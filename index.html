@@ -55,6 +55,7 @@
   .c8 { background: linear-gradient(135deg,#ee0979,#ff6a00); }
   .c9 { background: linear-gradient(135deg,#f7971e,#ffd200); }
   .c10 { background: linear-gradient(135deg,#2193b0,#6dd5ed); }
+  .c11 { background: linear-gradient(135deg,#654ea3,#eaafc8); }
   .card.locked { cursor: not-allowed; }
   .card.locked::after {
     content: '🔒 준비 중'; position: absolute; inset: 0;
@@ -333,6 +334,10 @@
       <div class="card c10" onclick="startQuiz('sportsF')">
         <div class="emoji">🌍</div>
         <div><div class="title">해외 운동선수</div><div class="sub">사진 속 선수는?</div></div>
+      </div>
+      <div class="card c11" onclick="startQuiz('pager')">
+        <div class="emoji">📟</div>
+        <div><div class="title">삐삐 숫자 암호</div><div class="sub">숫자의 뜻은?</div></div>
       </div>
     </div>
     <div class="admin-link"><button onclick="showAdmin()">🔧 관리자</button></div>
@@ -753,6 +758,25 @@
     { photo: 'https://upload.wikimedia.org/wikipedia/commons/6/65/Victor_Wembanyama_San_Antonio_Spurs_2024.jpg', answer: '빅터 웸반야마 (농구)' },
   ];
 
+  // 삐삐(무선호출기) 숫자 암호
+  const PAGER = [
+    { q: '0000', answer: '빵빵 / 꽝 (할 말 없음)' },
+    { q: '0024', answer: '영원히 사랑해' },
+    { q: '0027', answer: '영원히 친구' },
+    { q: '0124', answer: '영원히 사랑해' },
+    { q: '017942', answer: '공일친구사이' },
+    { q: '0909', answer: '구질구질 (빨리 와)' },
+    { q: '100', answer: '백 / 돌아와 (back)' },
+    { q: '1010235', answer: '열렬히 사모' },
+    { q: '486', answer: '사랑해' },
+    { q: '8282', answer: '빨리빨리' },
+    { q: '1004', answer: '천사' },
+    { q: '1212', answer: '12시에 만나' },
+    { q: '7942', answer: '친구사이' },
+    { q: '9090', answer: '구질구질' },
+    { q: '5882', answer: '오빠빨리' },
+  ];
+
   const QUIZZES = {
     ceo:      { title: 'CEO 기업 맞히기',  question: '이 분이 이끄는 기업은? 🤔', items: CEO_QUIZ,
                 emoji: '👔', sub: '사진 속 CEO의 기업을 맞혀보세요', grad: 'linear-gradient(135deg,#f857a6,#ff5858)' },
@@ -774,6 +798,8 @@
                 emoji: '🏅', sub: '사진 속 선수는?', grad: 'linear-gradient(135deg,#f7971e,#ffd200)' },
     sportsF:  { title: '해외 운동선수',   question: '이 선수는 누구일까요? 🏅', items: SPORTS_F,
                 emoji: '🌍', sub: '사진 속 선수는?', grad: 'linear-gradient(135deg,#2193b0,#6dd5ed)' },
+    pager:    { title: '삐삐 숫자 암호',   question: '이 삐삐 암호의 뜻은? 📟', items: PAGER, mode: 'ticker',
+                emoji: '📟', sub: '숫자에 담긴 뜻은?', grad: 'linear-gradient(135deg,#654ea3,#eaafc8)' },
   };
 
   let cur = QUIZZES.ceo;
@@ -798,7 +824,7 @@
 
   function showAdmin() {
     let html = '';
-    for (const key of ['ceo', 'female', 'male', 'krTicker', 'usTicker', 'cast', 'foreignM', 'foreignF', 'sportsKR', 'sportsF']) {
+    for (const key of ['ceo', 'female', 'male', 'krTicker', 'usTicker', 'cast', 'foreignM', 'foreignF', 'sportsKR', 'sportsF', 'pager']) {
       const q = QUIZZES[key];
       const rows = q.items.map((it, i) => {
         let ans;
