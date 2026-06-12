@@ -79,7 +79,7 @@
   }
   .quiz-card h2 { font-size: 26px; font-weight: 800; margin-bottom: 24px; color: #3a2d5c; }
   .photo-box {
-    width: 100%; max-width: 400px; aspect-ratio: 3/4; margin: 0 auto 22px;
+    width: 100%; max-width: 600px; aspect-ratio: 3/4; margin: 0 auto 22px;
     border-radius: 18px; overflow: hidden; background: #eef0f6;
     display: flex; align-items: center; justify-content: center;
     box-shadow: inset 0 0 0 4px rgba(0,0,0,.04);
@@ -178,6 +178,18 @@
   @keyframes pulse { 0%,100% { opacity: .65; } 50% { opacity: 1; } }
   body.audience-mode .cover-hint { display: none; }
 
+  /* 팀 점수판 */
+  .scoreboard { display: flex; align-items: stretch; justify-content: center; gap: 18px; margin-bottom: 18px; }
+  .scoreboard .team { flex: 1; max-width: 260px; border-radius: 18px; padding: 14px 16px; text-align: center; color: #fff; box-shadow: 0 8px 20px rgba(0,0,0,.2); }
+  .scoreboard .team.growth { background: linear-gradient(135deg,#11998e,#38ef7d); }
+  .scoreboard .team.value { background: linear-gradient(135deg,#eb3349,#f45c43); }
+  .scoreboard .team-name { font-size: 22px; font-weight: 900; letter-spacing: 2px; }
+  .scoreboard .team-score { font-size: 46px; font-weight: 900; line-height: 1.1; }
+  .scoreboard .team-check { margin-top: 6px; background: rgba(255,255,255,.25); border: 2px solid rgba(255,255,255,.9); color: #fff; border-radius: 10px; padding: 7px 14px; font-weight: 800; cursor: pointer; font-size: 15px; }
+  .scoreboard .team-check:hover { background: rgba(255,255,255,.4); }
+  .scoreboard .team.picked { outline: 5px solid #ffd200; outline-offset: 2px; transform: scale(1.04); }
+  .scoreboard .vs { align-self: center; font-size: 24px; font-weight: 900; color: #fff; opacity: .85; text-shadow: 0 2px 6px rgba(0,0,0,.3); }
+
   /* ===== 발표자 모드 ===== */
   .present-toggle { display: inline-flex; align-items: center; gap: 9px; margin-top: 20px;
     background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.4);
@@ -218,7 +230,7 @@
   body.audience-mode { align-items: center; }
   #audience { text-align: center; color: #fff; width: 100%; }
   .aud-progress { font-size: 24px; font-weight: 800; margin-bottom: 20px; text-shadow: 0 2px 8px rgba(0,0,0,.3); }
-  .aud-photo-box { width: 100%; max-width: 460px; aspect-ratio: 3/4; margin: 0 auto;
+  .aud-photo-box { width: 100%; max-width: 680px; aspect-ratio: 3/4; margin: 0 auto;
     background: #eef0f6; border-radius: 24px; overflow: hidden;
     display: flex; align-items: center; justify-content: center; box-shadow: 0 20px 44px rgba(0,0,0,.32); }
   .aud-photo-box.ticker { aspect-ratio: auto; min-height: 320px;
@@ -354,7 +366,20 @@
     <div class="pres-top">
       <button onclick="exitPresent()">← 종료</button>
       <span id="presProgress">1 / 1</span>
-      <span class="pres-hint">Enter / → : 정답공개 후 다음 · ← : 이전 · Esc : 종료</span>
+      <span class="pres-hint">Enter: 정답공개/다음 · 1=GROWTH 2=VALUE 정답체크 · ←: 이전 · Esc: 종료</span>
+    </div>
+    <div class="scoreboard">
+      <div class="team growth" id="presTeamG">
+        <div class="team-name">GROWTH</div>
+        <div class="team-score" id="presScoreG">0</div>
+        <button class="team-check" onclick="pickTeam('growth')">✓ 정답 (1)</button>
+      </div>
+      <div class="vs">VS</div>
+      <div class="team value" id="presTeamV">
+        <div class="team-name">VALUE</div>
+        <div class="team-score" id="presScoreV">0</div>
+        <button class="team-check" onclick="pickTeam('value')">✓ 정답 (2)</button>
+      </div>
     </div>
     <div class="pres-main">
       <div class="pres-current">
@@ -381,6 +406,11 @@
 
   <!-- 관객 화면 (빔프로젝터 모니터, 새 창) -->
   <section id="audience" class="screen">
+    <div class="scoreboard">
+      <div class="team growth"><div class="team-name">GROWTH</div><div class="team-score" id="audScoreG">0</div></div>
+      <div class="vs">VS</div>
+      <div class="team value"><div class="team-name">VALUE</div><div class="team-score" id="audScoreV">0</div></div>
+    </div>
     <div class="aud-progress" id="audProgress"></div>
     <div class="aud-photo-box" id="audPhotoBox">
       <img id="audPhoto" alt="">
@@ -843,10 +873,12 @@
   // ===== 발표자 모드 (듀얼 스크린) =====
   const BC = ('BroadcastChannel' in window) ? new BroadcastChannel('elite-quiz') : null;
   let presMode = false, presKey = 'ceo', presIntro = true, presRevealed = false, presDone = false, audienceWin = null;
+  let growthScore = 0, valueScore = 0, pickedTeam = null;
 
   function startPresent(key) {
     presKey = key; cur = QUIZZES[key]; idx = 0;
     presIntro = true; presRevealed = false; presDone = false; presMode = true;
+    growthScore = 0; valueScore = 0; pickedTeam = null;
     audienceWin = window.open(location.pathname + '?view=audience', 'quizAudience', 'width=1100,height=760');
     renderPresenter();   // 표지(준비) 화면부터
     broadcast();
@@ -856,11 +888,17 @@
     if (presDone) return;
     if (presIntro) presIntro = false;                  // 표지 → 첫 문제 시작
     else if (!presRevealed) presRevealed = true;       // 1단계: 관객에게 정답 공개
-    else if (idx >= cur.items.length - 1) presDone = true;
-    else { idx++; presRevealed = false; }              // 2단계: 다음 문제
+    else {                                              // 2단계: 점수 반영 후 다음 문제
+      if (pickedTeam === 'growth') growthScore++;
+      else if (pickedTeam === 'value') valueScore++;
+      pickedTeam = null;
+      if (idx >= cur.items.length - 1) presDone = true;
+      else { idx++; presRevealed = false; }
+    }
     renderPresenter(); broadcast();
   }
   function presBack() {
+    pickedTeam = null;
     if (presDone) presDone = false;
     else if (presRevealed) presRevealed = false;
     else if (idx > 0) { idx--; presRevealed = false; }
@@ -874,8 +912,14 @@
     show('home');
   }
 
+  function pickTeam(team) {
+    if (presIntro || presDone) return;
+    pickedTeam = (pickedTeam === team) ? null : team;
+    renderPresenter();
+  }
+
   function broadcast() {
-    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone });
+    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone, g: growthScore, v: valueScore });
   }
 
   // 표지(준비) 화면 렌더 — 발표자·관객 공용
@@ -906,12 +950,18 @@
     const logoBox = document.getElementById('presLogoBox');
     const st = document.getElementById('presRevealState');
 
+    document.getElementById('presScoreG').textContent = growthScore;
+    document.getElementById('presScoreV').textContent = valueScore;
+    document.getElementById('presTeamG').classList.toggle('picked', pickedTeam === 'growth');
+    document.getElementById('presTeamV').classList.toggle('picked', pickedTeam === 'value');
+
     if (presDone) {
+      const win = growthScore > valueScore ? '🏆 GROWTH 승!' : valueScore > growthScore ? '🏆 VALUE 승!' : '🤝 무승부!';
       document.getElementById('presProgress').textContent = '완료!';
       document.getElementById('presQ').textContent = '';
       logoBox.style.display = 'none';
-      document.getElementById('presAnswer').textContent = '🎉 모든 문제를 마쳤어요';
-      document.getElementById('presAnswerSub').textContent = '';
+      document.getElementById('presAnswer').textContent = win;
+      document.getElementById('presAnswerSub').textContent = 'GROWTH ' + growthScore + ' : ' + valueScore + ' VALUE';
       st.textContent = ''; st.className = '';
       document.getElementById('presNext').textContent = '← 이전 또는 종료 버튼으로 나가기';
       return;
@@ -949,14 +999,19 @@
     if (data.intro) { renderCover(data.key); show('cover'); return; }
     show('audience');
 
+    document.getElementById('audScoreG').textContent = data.g || 0;
+    document.getElementById('audScoreV').textContent = data.v || 0;
+
     const q = QUIZZES[data.key];
     const reveal = document.getElementById('audReveal');
     const box = document.getElementById('audPhotoBox');
 
     if (data.done) {
+      const win = (data.g||0) > (data.v||0) ? '🏆 GROWTH 승!' : (data.v||0) > (data.g||0) ? '🏆 VALUE 승!' : '🤝 무승부!';
       box.style.display = 'none';
       reveal.classList.remove('show');
       document.getElementById('audProgress').textContent = '';
+      document.getElementById('audDoneMsg').textContent = win;
       document.getElementById('audDoneMsg').style.display = 'block';
       return;
     }
@@ -990,6 +1045,8 @@
     if (!presMode) return;
     if (e.key === 'Enter' || e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); presAdvance(); }
     else if (e.key === 'ArrowLeft') { e.preventDefault(); presBack(); }
+    else if (e.key === '1') { e.preventDefault(); pickTeam('growth'); }
+    else if (e.key === '2') { e.preventDefault(); pickTeam('value'); }
     else if (e.key === 'Escape') { exitPresent(); }
   });
 
