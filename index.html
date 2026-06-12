@@ -79,7 +79,7 @@
   }
   .quiz-card h2 { font-size: 26px; font-weight: 800; margin-bottom: 24px; color: #3a2d5c; }
   .photo-box {
-    height: min(50vh, 540px); aspect-ratio: 3/4; width: auto; max-width: 90vw; margin: 0 auto 16px;
+    height: min(56vh, 600px); aspect-ratio: 4/5; width: auto; max-width: 90vw; margin: 0 auto 16px;
     border-radius: 18px; overflow: hidden; background: #eef0f6;
     display: flex; align-items: center; justify-content: center;
     box-shadow: inset 0 0 0 4px rgba(0,0,0,.04);
@@ -189,6 +189,22 @@
   .scoreboard .team-check:hover { background: rgba(255,255,255,.4); }
   .scoreboard .team.picked { outline: 5px solid #ffd200; outline-offset: 2px; transform: scale(1.04); }
   .scoreboard .vs { align-self: center; font-size: 24px; font-weight: 900; color: #fff; opacity: .85; text-shadow: 0 2px 6px rgba(0,0,0,.3); }
+  /* 좌우 팀 패널 */
+  .team-side { width: 160px; flex-shrink: 0; border-radius: 20px; padding: 18px 12px; color: #fff;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.2); }
+  .team-side.growth { background: linear-gradient(160deg,#11998e,#38ef7d); }
+  .team-side.value { background: linear-gradient(160deg,#eb3349,#f45c43); }
+  .team-side .ts-name { font-size: 26px; font-weight: 900; letter-spacing: 2px; }
+  .team-side .ts-score { font-size: 68px; font-weight: 900; line-height: 1; }
+  .team-side.picked { outline: 6px solid #ffd200; outline-offset: 2px; }
+  .team-side .team-check { margin-top: 4px; background: rgba(255,255,255,.25); border: 2px solid rgba(255,255,255,.9);
+    color: #fff; border-radius: 10px; padding: 9px 12px; font-weight: 800; cursor: pointer; font-size: 14px; line-height: 1.3; }
+  .team-side .team-check:hover { background: rgba(255,255,255,.4); }
+  .aud-layout { display: flex; gap: 16px; align-items: stretch; width: 100%; }
+  .aud-center { flex: 1; min-width: 0; }
+  .pres-body { display: flex; gap: 16px; align-items: stretch; }
+  .pres-center { flex: 1; min-width: 0; }
 
   /* ===== 발표자 모드 ===== */
   .present-toggle { display: inline-flex; align-items: center; gap: 9px; margin-top: 20px;
@@ -228,9 +244,10 @@
 
   /* 관객 화면 (빔프로젝터) */
   body.audience-mode { align-items: center; padding: 14px; }
+  body.audience-mode .wrap { max-width: 96vw; }
   #audience { text-align: center; color: #fff; width: 100%; }
   .aud-progress { font-size: 22px; font-weight: 800; margin-bottom: 12px; text-shadow: 0 2px 8px rgba(0,0,0,.3); }
-  .aud-photo-box { height: min(54vh, 600px); aspect-ratio: 3/4; width: auto; max-width: 90vw; margin: 0 auto;
+  .aud-photo-box { height: min(64vh, 680px); aspect-ratio: 4/5; width: auto; max-width: 90vw; margin: 0 auto;
     background: #eef0f6; border-radius: 24px; overflow: hidden;
     display: flex; align-items: center; justify-content: center; box-shadow: 0 20px 44px rgba(0,0,0,.32); }
   .aud-photo-box.ticker { aspect-ratio: auto; height: auto; min-height: 260px;
@@ -368,19 +385,13 @@
       <span id="presProgress">1 / 1</span>
       <span class="pres-hint">Enter: 정답공개/다음 · 1=GROWTH 2=VALUE 정답체크 · ←: 이전 · Esc: 종료</span>
     </div>
-    <div class="scoreboard">
-      <div class="team growth" id="presTeamG">
-        <div class="team-name">GROWTH</div>
-        <div class="team-score" id="presScoreG">0</div>
-        <button class="team-check" onclick="pickTeam('growth')">✓ 정답 (1)</button>
+    <div class="pres-body">
+      <div class="team-side growth" id="presTeamG">
+        <div class="ts-name">GROWTH</div>
+        <div class="ts-score" id="presScoreG">0</div>
+        <button class="team-check" onclick="pickTeam('growth')">✓ 정답<br>(1)</button>
       </div>
-      <div class="vs">VS</div>
-      <div class="team value" id="presTeamV">
-        <div class="team-name">VALUE</div>
-        <div class="team-score" id="presScoreV">0</div>
-        <button class="team-check" onclick="pickTeam('value')">✓ 정답 (2)</button>
-      </div>
-    </div>
+      <div class="pres-center">
     <div class="pres-main">
       <div class="pres-current">
         <div class="pres-label">현재 문제 (관객 화면)</div>
@@ -402,16 +413,21 @@
       <span class="pres-label">다음 ▶</span>
       <span id="presNext"></span>
     </div>
+      </div>
+      <div class="team-side value" id="presTeamV">
+        <div class="ts-name">VALUE</div>
+        <div class="ts-score" id="presScoreV">0</div>
+        <button class="team-check" onclick="pickTeam('value')">✓ 정답<br>(2)</button>
+      </div>
+    </div>
   </section>
 
   <!-- 관객 화면 (빔프로젝터 모니터, 새 창) -->
   <section id="audience" class="screen">
-    <div class="scoreboard">
-      <div class="team growth"><div class="team-name">GROWTH</div><div class="team-score" id="audScoreG">0</div></div>
-      <div class="vs">VS</div>
-      <div class="team value"><div class="team-name">VALUE</div><div class="team-score" id="audScoreV">0</div></div>
-    </div>
-    <div class="aud-progress" id="audProgress"></div>
+    <div class="aud-layout">
+      <div class="team-side growth"><div class="ts-name">GROWTH</div><div class="ts-score" id="audScoreG">0</div></div>
+      <div class="aud-center">
+        <div class="aud-progress" id="audProgress"></div>
     <div class="aud-photo-box" id="audPhotoBox">
       <img id="audPhoto" alt="">
       <div id="audTicker" style="display:none"></div>
@@ -422,6 +438,9 @@
       <div id="audSub"></div>
     </div>
     <div id="audDoneMsg" style="display:none;font-size:64px;margin-top:24px">🎉 끝!</div>
+      </div>
+      <div class="team-side value"><div class="ts-name">VALUE</div><div class="ts-score" id="audScoreV">0</div></div>
+    </div>
   </section>
 
   <!-- 관리자: 정답지 -->
