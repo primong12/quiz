@@ -281,9 +281,9 @@
         <div class="emoji">🌎</div>
         <div><div class="title">해외 주식 티커</div><div class="sub">티커로 기업 맞히기</div></div>
       </div>
-      <div class="card c6 locked" onclick="comingSoon()">
-        <div class="emoji">⚽</div>
-        <div><div class="title">스포츠 스타 퀴즈</div><div class="sub">스타 선수 맞히기</div></div>
+      <div class="card c6" onclick="startQuiz('cast')">
+        <div class="emoji">🎬</div>
+        <div><div class="title">출연자 맞히기</div><div class="sub">사진 속 출연자는?</div></div>
       </div>
     </div>
     <div class="admin-link"><button onclick="showAdmin()">🔧 관리자</button></div>
@@ -546,6 +546,27 @@
     { q: 'HD',    answer: '홈디포 (Home Depot)' },
   ];
 
+  // 출연자 (사진 → 이름, 순서 임의 셔플)
+  const CAST = [
+    { photo: 'images/cast03.jpg',  answer: '정지훈' },
+    { photo: 'images/cast11.jpg',  answer: '홍춘욱' },
+    { photo: 'images/cast07.jpg',  answer: '박지원' },
+    { photo: 'images/cast02.jpg',  answer: '김탁' },
+    { photo: 'images/cast13.jpg',  answer: '더글라스 요나스' },
+    { photo: 'images/cast06.jpg',  answer: '모르면 나가세요' },
+    { photo: 'images/cast01.png',  answer: '이선엽' },
+    { photo: 'images/cast09.jpg',  answer: '윤수목' },
+    { photo: 'images/cast17.jpg',  answer: '최도연' },
+    { photo: 'images/cast12.jpg',  answer: '박곰희' },
+    { photo: 'images/cast04.jpg',  answer: '아신 (이형수)' },
+    { photo: 'images/cast16.jpg',  answer: '김효식' },
+    { photo: 'images/cast10.png',  answer: '오종태' },
+    { photo: 'images/cast15.jpg',  answer: '홍진채' },
+    { photo: 'images/cast05.jpg',  answer: '김준성' },
+    { photo: 'images/cast14.webp', answer: '이병한' },
+    { photo: 'images/cast08.jpg',  answer: '정주용' },
+  ];
+
   const QUIZZES = {
     ceo:      { title: 'CEO 기업 맞히기',  question: '이 분이 이끄는 기업은? 🤔', items: CEO_QUIZ,
                 emoji: '👔', sub: '사진 속 CEO의 기업을 맞혀보세요', grad: 'linear-gradient(135deg,#f857a6,#ff5858)' },
@@ -557,6 +578,8 @@
                 emoji: '📈', sub: '종목코드로 기업 맞히기', grad: 'linear-gradient(135deg,#4facfe,#00f2fe)' },
     usTicker: { title: '해외 주식 티커',   question: '이 티커의 기업은? 📈',     items: US_TICKER, mode: 'ticker',
                 emoji: '🌎', sub: '티커로 기업 맞히기', grad: 'linear-gradient(135deg,#a06bff,#6a3093)' },
+    cast:     { title: '출연자 맞히기',    question: '이 출연자는 누구일까요? 🤔', items: CAST,
+                emoji: '🎬', sub: '사진 속 출연자의 이름은?', grad: 'linear-gradient(135deg,#ff9966,#ff5e62)' },
   };
 
   let cur = QUIZZES.ceo;
@@ -577,11 +600,11 @@
   function comingSoon() { alert('이 퀴즈는 곧 만나요! 😊'); }
 
   // 준비 중인 다른 퀴즈 목록 (정답지 화면에 함께 표시)
-  const UPCOMING = ['스포츠 스타 맞히기'];
+  const UPCOMING = [];
 
   function showAdmin() {
     let html = '';
-    for (const key of ['ceo', 'female', 'male', 'krTicker', 'usTicker']) {
+    for (const key of ['ceo', 'female', 'male', 'krTicker', 'usTicker', 'cast']) {
       const q = QUIZZES[key];
       const rows = q.items.map((it, i) => {
         let ans;
