@@ -159,6 +159,61 @@
   .answer-sheet.soon { color: #b6aecb; font-weight: 600; font-size: 14px; }
   #adminBody { max-width: 820px; margin: 0 auto; }
 
+  /* ===== 발표자 모드 ===== */
+  .present-toggle { display: inline-flex; align-items: center; gap: 9px; margin-top: 20px;
+    background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.4);
+    color: #fff; padding: 10px 18px; border-radius: 99px; font-size: 16px; font-weight: 700; cursor: pointer; }
+  .present-toggle input { width: 18px; height: 18px; cursor: pointer; }
+
+  #presenter { color: #fff; }
+  .pres-top { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
+  .pres-top button { background: rgba(255,255,255,.92); border: none; border-radius: 12px;
+    padding: 10px 16px; font-weight: 700; color: #6a3093; cursor: pointer; }
+  #presProgress { font-size: 22px; font-weight: 800; }
+  .pres-hint { margin-left: auto; font-size: 14px; opacity: .9;
+    background: rgba(0,0,0,.22); padding: 7px 13px; border-radius: 10px; }
+  .pres-main { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .pres-current, .pres-answer { background: #fff; border-radius: 22px; padding: 24px;
+    color: #2d2d44; min-height: 360px; display: flex; flex-direction: column;
+    box-shadow: 0 14px 32px rgba(0,0,0,.22); }
+  .pres-current { align-items: center; text-align: center; }
+  .pres-answer { align-items: center; text-align: center; justify-content: center; }
+  .pres-label { font-size: 13px; font-weight: 800; color: #b9a9d6; letter-spacing: 1px; margin-bottom: 14px; }
+  .pres-mediabox { flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; min-height: 250px; }
+  .pres-mediabox img { max-height: 310px; max-width: 100%; border-radius: 14px; object-fit: contain; }
+  .pres-ticker { font-family: 'SF Mono','Consolas',monospace; font-weight: 800; font-size: 64px;
+    color: #2d3a6b; letter-spacing: 3px; }
+  #presQ { font-size: 18px; font-weight: 700; margin-top: 12px; color: #666; }
+  .pres-answer .logo-box { margin-bottom: 14px; }
+  #presAnswer { font-size: 36px; font-weight: 900; color: #e8467c; letter-spacing: -.5px; }
+  #presAnswerSub { font-size: 17px; color: #888; margin-top: 6px; }
+  #presRevealState { margin-top: 18px; font-size: 14px; font-weight: 800; padding: 8px 16px; border-radius: 99px; }
+  .reveal-hidden { background: #ffe9b0; color: #9a6b00; }
+  .reveal-shown { background: #c8f0d0; color: #1c7a3a; }
+  .pres-next { margin-top: 18px; background: rgba(0,0,0,.24); border-radius: 16px;
+    padding: 16px 24px; display: flex; align-items: center; gap: 16px; }
+  .pres-next .pres-label { margin: 0; color: #ffe259; }
+  #presNext { font-size: 23px; font-weight: 800; }
+
+  /* 관객 화면 (빔프로젝터) */
+  body.audience-mode { align-items: center; }
+  #audience { text-align: center; color: #fff; width: 100%; }
+  .aud-progress { font-size: 24px; font-weight: 800; margin-bottom: 20px; text-shadow: 0 2px 8px rgba(0,0,0,.3); }
+  .aud-photo-box { width: 100%; max-width: 460px; aspect-ratio: 3/4; margin: 0 auto;
+    background: #eef0f6; border-radius: 24px; overflow: hidden;
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 20px 44px rgba(0,0,0,.32); }
+  .aud-photo-box.ticker { aspect-ratio: auto; min-height: 320px;
+    background: linear-gradient(135deg,#1e2746,#2d3a6b); }
+  .aud-photo-box img { width: 100%; height: 100%; object-fit: cover; }
+  #audTicker { font-family: 'SF Mono','Consolas',monospace; font-weight: 800;
+    font-size: 110px; color: #ffe259; letter-spacing: 5px; text-shadow: 0 4px 18px rgba(0,0,0,.4); }
+  .aud-reveal { margin-top: 26px; display: none; }
+  .aud-reveal.show { display: block; animation: pop .4s cubic-bezier(.2,1.4,.4,1); }
+  .aud-reveal .logo-box { width: 250px; height: 160px; }
+  .aud-answer-name { font-size: 58px; font-weight: 900; color: #fff; text-shadow: 0 4px 18px rgba(0,0,0,.4); }
+  #audSub { font-size: 24px; opacity: .9; margin-top: 8px; }
+  @media (max-width: 760px) { .pres-main { grid-template-columns: 1fr; } #audTicker { font-size: 64px; } }
+
   /* ===== 반응형: 화면 좁아지면 열 수 줄이기 ===== */
   @media (max-width: 920px) {
     .grid { grid-template-columns: repeat(2, 1fr); }
@@ -185,6 +240,7 @@
       <div class="crown">🏆</div>
       <h1>엘리트 클럽 퀴즈</h1>
       <p>도전할 퀴즈를 골라보세요!</p>
+      <label class="present-toggle"><input type="checkbox" id="presentChk"> 🎤 발표 모드 (빔프로젝터·듀얼모니터)</label>
     </div>
     <div class="grid">
       <div class="card c1" onclick="startQuiz('ceo')">
@@ -246,6 +302,51 @@
         <button class="btn btn-next" id="nextBtn" onclick="nextQuestion()">다음 ▶</button>
       </div>
     </div>
+  </section>
+
+  <!-- 발표자 화면 (조작용 모니터) -->
+  <section id="presenter" class="screen">
+    <div class="pres-top">
+      <button onclick="exitPresent()">← 종료</button>
+      <span id="presProgress">1 / 1</span>
+      <span class="pres-hint">Enter / → : 정답공개 후 다음 · ← : 이전 · Esc : 종료</span>
+    </div>
+    <div class="pres-main">
+      <div class="pres-current">
+        <div class="pres-label">현재 문제 (관객 화면)</div>
+        <div class="pres-mediabox" id="presPhotoBox">
+          <img id="presPhoto" alt="">
+          <div id="presTicker" class="pres-ticker" style="display:none"></div>
+        </div>
+        <div id="presQ"></div>
+      </div>
+      <div class="pres-answer">
+        <div class="pres-label">정답</div>
+        <div class="logo-box" id="presLogoBox" style="display:none"><img id="presLogo" alt=""></div>
+        <div id="presAnswer"></div>
+        <div id="presAnswerSub"></div>
+        <div id="presRevealState"></div>
+      </div>
+    </div>
+    <div class="pres-next">
+      <span class="pres-label">다음 ▶</span>
+      <span id="presNext"></span>
+    </div>
+  </section>
+
+  <!-- 관객 화면 (빔프로젝터 모니터, 새 창) -->
+  <section id="audience" class="screen">
+    <div class="aud-progress" id="audProgress"></div>
+    <div class="aud-photo-box" id="audPhotoBox">
+      <img id="audPhoto" alt="">
+      <div id="audTicker" style="display:none"></div>
+    </div>
+    <div class="aud-reveal" id="audReveal">
+      <div class="logo-box" id="audLogoBox"><img id="audLogo" alt=""></div>
+      <div class="aud-answer-name" id="audName"></div>
+      <div id="audSub"></div>
+    </div>
+    <div id="audDoneMsg" style="display:none;font-size:64px;margin-top:24px">🎉 끝!</div>
   </section>
 
   <!-- 관리자: 정답지 -->
@@ -435,7 +536,11 @@
     window.scrollTo(0, 0);
   }
 
-  function startQuiz(key) { cur = QUIZZES[key]; idx = 0; show('quiz'); renderQuestion(); }
+  function startQuiz(key) {
+    const chk = document.getElementById('presentChk');
+    if (chk && chk.checked) { startPresent(key); return; }
+    cur = QUIZZES[key]; idx = 0; show('quiz'); renderQuestion();
+  }
   function goHome() { show('home'); }
   function comingSoon() { alert('이 퀴즈는 곧 만나요! 😊'); }
 
@@ -534,6 +639,157 @@
     }
     renderQuestion();
   }
+
+  // ===== 발표자 모드 (듀얼 스크린) =====
+  const BC = ('BroadcastChannel' in window) ? new BroadcastChannel('elite-quiz') : null;
+  let presMode = false, presKey = 'ceo', presRevealed = false, presDone = false, audienceWin = null;
+
+  function startPresent(key) {
+    presKey = key; cur = QUIZZES[key]; idx = 0; presRevealed = false; presDone = false; presMode = true;
+    audienceWin = window.open(location.pathname + '?view=audience', 'quizAudience', 'width=1100,height=760');
+    show('presenter');
+    renderPresenter();
+    broadcast();
+  }
+
+  function presAdvance() {
+    if (presDone) return;
+    if (!presRevealed) presRevealed = true;            // 1단계: 관객에게 정답 공개
+    else if (idx >= cur.items.length - 1) presDone = true;
+    else { idx++; presRevealed = false; }              // 2단계: 다음 문제
+    renderPresenter(); broadcast();
+  }
+  function presBack() {
+    if (presDone) presDone = false;
+    else if (presRevealed) presRevealed = false;
+    else if (idx > 0) { idx--; presRevealed = false; }
+    renderPresenter(); broadcast();
+  }
+  function exitPresent() {
+    presMode = false;
+    if (BC) BC.postMessage({ type: 'exit' });
+    if (audienceWin && !audienceWin.closed) audienceWin.close();
+    show('home');
+  }
+
+  function broadcast() {
+    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, revealed: presRevealed, done: presDone });
+  }
+
+  // 사진/티커 채우기 (발표자·관객 공용)
+  function fillMedia(box, img, ticker, it, mode) {
+    if (mode === 'ticker') {
+      box.classList.add('ticker'); img.style.display = 'none';
+      ticker.style.display = 'block'; ticker.textContent = it.q;
+    } else {
+      box.classList.remove('ticker'); ticker.style.display = 'none';
+      img.style.display = 'block'; img.src = it.photo;
+    }
+  }
+
+  function renderPresenter() {
+    const q = QUIZZES[presKey];
+    const logoBox = document.getElementById('presLogoBox');
+    const st = document.getElementById('presRevealState');
+
+    if (presDone) {
+      document.getElementById('presProgress').textContent = '완료!';
+      document.getElementById('presQ').textContent = '';
+      logoBox.style.display = 'none';
+      document.getElementById('presAnswer').textContent = '🎉 모든 문제를 마쳤어요';
+      document.getElementById('presAnswerSub').textContent = '';
+      st.textContent = ''; st.className = '';
+      document.getElementById('presNext').textContent = '← 이전 또는 종료 버튼으로 나가기';
+      return;
+    }
+
+    const it = q.items[idx];
+    document.getElementById('presProgress').textContent = (idx + 1) + ' / ' + q.items.length;
+    fillMedia(document.getElementById('presPhotoBox'), document.getElementById('presPhoto'),
+              document.getElementById('presTicker'), it, q.mode);
+    document.getElementById('presQ').textContent = q.question;
+
+    if (it.logo) {
+      logoBox.style.display = 'flex';
+      document.getElementById('presLogo').src = it.logo;
+      document.getElementById('presAnswer').textContent = it.company;
+      document.getElementById('presAnswerSub').textContent = it.ceo;
+    } else {
+      logoBox.style.display = 'none';
+      document.getElementById('presAnswer').textContent = it.answer;
+      document.getElementById('presAnswerSub').textContent = (q.mode === 'ticker' ? it.q : '');
+    }
+
+    if (presRevealed) { st.textContent = '● 관객 화면에 정답 공개됨'; st.className = 'reveal-shown'; }
+    else { st.textContent = '○ 관객 화면엔 아직 숨김 — Enter로 공개'; st.className = 'reveal-hidden'; }
+
+    const nx = q.items[idx + 1];
+    document.getElementById('presNext').textContent = nx ? (nx.logo ? nx.company : nx.answer) : '— (마지막 문제)';
+  }
+
+  function renderAudience(data) {
+    if (!data) return;
+    if (data.type === 'exit') { window.close(); return; }
+    if (data.type !== 'state') return;
+
+    const q = QUIZZES[data.key];
+    const reveal = document.getElementById('audReveal');
+    const box = document.getElementById('audPhotoBox');
+
+    if (data.done) {
+      box.style.display = 'none';
+      reveal.classList.remove('show');
+      document.getElementById('audProgress').textContent = '';
+      document.getElementById('audDoneMsg').style.display = 'block';
+      return;
+    }
+    document.getElementById('audDoneMsg').style.display = 'none';
+    box.style.display = 'flex';
+
+    const it = q.items[data.idx];
+    fillMedia(box, document.getElementById('audPhoto'), document.getElementById('audTicker'), it, q.mode);
+    document.getElementById('audProgress').textContent = (data.idx + 1) + ' / ' + q.items.length;
+
+    if (data.revealed) {
+      const logoBox = document.getElementById('audLogoBox');
+      if (it.logo) {
+        logoBox.style.display = 'flex';
+        document.getElementById('audLogo').src = it.logo;
+        document.getElementById('audName').textContent = it.company;
+        document.getElementById('audSub').textContent = it.ceo;
+      } else {
+        logoBox.style.display = 'none';
+        document.getElementById('audName').textContent = it.answer;
+        document.getElementById('audSub').textContent = '';
+      }
+      reveal.classList.add('show');
+    } else {
+      reveal.classList.remove('show');
+    }
+  }
+
+  // 키보드: 발표자 화면에서만 동작
+  document.addEventListener('keydown', function (e) {
+    if (!presMode) return;
+    if (e.key === 'Enter' || e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); presAdvance(); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); presBack(); }
+    else if (e.key === 'Escape') { exitPresent(); }
+  });
+
+  // 부팅: 관객 창(?view=audience)인지 확인
+  (function initView() {
+    const isAudience = new URLSearchParams(location.search).get('view') === 'audience';
+    if (isAudience) {
+      document.body.classList.add('audience-mode');
+      show('audience');
+      if (BC) {
+        BC.onmessage = function (e) { renderAudience(e.data); };
+        BC.postMessage({ type: 'request' });   // 발표자에게 현재 상태 요청
+      }
+    } else if (BC) {
+      BC.onmessage = function (e) { if (e.data && e.data.type === 'request') broadcast(); };
+    }
+  })();
 </script>
 </body>
 </html>
