@@ -159,6 +159,21 @@
   .answer-sheet.soon { color: #b6aecb; font-weight: 600; font-size: 14px; }
   #adminBody { max-width: 820px; margin: 0 auto; }
 
+  /* ===== 발표 표지(준비) 화면 ===== */
+  .cover-card { width: 100%; max-width: 900px; min-height: 460px; margin: 0 auto;
+    border-radius: 36px; color: #fff; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; padding: 50px;
+    box-shadow: 0 24px 60px rgba(0,0,0,.35); }
+  .cover-emoji { font-size: 116px; filter: drop-shadow(0 6px 12px rgba(0,0,0,.25)); }
+  .cover-title { font-size: 58px; font-weight: 900; margin-top: 18px; letter-spacing: -1.5px;
+    text-shadow: 0 4px 16px rgba(0,0,0,.25); }
+  .cover-sub { font-size: 24px; opacity: .95; margin-top: 14px; }
+  .cover-hint { margin-top: 40px; font-size: 21px; font-weight: 700;
+    background: rgba(0,0,0,.25); padding: 13px 28px; border-radius: 99px;
+    animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: .65; } 50% { opacity: 1; } }
+  body.audience-mode .cover-hint { display: none; }
+
   /* ===== 발표자 모드 ===== */
   .present-toggle { display: inline-flex; align-items: center; gap: 9px; margin-top: 20px;
     background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.4);
@@ -301,6 +316,16 @@
         <button class="btn btn-answer" id="answerBtn" onclick="showAnswer()">정답 보기 👀</button>
         <button class="btn btn-next" id="nextBtn" onclick="nextQuestion()">다음 ▶</button>
       </div>
+    </div>
+  </section>
+
+  <!-- 발표 표지(준비) 화면 -->
+  <section id="cover" class="screen">
+    <div class="cover-card" id="coverCard">
+      <div class="cover-emoji" id="coverEmoji"></div>
+      <div class="cover-title" id="coverTitle"></div>
+      <div class="cover-sub" id="coverSub"></div>
+      <div class="cover-hint">▶ Enter를 누르면 시작합니다</div>
     </div>
   </section>
 
@@ -520,11 +545,16 @@
   ];
 
   const QUIZZES = {
-    ceo:      { title: 'CEO 기업 맞히기',  question: '이 분이 이끄는 기업은? 🤔', items: CEO_QUIZ },
-    female:   { title: '여자 연예인 맞히기', question: '이 사람은 누구일까요? 🤔',  items: FEMALE },
-    male:     { title: '남자 연예인 맞히기', question: '이 사람은 누구일까요? 🤔',  items: MALE },
-    krTicker: { title: '국내 주식 티커',   question: '이 종목코드의 기업은? 📈', items: KR_TICKER, mode: 'ticker' },
-    usTicker: { title: '해외 주식 티커',   question: '이 티커의 기업은? 📈',     items: US_TICKER, mode: 'ticker' },
+    ceo:      { title: 'CEO 기업 맞히기',  question: '이 분이 이끄는 기업은? 🤔', items: CEO_QUIZ,
+                emoji: '👔', sub: '사진 속 CEO의 기업을 맞혀보세요', grad: 'linear-gradient(135deg,#f857a6,#ff5858)' },
+    female:   { title: '여자 연예인 맞히기', question: '이 사람은 누구일까요? 🤔',  items: FEMALE,
+                emoji: '👩‍🎤', sub: '사진 속 인물의 이름은?', grad: 'linear-gradient(135deg,#43cea2,#185a9d)' },
+    male:     { title: '남자 연예인 맞히기', question: '이 사람은 누구일까요? 🤔',  items: MALE,
+                emoji: '🧑‍🎤', sub: '사진 속 인물의 이름은?', grad: 'linear-gradient(135deg,#fa709a,#fee140)' },
+    krTicker: { title: '국내 주식 티커',   question: '이 종목코드의 기업은? 📈', items: KR_TICKER, mode: 'ticker',
+                emoji: '📈', sub: '종목코드로 기업 맞히기', grad: 'linear-gradient(135deg,#4facfe,#00f2fe)' },
+    usTicker: { title: '해외 주식 티커',   question: '이 티커의 기업은? 📈',     items: US_TICKER, mode: 'ticker',
+                emoji: '🌎', sub: '티커로 기업 맞히기', grad: 'linear-gradient(135deg,#a06bff,#6a3093)' },
   };
 
   let cur = QUIZZES.ceo;
@@ -642,19 +672,20 @@
 
   // ===== 발표자 모드 (듀얼 스크린) =====
   const BC = ('BroadcastChannel' in window) ? new BroadcastChannel('elite-quiz') : null;
-  let presMode = false, presKey = 'ceo', presRevealed = false, presDone = false, audienceWin = null;
+  let presMode = false, presKey = 'ceo', presIntro = true, presRevealed = false, presDone = false, audienceWin = null;
 
   function startPresent(key) {
-    presKey = key; cur = QUIZZES[key]; idx = 0; presRevealed = false; presDone = false; presMode = true;
+    presKey = key; cur = QUIZZES[key]; idx = 0;
+    presIntro = true; presRevealed = false; presDone = false; presMode = true;
     audienceWin = window.open(location.pathname + '?view=audience', 'quizAudience', 'width=1100,height=760');
-    show('presenter');
-    renderPresenter();
+    renderPresenter();   // 표지(준비) 화면부터
     broadcast();
   }
 
   function presAdvance() {
     if (presDone) return;
-    if (!presRevealed) presRevealed = true;            // 1단계: 관객에게 정답 공개
+    if (presIntro) presIntro = false;                  // 표지 → 첫 문제 시작
+    else if (!presRevealed) presRevealed = true;       // 1단계: 관객에게 정답 공개
     else if (idx >= cur.items.length - 1) presDone = true;
     else { idx++; presRevealed = false; }              // 2단계: 다음 문제
     renderPresenter(); broadcast();
@@ -663,6 +694,7 @@
     if (presDone) presDone = false;
     else if (presRevealed) presRevealed = false;
     else if (idx > 0) { idx--; presRevealed = false; }
+    else presIntro = true;                             // 첫 문제 → 표지로
     renderPresenter(); broadcast();
   }
   function exitPresent() {
@@ -673,7 +705,17 @@
   }
 
   function broadcast() {
-    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, revealed: presRevealed, done: presDone });
+    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone });
+  }
+
+  // 표지(준비) 화면 렌더 — 발표자·관객 공용
+  function renderCover(key) {
+    const q = QUIZZES[key];
+    const card = document.getElementById('coverCard');
+    card.style.background = q.grad;
+    document.getElementById('coverEmoji').textContent = q.emoji;
+    document.getElementById('coverTitle').textContent = q.title;
+    document.getElementById('coverSub').textContent = q.sub + ' · 총 ' + q.items.length + '문제';
   }
 
   // 사진/티커 채우기 (발표자·관객 공용)
@@ -688,6 +730,8 @@
   }
 
   function renderPresenter() {
+    if (presIntro) { renderCover(presKey); show('cover'); return; }
+    show('presenter');
     const q = QUIZZES[presKey];
     const logoBox = document.getElementById('presLogoBox');
     const st = document.getElementById('presRevealState');
@@ -731,6 +775,9 @@
     if (!data) return;
     if (data.type === 'exit') { window.close(); return; }
     if (data.type !== 'state') return;
+
+    if (data.intro) { renderCover(data.key); show('cover'); return; }
+    show('audience');
 
     const q = QUIZZES[data.key];
     const reveal = document.getElementById('audReveal');
