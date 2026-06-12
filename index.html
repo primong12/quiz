@@ -79,7 +79,7 @@
   }
   .quiz-card h2 { font-size: 26px; font-weight: 800; margin-bottom: 24px; color: #3a2d5c; }
   .photo-box {
-    width: 100%; max-width: 600px; aspect-ratio: 3/4; margin: 0 auto 22px;
+    height: min(50vh, 540px); aspect-ratio: 3/4; width: auto; max-width: 90vw; margin: 0 auto 16px;
     border-radius: 18px; overflow: hidden; background: #eef0f6;
     display: flex; align-items: center; justify-content: center;
     box-shadow: inset 0 0 0 4px rgba(0,0,0,.04);
@@ -87,7 +87,7 @@
   .photo-box img { width: 100%; height: 100%; object-fit: cover; }
   .loading { color: #aaa; font-size: 14px; }
   /* 티커 표시 (사진 대신 종목코드/티커를 크게) */
-  .photo-box.ticker-mode { aspect-ratio: auto; min-height: 190px;
+  .photo-box.ticker-mode { aspect-ratio: auto; height: auto; min-height: 160px;
     background: linear-gradient(135deg,#1e2746,#2d3a6b); box-shadow: none; }
   .photo-box.ticker-mode { min-height: 230px; }
   .ticker-display {
@@ -179,7 +179,7 @@
   body.audience-mode .cover-hint { display: none; }
 
   /* 팀 점수판 */
-  .scoreboard { display: flex; align-items: stretch; justify-content: center; gap: 18px; margin-bottom: 18px; }
+  .scoreboard { display: flex; align-items: stretch; justify-content: center; gap: 18px; margin-bottom: 14px; }
   .scoreboard .team { flex: 1; max-width: 260px; border-radius: 18px; padding: 14px 16px; text-align: center; color: #fff; box-shadow: 0 8px 20px rgba(0,0,0,.2); }
   .scoreboard .team.growth { background: linear-gradient(135deg,#11998e,#38ef7d); }
   .scoreboard .team.value { background: linear-gradient(135deg,#eb3349,#f45c43); }
@@ -204,14 +204,14 @@
   .pres-hint { margin-left: auto; font-size: 14px; opacity: .9;
     background: rgba(0,0,0,.22); padding: 7px 13px; border-radius: 10px; }
   .pres-main { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .pres-current, .pres-answer { background: #fff; border-radius: 22px; padding: 24px;
-    color: #2d2d44; min-height: 360px; display: flex; flex-direction: column;
+  .pres-current, .pres-answer { background: #fff; border-radius: 22px; padding: 20px;
+    color: #2d2d44; min-height: 300px; display: flex; flex-direction: column;
     box-shadow: 0 14px 32px rgba(0,0,0,.22); }
   .pres-current { align-items: center; text-align: center; }
   .pres-answer { align-items: center; text-align: center; justify-content: center; }
   .pres-label { font-size: 13px; font-weight: 800; color: #b9a9d6; letter-spacing: 1px; margin-bottom: 14px; }
   .pres-mediabox { flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; min-height: 250px; }
-  .pres-mediabox img { max-height: 310px; max-width: 100%; border-radius: 14px; object-fit: contain; }
+  .pres-mediabox img { max-height: min(34vh, 310px); max-width: 100%; border-radius: 14px; object-fit: contain; }
   .pres-ticker { font-family: 'SF Mono','Consolas',monospace; font-weight: 800; font-size: 64px;
     color: #2d3a6b; letter-spacing: 3px; }
   #presQ { font-size: 18px; font-weight: 700; margin-top: 12px; color: #666; }
@@ -227,18 +227,18 @@
   #presNext { font-size: 23px; font-weight: 800; }
 
   /* 관객 화면 (빔프로젝터) */
-  body.audience-mode { align-items: center; }
+  body.audience-mode { align-items: center; padding: 14px; }
   #audience { text-align: center; color: #fff; width: 100%; }
-  .aud-progress { font-size: 24px; font-weight: 800; margin-bottom: 20px; text-shadow: 0 2px 8px rgba(0,0,0,.3); }
-  .aud-photo-box { width: 100%; max-width: 680px; aspect-ratio: 3/4; margin: 0 auto;
+  .aud-progress { font-size: 22px; font-weight: 800; margin-bottom: 12px; text-shadow: 0 2px 8px rgba(0,0,0,.3); }
+  .aud-photo-box { height: min(54vh, 600px); aspect-ratio: 3/4; width: auto; max-width: 90vw; margin: 0 auto;
     background: #eef0f6; border-radius: 24px; overflow: hidden;
     display: flex; align-items: center; justify-content: center; box-shadow: 0 20px 44px rgba(0,0,0,.32); }
-  .aud-photo-box.ticker { aspect-ratio: auto; min-height: 320px;
+  .aud-photo-box.ticker { aspect-ratio: auto; height: auto; min-height: 260px;
     background: linear-gradient(135deg,#1e2746,#2d3a6b); }
   .aud-photo-box img { width: 100%; height: 100%; object-fit: cover; }
   #audTicker { font-family: 'SF Mono','Consolas',monospace; font-weight: 800;
     font-size: 110px; color: #ffe259; letter-spacing: 5px; text-shadow: 0 4px 18px rgba(0,0,0,.4); }
-  .aud-reveal { margin-top: 26px; display: none; }
+  .aud-reveal { margin-top: 16px; display: none; }
   .aud-reveal.show { display: block; animation: pop .4s cubic-bezier(.2,1.4,.4,1); }
   .aud-reveal .logo-box { width: 250px; height: 160px; }
   .aud-answer-name { font-size: 58px; font-weight: 900; color: #fff; text-shadow: 0 4px 18px rgba(0,0,0,.4); }
