@@ -448,6 +448,8 @@
     { ceo: '사티아 나델라', company: '마이크로소프트 (Microsoft)',
       photo: 'https://upload.wikimedia.org/wikipedia/commons/7/78/MS-Exec-Nadella-Satya-2017-08-31-22_%28cropped%29.jpg',
       logo:  'https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg' },
+    { ceo: 'HS아카데미', company: '모르면 나가주세요',
+      photo: 'images/hs-academy.jpg' },
   ];
 
   const FEMALE = [
@@ -583,7 +585,7 @@
       const q = QUIZZES[key];
       const rows = q.items.map((it, i) => {
         let ans;
-        if (it.logo)    ans = it.company + ' <span style="color:#aaa;font-weight:600">· ' + it.ceo + '</span>';
+        if (it.company !== undefined) ans = it.company + (it.ceo ? ' <span style="color:#aaa;font-weight:600">· ' + it.ceo + '</span>' : '');
         else if (it.q)  ans = '<span style="color:#888;font-weight:700">' + it.q + '</span> → ' + it.answer;
         else            ans = it.answer;
         return '<tr><td class="no">' + (i + 1) + '</td><td class="ans">' + ans + '</td></tr>';
@@ -641,15 +643,15 @@
     const nameEl = document.getElementById('companyName');
     const subEl = document.getElementById('ceoName');
 
-    if (it.logo) {
-      // CEO 퀴즈: 로고 + 기업명 + CEO 이름
-      logoBox.style.display = 'flex';
-      document.getElementById('companyLogo').src = it.logo;
+    if (it.company !== undefined) {
+      // CEO 형식: (로고가 있으면 로고) + 기업명 + CEO 이름
+      if (it.logo) { logoBox.style.display = 'flex'; document.getElementById('companyLogo').src = it.logo; }
+      else { logoBox.style.display = 'none'; }
       nameEl.textContent = it.company;
-      subEl.textContent = it.ceo;
-      subEl.style.display = 'block';
+      subEl.textContent = it.ceo || '';
+      subEl.style.display = it.ceo ? 'block' : 'none';
     } else {
-      // 연예인 퀴즈: 이름만 크게
+      // 연예인/티커: 이름만 크게
       logoBox.style.display = 'none';
       nameEl.textContent = it.answer;
       subEl.style.display = 'none';
@@ -753,11 +755,11 @@
               document.getElementById('presTicker'), it, q.mode);
     document.getElementById('presQ').textContent = q.question;
 
-    if (it.logo) {
-      logoBox.style.display = 'flex';
-      document.getElementById('presLogo').src = it.logo;
+    if (it.company !== undefined) {
+      if (it.logo) { logoBox.style.display = 'flex'; document.getElementById('presLogo').src = it.logo; }
+      else { logoBox.style.display = 'none'; }
       document.getElementById('presAnswer').textContent = it.company;
-      document.getElementById('presAnswerSub').textContent = it.ceo;
+      document.getElementById('presAnswerSub').textContent = it.ceo || '';
     } else {
       logoBox.style.display = 'none';
       document.getElementById('presAnswer').textContent = it.answer;
@@ -768,7 +770,7 @@
     else { st.textContent = '○ 관객 화면엔 아직 숨김 — Enter로 공개'; st.className = 'reveal-hidden'; }
 
     const nx = q.items[idx + 1];
-    document.getElementById('presNext').textContent = nx ? (nx.logo ? nx.company : nx.answer) : '— (마지막 문제)';
+    document.getElementById('presNext').textContent = nx ? (nx.company !== undefined ? nx.company : nx.answer) : '— (마지막 문제)';
   }
 
   function renderAudience(data) {
@@ -799,11 +801,11 @@
 
     if (data.revealed) {
       const logoBox = document.getElementById('audLogoBox');
-      if (it.logo) {
-        logoBox.style.display = 'flex';
-        document.getElementById('audLogo').src = it.logo;
+      if (it.company !== undefined) {
+        if (it.logo) { logoBox.style.display = 'flex'; document.getElementById('audLogo').src = it.logo; }
+        else { logoBox.style.display = 'none'; }
         document.getElementById('audName').textContent = it.company;
-        document.getElementById('audSub').textContent = it.ceo;
+        document.getElementById('audSub').textContent = it.ceo || '';
       } else {
         logoBox.style.display = 'none';
         document.getElementById('audName').textContent = it.answer;
