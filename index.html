@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>엘리트 클럽 퀴즈</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg1: #ff9a9e; --bg2: #a18cd1; --bg3: #fbc2eb;
+  }
+  body {
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background-attachment: fixed;
+    color: #2d2d44;
+    display: flex; justify-content: center; align-items: center;
+    padding: 40px 32px;
+  }
+  .wrap { width: 100%; max-width: 1160px; }
+
+  /* ===== 화면 전환 ===== */
+  .screen { display: none; }
+  .screen.active { display: block; animation: fade .35s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+  /* ===== 메인 ===== */
+  .hero { text-align: center; color: #fff; margin: 0 0 40px; }
+  .hero .crown { font-size: 76px; filter: drop-shadow(0 4px 8px rgba(0,0,0,.25)); }
+  .hero h1 { font-size: 56px; font-weight: 800; margin: 10px 0 10px; letter-spacing: -1.5px;
+             text-shadow: 0 4px 16px rgba(0,0,0,.25); }
+  .hero p { font-size: 20px; opacity: .92; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .card {
+    border-radius: 26px; padding: 34px 28px; min-height: 210px;
+    color: #fff; cursor: pointer; position: relative; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: space-between;
+    box-shadow: 0 10px 24px rgba(0,0,0,.18);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 16px 32px rgba(0,0,0,.28); }
+  .card:active { transform: translateY(-1px) scale(.99); }
+  .card .emoji { font-size: 58px; }
+  .card .title { font-size: 26px; font-weight: 800; margin-top: 14px; }
+  .card .sub { font-size: 16px; opacity: .9; margin-top: 6px; }
+  .c1 { background: linear-gradient(135deg,#f857a6,#ff5858); }
+  .c2 { background: linear-gradient(135deg,#43cea2,#185a9d); }
+  .c3 { background: linear-gradient(135deg,#fa709a,#fee140); }
+  .c4 { background: linear-gradient(135deg,#4facfe,#00f2fe); }
+  .c5 { background: linear-gradient(135deg,#a06bff,#6a3093); }
+  .c6 { background: linear-gradient(135deg,#ff9966,#ff5e62); }
+  .card.locked { cursor: not-allowed; }
+  .card.locked::after {
+    content: '🔒 준비 중'; position: absolute; inset: 0;
+    background: rgba(20,20,40,.55); color: #fff; font-weight: 700; font-size: 18px;
+    display: flex; align-items: center; justify-content: center; backdrop-filter: blur(2px);
+  }
+
+  /* ===== 퀴즈 ===== */
+  .topbar { display: flex; align-items: center; gap: 12px; margin: 0 auto 18px; max-width: 820px; }
+  .back-btn {
+    background: rgba(255,255,255,.9); border: none; border-radius: 14px;
+    padding: 10px 16px; font-size: 15px; font-weight: 700; color: #6a3093; cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,.12);
+  }
+  .progress-text { color: #fff; font-weight: 800; font-size: 16px; text-shadow: 0 2px 6px rgba(0,0,0,.2); }
+  .bar { flex: 1; height: 12px; background: rgba(255,255,255,.35); border-radius: 99px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0; background: linear-gradient(90deg,#ffe259,#ffa751); border-radius: 99px; transition: width .4s ease; }
+
+  .quiz-card {
+    background: #fff; border-radius: 28px; padding: 36px; max-width: 820px; margin: 0 auto;
+    box-shadow: 0 18px 40px rgba(0,0,0,.25); text-align: center;
+  }
+  .quiz-card h2 { font-size: 26px; font-weight: 800; margin-bottom: 24px; color: #3a2d5c; }
+  .photo-box {
+    width: 100%; max-width: 400px; aspect-ratio: 3/4; margin: 0 auto 22px;
+    border-radius: 18px; overflow: hidden; background: #eef0f6;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 0 0 4px rgba(0,0,0,.04);
+  }
+  .photo-box img { width: 100%; height: 100%; object-fit: cover; }
+  .loading { color: #aaa; font-size: 14px; }
+  /* 티커 표시 (사진 대신 종목코드/티커를 크게) */
+  .photo-box.ticker-mode { aspect-ratio: auto; min-height: 190px;
+    background: linear-gradient(135deg,#1e2746,#2d3a6b); box-shadow: none; }
+  .photo-box.ticker-mode { min-height: 230px; }
+  .ticker-display {
+    font-family: 'SF Mono','Consolas',monospace; font-weight: 800;
+    font-size: 72px; letter-spacing: 3px; color: #ffe259;
+    text-shadow: 0 4px 16px rgba(0,0,0,.4);
+  }
+
+  /* 정답 영역 */
+  .answer-area { min-height: 8px; }
+  .reveal {
+    display: none; margin-top: 4px; animation: pop .4s cubic-bezier(.2,1.4,.4,1);
+  }
+  .reveal.show { display: block; }
+  @keyframes pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .logo-box {
+    width: 200px; height: 130px; margin: 0 auto 14px; background: #fff;
+    border: 2px solid #f0f0f5; border-radius: 18px; padding: 16px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 16px rgba(0,0,0,.08);
+  }
+  .logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .company { font-size: 38px; font-weight: 900; color: #e8467c; letter-spacing: -.5px; }
+  .ceo-name { font-size: 17px; color: #888; margin-top: 6px; }
+
+  .actions { margin-top: 28px; }
+  .btn {
+    width: 100%; border: none; border-radius: 16px; padding: 19px;
+    font-size: 21px; font-weight: 800; cursor: pointer; color: #fff;
+    box-shadow: 0 8px 18px rgba(0,0,0,.18); transition: transform .12s ease, filter .12s ease;
+  }
+  .btn:hover { filter: brightness(1.05); transform: translateY(-2px); }
+  .btn:active { transform: translateY(0); }
+  .btn-answer { background: linear-gradient(135deg,#f857a6,#ff5858); }
+  .btn-next   { background: linear-gradient(135deg,#43cea2,#185a9d); display: none; }
+  .btn-next.show { display: block; }
+
+  /* ===== 완료 ===== */
+  .done-card {
+    background: #fff; border-radius: 28px; padding: 60px 32px; text-align: center;
+    max-width: 820px; margin: 0 auto;
+    box-shadow: 0 18px 40px rgba(0,0,0,.25);
+  }
+  .done-card .big { font-size: 70px; }
+  .done-card h2 { font-size: 26px; font-weight: 900; margin: 12px 0 8px; color: #3a2d5c; }
+  .done-card p { color: #777; font-size: 16px; margin-bottom: 26px; }
+
+  /* ===== 관리자 ===== */
+  .admin-link { text-align: center; margin-top: 34px; }
+  .admin-link button {
+    background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35);
+    color: rgba(255,255,255,.85); font-size: 12px; font-weight: 600;
+    padding: 7px 14px; border-radius: 10px; cursor: pointer;
+  }
+  .admin-link button:hover { background: rgba(255,255,255,.3); }
+  .answer-sheet {
+    background: #fff; border-radius: 22px; padding: 22px 20px; margin-bottom: 18px;
+    box-shadow: 0 14px 32px rgba(0,0,0,.22);
+  }
+  .answer-sheet h3 {
+    font-size: 18px; font-weight: 800; color: #3a2d5c;
+    display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+  }
+  .answer-sheet .count { font-size: 13px; font-weight: 600; color: #9a8; color: #ad9bd6; }
+  .answer-sheet table { width: 100%; border-collapse: collapse; }
+  .answer-sheet th, .answer-sheet td {
+    text-align: left; padding: 9px 8px; font-size: 15px; border-bottom: 1px solid #f0eef6;
+  }
+  .answer-sheet th { font-size: 12px; color: #9b94ad; font-weight: 700; }
+  .answer-sheet td.no { width: 38px; color: #c5bdd8; font-weight: 800; }
+  .answer-sheet td.ceo { color: #555; width: 38%; }
+  .answer-sheet td.ans { font-weight: 800; color: #e8467c; }
+  .answer-sheet.soon { color: #b6aecb; font-weight: 600; font-size: 14px; }
+  #adminBody { max-width: 820px; margin: 0 auto; }
+
+  /* ===== 반응형: 화면 좁아지면 열 수 줄이기 ===== */
+  @media (max-width: 920px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .hero h1 { font-size: 44px; }
+  }
+  @media (max-width: 560px) {
+    body { padding: 24px 16px; }
+    .grid { grid-template-columns: 1fr; }
+    .hero .crown { font-size: 60px; }
+    .hero h1 { font-size: 36px; }
+    .hero p { font-size: 16px; }
+    .card { min-height: 150px; padding: 26px 22px; }
+    .ticker-display { font-size: 52px; }
+    .company { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 메인 화면 -->
+  <section id="home" class="screen active">
+    <div class="hero">
+      <div class="crown">🏆</div>
+      <h1>엘리트 클럽 퀴즈</h1>
+      <p>도전할 퀴즈를 골라보세요!</p>
+    </div>
+    <div class="grid">
+      <div class="card c1" onclick="startQuiz('ceo')">
+        <div class="emoji">👔</div>
+        <div>
+          <div class="title">CEO 기업 맞히기</div>
+          <div class="sub">사진 속 CEO의 기업은?</div>
+        </div>
+      </div>
+      <div class="card c2" onclick="startQuiz('female')">
+        <div class="emoji">👩‍🎤</div>
+        <div><div class="title">여자 연예인 맞히기</div><div class="sub">이 사람은 누구?</div></div>
+      </div>
+      <div class="card c3" onclick="startQuiz('male')">
+        <div class="emoji">🧑‍🎤</div>
+        <div><div class="title">남자 연예인 맞히기</div><div class="sub">이 사람은 누구?</div></div>
+      </div>
+      <div class="card c4" onclick="startQuiz('krTicker')">
+        <div class="emoji">📈</div>
+        <div><div class="title">국내 주식 티커</div><div class="sub">종목코드로 기업 맞히기</div></div>
+      </div>
+      <div class="card c5" onclick="startQuiz('usTicker')">
+        <div class="emoji">🌎</div>
+        <div><div class="title">해외 주식 티커</div><div class="sub">티커로 기업 맞히기</div></div>
+      </div>
+      <div class="card c6 locked" onclick="comingSoon()">
+        <div class="emoji">⚽</div>
+        <div><div class="title">스포츠 스타 퀴즈</div><div class="sub">스타 선수 맞히기</div></div>
+      </div>
+    </div>
+    <div class="admin-link"><button onclick="showAdmin()">🔧 관리자</button></div>
+  </section>
+
+  <!-- 퀴즈 화면 -->
+  <section id="quiz" class="screen">
+    <div class="topbar">
+      <button class="back-btn" onclick="goHome()">← 나가기</button>
+      <div class="bar"><div id="barFill"></div></div>
+      <div class="progress-text" id="progressText">1 / 10</div>
+    </div>
+    <div class="quiz-card">
+      <h2 id="quizQuestion">이 분이 이끄는 기업은? 🤔</h2>
+      <div class="photo-box" id="photoBox">
+        <span class="loading" id="photoLoading">사진 불러오는 중…</span>
+        <img id="ceoPhoto" alt="CEO 사진" style="display:none"
+             onload="this.style.display='block'; document.getElementById('photoLoading').style.display='none';"
+             onerror="document.getElementById('photoLoading').textContent='사진을 불러오지 못했어요 (인터넷 확인)';">
+        <div id="tickerDisplay" class="ticker-display" style="display:none"></div>
+      </div>
+      <div class="answer-area">
+        <div class="reveal" id="reveal">
+          <div class="logo-box" id="logoBox"><img id="companyLogo" alt="기업 로고"></div>
+          <div class="company" id="companyName"></div>
+          <div class="ceo-name" id="ceoName"></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-answer" id="answerBtn" onclick="showAnswer()">정답 보기 👀</button>
+        <button class="btn btn-next" id="nextBtn" onclick="nextQuestion()">다음 ▶</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 관리자: 정답지 -->
+  <section id="admin" class="screen">
+    <div class="topbar">
+      <button class="back-btn" onclick="goHome()">← 나가기</button>
+      <div class="progress-text" style="flex:1">🔧 관리자 · 정답지</div>
+    </div>
+    <div id="adminBody"></div>
+  </section>
+
+  <!-- 완료 화면 -->
+  <section id="done" class="screen">
+    <div class="done-card">
+      <div class="big">🎉</div>
+      <h2>수고하셨어요!</h2>
+      <p id="doneText">CEO 기업 맞히기를 모두 풀었어요.</p>
+      <button class="btn btn-answer" onclick="goHome()">처음으로 🏠</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  const CEO_QUIZ = [
+    { ceo: '일론 머스크',   company: '테슬라 (Tesla)',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Elon_Musk_-_54820081119_%28cropped%29.jpg',
+      logo:  'https://upload.wikimedia.org/wikipedia/commons/b/bd/Tesla_Motors.svg' },
+    { ceo: '이재용',        company: '삼성전자 (Samsung)',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/d/de/Lee_Jae-yong_in_2016.jpg',
+      logo:  'https://upload.wikimedia.org/wikipedia/commons/6/61/Samsung_old_logo_before_year_2015.svg' },
+    { ceo: '샘 올트먼',     company: '오픈AI (OpenAI)',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/5/5a/Meeting_with_Masayoshi_Son_and_Sam_Altman_%28February_3%2C_2025%29_%283x4_cropped_on_Altman%29.jpg',
+      logo:  'https://upload.wikimedia.org/wikipedia/commons/4/4d/OpenAI_Logo.svg' },
+    { ceo: '젠슨 황',       company: '엔비디아 (NVIDIA)',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/e/e6/Jen-Hsun_Huang_2025.jpg',
+      logo:  'https://upload.wikimedia.org/wikipedia/commons/2/21/Nvidia_logo.svg' },
+    { ceo: '워런 버핏',     company: '버크셔 해서웨이 (Berkshire Hathaway)',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/d/d4/Warren_Buffett_at_the_2015_SelectUSA_Investment_Summit_%28cropped%29.jpg',
+      logo:  'https://upload.wikimedia.org/wikipedia/commons/6/6e/Berkshire-Hathaway-Logo.svg' },
+    { ceo: '김범수',        company: '카카오 (Kakao)',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/7/75/Kim_Bum-soo%2C_Chairman_of_board%2C_Kakao_Inc.jpg',
+      logo:  'https://upload.wikimedia.org/wikipedia/commons/e/e3/KakaoTalk_logo.svg' },
+    { ceo: '팀 쿡',         company: '애플 (Apple)',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/f/f7/Tim_Cook_March_2026_%28cropped_2%29.jpg',
+      logo:  'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg' },
+    { ceo: '손정의 (마사요시 손)', company: '소프트뱅크 (SoftBank)',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/5/58/Masayoshi_Son_%28P066533-522034%2C_cropped%29.jpg',
+      logo:  'https://upload.wikimedia.org/wikipedia/commons/4/4b/SoftBank_logo.svg' },
+    { ceo: '정의선',        company: '현대자동차 (Hyundai)',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/c/c0/Chung_Eui-sun_%282025%29_cropped_1.jpg',
+      logo:  'https://upload.wikimedia.org/wikipedia/commons/4/44/Hyundai_Motor_Company_logo.svg' },
+    { ceo: '빌 게이츠 (공동창업자)', company: '마이크로소프트 (Microsoft)',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/d/d9/Bill_Gates_at_the_European_Commission_-_P067383-987995_%28cropped%29_5.jpg',
+      logo:  'https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg' },
+    { ceo: '마크 저커버그', company: '메타 (Meta)',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/0/0e/F20250904AH-2824_%2854778373111%29_%283x4_cropped_on_Zuckerberg_following_the_rule_of_thirds%29.jpg',
+      logo:  'https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg' },
+    { ceo: '앤디 재시',     company: '아마존 (Amazon)',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/0/07/Andy_Jassy.jpg',
+      logo:  'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg' },
+    { ceo: '최태원',        company: 'SK (에스케이)',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/a/a0/Korea_Portuguese_Business_Forum_01_%28cropped%29.jpg',
+      logo:  'https://upload.wikimedia.org/wikipedia/commons/b/b4/SK_logo.svg' },
+    { ceo: '다리오 아모데이', company: '앤스로픽 (Anthropic)',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/e/e4/Dario_Amodei_at_TechCrunch_Disrupt_2023_01_%28cropped%29.jpg',
+      logo:  'https://upload.wikimedia.org/wikipedia/commons/7/78/Anthropic_logo.svg' },
+    { ceo: '순다르 피차이', company: '구글 (Google)',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/c/c3/Sundar_Pichai_-_2023_%28cropped%29.jpg',
+      logo:  'https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg' },
+    { ceo: '신동빈',        company: '롯데 (Lotte)',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/3/37/Shin_Dong-Bin.jpg',
+      logo:  'https://upload.wikimedia.org/wikipedia/commons/2/2a/Lotte_logo.svg' },
+    { ceo: '사티아 나델라', company: '마이크로소프트 (Microsoft)',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/7/78/MS-Exec-Nadella-Satya-2017-08-31-22_%28cropped%29.jpg',
+      logo:  'https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg' },
+  ];
+
+  const FEMALE = [
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/221125_%EC%B2%AD%EB%A3%A1%EC%98%81%ED%99%94%EC%83%81_%EB%A0%88%EB%93%9C%EC%B9%B4%ED%8E%AB_01_%28cropped%29.jpg', answer: '아이유' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/b/b3/Kim_Tae-hee_Photoshoot_BTS_2023_-_2.png', answer: '김태희' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/1/1f/Jun_Ji-hyun.jpg', answer: '전지현' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/e/e2/20230719_Song_Hye-kyo_%28%EC%86%A1%ED%98%9C%EA%B5%90%29.jpg', answer: '송혜교' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/0/0c/Son_Ye-jin_%EC%86%90%EC%98%88%EC%A7%84_2024_02.jpg', answer: '손예진' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/2/22/Han_Ji-min_on_December_21%2C_2013.jpg', answer: '한지민' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/f/fe/Kim_Go-eun_at_the_2024_Toronto_International_Film_Festival_%28cropped%29.jpg', answer: '김고은' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/a/ae/Park_Shin-hye_in_September_2024_02.png', answer: '박신혜' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/a/ad/250313_Kim_Hye_Soo_%28%EA%B9%80%ED%98%9C%EC%88%98%29.png', answer: '김혜수' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/e/e2/Kim_Hee-ae_in_2019_%28cropped%29.png', answer: '김희애' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/0/02/Lee_Young-ae_at_the_17th_Asian_Film_Awards_in_Hong_Kong_on_March_10%2C_2024.jpg', answer: '이영애' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/5/52/Ko_Hyun-jung_2023.png', answer: '고현정' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/4/46/190306_%EC%98%81%ED%99%94_%27%EC%83%9D%EC%9D%BC%27_%EC%A0%9C%EC%9E%91%EB%B3%B4%EA%B3%A0%ED%9A%8C_%EC%A0%84%EB%8F%84%EC%97%B0.jpg', answer: '전도연' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/9/93/Uhm_Junghwa_Kolon_Sports_50th_Anniversary_Event_1.jpg', answer: '엄정화' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/b/b1/%28Marie_Claire_Korea%29_Feel_The_Soul_-_%EC%9D%B4%ED%9A%A8%EB%A6%AC_%284%29.jpg', answer: '이효리' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/9/95/180417_%EB%B3%B4%EC%95%84_03_%28cropped%29_02.png', answer: '보아 (BoA)' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/3/3f/Shin_Ji.jpg', answer: '신지 (코요테)' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/1/1a/Kim_Wan_Sun_Korea_KPOP_World_Festival_18_%28cropped%29_%28cropped%29.jpg', answer: '김완선' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/8/80/08%EC%9B%94_19%EC%9D%BC_%EB%8F%84%EC%8B%AC%EC%86%8D_%EB%B4%85%EC%8A%AC%EB%A0%88%EC%9D%B4_25.jpg', answer: '인순이' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/ko/e/ea/%EC%96%91%ED%9D%AC%EC%9D%80.JPG', answer: '양희은' },
+  ];
+
+  const MALE = [
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/3/3d/240301_Cha_Eun-woo.jpg', answer: '차은우 (아스트로)' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Park_Bo-gum_%EB%B0%95%EB%B3%B4%EA%B2%80_at_a_Celine_event_in_November_2024_5.png', answer: '박보검' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/1/13/Song_Joong-ki_at_Style_Icon_Asia_2016.jpg', answer: '송중기' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/7/73/Park_Seo-joon_for_Marie_Claire_Korea%2C_2023_%282%29.jpg', answer: '박서준' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/f/f1/Don_Lee_by_Gage_Skidmore.jpg', answer: '마동석' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/6/60/Hyun_Bin_at_the_2024_Toronto_International_Film_Festival_2_%28cropped%29.jpg', answer: '현빈' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/e/e0/Gong_Yoo_in_2021_-_3.png', answer: '공유' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/8/84/Temp_1662384481565.-511956263.jpg', answer: '임영웅' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/3/30/Yoo_Jae_Suk_going_to_work_at_Happy_Together_on_August_19%2C_2017_%281%29.jpg', answer: '유재석' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/d/d3/%27%ED%95%9C%EB%81%BC%EC%A4%8D%EC%87%BC%27_%EC%A0%9C%EC%9E%91%EB%B0%9C%ED%91%9C%ED%9A%8C_%ED%98%84%EC%9E%A5_14s.jpg', answer: '강호동' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/2/21/191025_%EC%9D%B4%EA%B2%BD%EA%B7%9C_%284%29.jpg', answer: '이경규' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/9/9f/Kimgookjin2018.png', answer: '김국진' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/1/14/Park_Myeong-su_from_Acrofan.jpg', answer: '박명수' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/5/5e/180503_%EC%8B%A0%EB%8F%99%EC%97%BD.png', answer: '신동엽' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/0/01/20210305%E2%80%94Jung_Woo_Sung_%EC%A0%95%EC%9A%B0%EC%84%B1%2C_The_Hyundai_Seoul%2C_Yeouido%2C_Seoul_%2800m11s%29.jpg', answer: '정우성' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Song_Gangho_2016.jpg', answer: '송강호' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Lee_Byung-hun_2025_Toronto_%28cropped%29.jpg', answer: '이병헌' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/9/94/190528_%EC%9E%A5%EB%8F%99%EA%B1%B4.jpg', answer: '장동건' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/b/b0/PSY_EMTV_logo_27_%288198008711%29.jpg', answer: '싸이' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/f/f6/Kim_Kun-Mo.jpg', answer: '김건모' },
+  ];
+
+  // 국내 티커 (시가총액 상위 유명 기업, 종목코드 6자리)
+  const KR_TICKER = [
+    { q: '005930', answer: '삼성전자' },
+    { q: '000660', answer: 'SK하이닉스' },
+    { q: '373220', answer: 'LG에너지솔루션' },
+    { q: '207940', answer: '삼성바이오로직스' },
+    { q: '005380', answer: '현대차' },
+    { q: '000270', answer: '기아' },
+    { q: '068270', answer: '셀트리온' },
+    { q: '035420', answer: 'NAVER (네이버)' },
+    { q: '035720', answer: '카카오' },
+    { q: '105560', answer: 'KB금융' },
+    { q: '055550', answer: '신한지주' },
+    { q: '005490', answer: 'POSCO홀딩스' },
+    { q: '006400', answer: '삼성SDI' },
+    { q: '051910', answer: 'LG화학' },
+    { q: '012330', answer: '현대모비스' },
+    { q: '066570', answer: 'LG전자' },
+    { q: '028260', answer: '삼성물산' },
+    { q: '012450', answer: '한화에어로스페이스' },
+    { q: '259960', answer: '크래프톤' },
+    { q: '033780', answer: 'KT&G' },
+  ];
+
+  // 해외 티커 (시가총액 상위 유명 기업)
+  const US_TICKER = [
+    { q: 'NVDA',  answer: '엔비디아 (NVIDIA)' },
+    { q: 'AAPL',  answer: '애플 (Apple)' },
+    { q: 'MSFT',  answer: '마이크로소프트 (Microsoft)' },
+    { q: 'GOOGL', answer: '알파벳 (구글)' },
+    { q: 'AMZN',  answer: '아마존 (Amazon)' },
+    { q: 'META',  answer: '메타 (Meta)' },
+    { q: 'TSLA',  answer: '테슬라 (Tesla)' },
+    { q: 'AVGO',  answer: '브로드컴 (Broadcom)' },
+    { q: 'BRK.B', answer: '버크셔 해서웨이' },
+    { q: 'JPM',   answer: 'JP모건 체이스' },
+    { q: 'WMT',   answer: '월마트 (Walmart)' },
+    { q: 'LLY',   answer: '일라이 릴리 (Eli Lilly)' },
+    { q: 'V',     answer: '비자 (Visa)' },
+    { q: 'ORCL',  answer: '오라클 (Oracle)' },
+    { q: 'MA',    answer: '마스터카드 (Mastercard)' },
+    { q: 'NFLX',  answer: '넷플릭스 (Netflix)' },
+    { q: 'COST',  answer: '코스트코 (Costco)' },
+    { q: 'XOM',   answer: '엑슨모빌 (ExxonMobil)' },
+    { q: 'JNJ',   answer: '존슨앤드존슨 (J&J)' },
+    { q: 'HD',    answer: '홈디포 (Home Depot)' },
+  ];
+
+  const QUIZZES = {
+    ceo:      { title: 'CEO 기업 맞히기',  question: '이 분이 이끄는 기업은? 🤔', items: CEO_QUIZ },
+    female:   { title: '여자 연예인 맞히기', question: '이 사람은 누구일까요? 🤔',  items: FEMALE },
+    male:     { title: '남자 연예인 맞히기', question: '이 사람은 누구일까요? 🤔',  items: MALE },
+    krTicker: { title: '국내 주식 티커',   question: '이 종목코드의 기업은? 📈', items: KR_TICKER, mode: 'ticker' },
+    usTicker: { title: '해외 주식 티커',   question: '이 티커의 기업은? 📈',     items: US_TICKER, mode: 'ticker' },
+  };
+
+  let cur = QUIZZES.ceo;
+  let idx = 0;
+
+  function show(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function startQuiz(key) { cur = QUIZZES[key]; idx = 0; show('quiz'); renderQuestion(); }
+  function goHome() { show('home'); }
+  function comingSoon() { alert('이 퀴즈는 곧 만나요! 😊'); }
+
+  // 준비 중인 다른 퀴즈 목록 (정답지 화면에 함께 표시)
+  const UPCOMING = ['스포츠 스타 맞히기'];
+
+  function showAdmin() {
+    let html = '';
+    for (const key of ['ceo', 'female', 'male', 'krTicker', 'usTicker']) {
+      const q = QUIZZES[key];
+      const rows = q.items.map((it, i) => {
+        let ans;
+        if (it.logo)    ans = it.company + ' <span style="color:#aaa;font-weight:600">· ' + it.ceo + '</span>';
+        else if (it.q)  ans = '<span style="color:#888;font-weight:700">' + it.q + '</span> → ' + it.answer;
+        else            ans = it.answer;
+        return '<tr><td class="no">' + (i + 1) + '</td><td class="ans">' + ans + '</td></tr>';
+      }).join('');
+      html +=
+        '<div class="answer-sheet">' +
+          '<h3>' + q.title + ' <span class="count">· 총 ' + q.items.length + '문제</span></h3>' +
+          '<table><tbody>' + rows + '</tbody></table>' +
+        '</div>';
+    }
+    html += UPCOMING.map(name =>
+      '<div class="answer-sheet soon">🔒 ' + name + ' · 준비 중</div>'
+    ).join('');
+
+    document.getElementById('adminBody').innerHTML = html;
+    show('admin');
+  }
+
+  function renderQuestion() {
+    const it = cur.items[idx];
+
+    document.getElementById('quizQuestion').textContent = cur.question;
+    document.getElementById('progressText').textContent = (idx + 1) + ' / ' + cur.items.length;
+    document.getElementById('barFill').style.width = ((idx + 1) / cur.items.length * 100) + '%';
+
+    const photoBox = document.getElementById('photoBox');
+    const photo = document.getElementById('ceoPhoto');
+    const loading = document.getElementById('photoLoading');
+    const ticker = document.getElementById('tickerDisplay');
+
+    if (cur.mode === 'ticker') {
+      // 사진 대신 티커/종목코드를 크게 표시
+      photoBox.classList.add('ticker-mode');
+      photo.style.display = 'none';
+      loading.style.display = 'none';
+      ticker.style.display = 'block';
+      ticker.textContent = it.q;
+    } else {
+      photoBox.classList.remove('ticker-mode');
+      ticker.style.display = 'none';
+      photo.style.display = 'none';
+      loading.style.display = 'block';
+      loading.textContent = '사진 불러오는 중…';
+      photo.src = it.photo;
+    }
+
+    document.getElementById('reveal').classList.remove('show');
+    document.getElementById('answerBtn').style.display = 'block';
+    document.getElementById('nextBtn').classList.remove('show');
+  }
+
+  function showAnswer() {
+    const it = cur.items[idx];
+    const logoBox = document.getElementById('logoBox');
+    const nameEl = document.getElementById('companyName');
+    const subEl = document.getElementById('ceoName');
+
+    if (it.logo) {
+      // CEO 퀴즈: 로고 + 기업명 + CEO 이름
+      logoBox.style.display = 'flex';
+      document.getElementById('companyLogo').src = it.logo;
+      nameEl.textContent = it.company;
+      subEl.textContent = it.ceo;
+      subEl.style.display = 'block';
+    } else {
+      // 연예인 퀴즈: 이름만 크게
+      logoBox.style.display = 'none';
+      nameEl.textContent = it.answer;
+      subEl.style.display = 'none';
+    }
+
+    document.getElementById('reveal').classList.add('show');
+    document.getElementById('answerBtn').style.display = 'none';
+    document.getElementById('nextBtn').classList.add('show');
+  }
+
+  function nextQuestion() {
+    idx++;
+    if (idx >= cur.items.length) {
+      document.getElementById('doneText').textContent =
+        cur.title + ' ' + cur.items.length + '문제를 모두 풀었어요.';
+      show('done'); return;
+    }
+    renderQuestion();
+  }
+</script>
+</body>
+</html>
