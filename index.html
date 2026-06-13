@@ -149,6 +149,20 @@
     font-size: 72px; letter-spacing: 3px; color: #ffe259;
     text-shadow: 0 4px 16px rgba(0,0,0,.4);
   }
+  /* 경제·투자 용어(설명형): 남색 박스 제거 + 작은 글씨 + 최대 3줄 */
+  .photo-box.ticker-mode.desc, .aud-photo-box.ticker.desc {
+    background: #eef1f8; box-shadow: none; min-height: 0;
+  }
+  .ticker-display.desc, #audTicker.desc, .pres-ticker.desc {
+    font-family: 'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+    color: #232a45; letter-spacing: 0; text-shadow: none; font-weight: 800;
+    line-height: 1.45; white-space: normal; word-break: keep-all;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3;
+    overflow: hidden; padding: 20px 26px; max-width: 92%;
+  }
+  .ticker-display.desc { font-size: clamp(20px, 4.5vw, 33px); }
+  .pres-ticker.desc { font-size: 30px; letter-spacing: 0; }
+  #audTicker.desc { font-size: clamp(40px, 7vw, 78px); }
 
   /* 정답 영역 */
   .answer-area { min-height: 8px; }
@@ -1202,7 +1216,7 @@
                 emoji: '🧸', sub: '사진 속 캐릭터는?', grad: 'linear-gradient(135deg,#909497,#566573)' },
     landmark: { title: '세계 랜드마크',   question: '이곳은 어디일까요? 🏛️', items: LANDMARK,
                 emoji: '🏛️', sub: '사진 속 명소는?', grad: 'linear-gradient(135deg,#36d1dc,#5b86e5)' },
-    econ:     { title: '경제·투자 용어',  question: '설명에 맞는 용어는? 📊', items: ECON, mode: 'ticker',
+    econ:     { title: '경제·투자 용어',  question: '설명에 맞는 용어는? 📊', items: ECON, mode: 'ticker', desc: true,
                 emoji: '📊', sub: '용어의 뜻은?', grad: 'linear-gradient(135deg,#f7b733,#fc4a1a)' },
     song:     { title: '7080',           question: '이 노래의 제목은? 🎵', items: SONG, mode: 'audio',
                 emoji: '🎵', sub: '노래를 듣고 맞혀요', grad: 'linear-gradient(135deg,#c471f5,#fa71cd)' },
@@ -1347,6 +1361,7 @@
     } else if (cur.mode === 'ticker') {
       audioDisp.style.display = 'none';
       photoBox.classList.add('ticker-mode'); photoBox.classList.remove('audio-mode');
+      photoBox.classList.toggle('desc', !!cur.desc); ticker.classList.toggle('desc', !!cur.desc);
       photo.style.display = 'none'; loading.style.display = 'none';
       ticker.style.display = 'block'; ticker.textContent = it.q;
     } else {
@@ -1548,6 +1563,7 @@
     document.getElementById('presProgress').textContent = (idx + 1) + ' / ' + q.items.length;
     fillMedia(document.getElementById('presPhotoBox'), document.getElementById('presPhoto'),
               document.getElementById('presTicker'), it, q.mode, document.getElementById('presAudioDisp'), true);
+    document.getElementById('presTicker').classList.toggle('desc', !!q.desc);
     document.getElementById('presQ').textContent = q.question;
 
     if (it.company !== undefined) {
@@ -1597,6 +1613,8 @@
 
     const it = q.items[data.idx];
     fillMedia(box, document.getElementById('audPhoto'), document.getElementById('audTicker'), it, q.mode, document.getElementById('audAudioDisp'), false);
+    document.getElementById('audTicker').classList.toggle('desc', !!q.desc);
+    box.classList.toggle('desc', !!q.desc);
     document.getElementById('audProgress').textContent = (data.idx + 1) + ' / ' + q.items.length;
 
     if (data.revealed) {
