@@ -1668,13 +1668,13 @@
   });
   markVisited();
   updateHomeScore();
-  (function () {
+  setInterval(function () {
     var sa = document.getElementById('songAudio');
-    if (sa) sa.addEventListener('timeupdate', function () {
-      var p = sa.duration ? (sa.currentTime / sa.duration * 100) : 0;
-      document.querySelectorAll('.audio-bar-fill').forEach(function (f) { f.style.width = p + '%'; });
-    });
-  })();
+    if (!sa || sa.paused || !sa.dataset.cur) return;
+    var dur = (sa.duration && isFinite(sa.duration) && sa.duration > 0) ? sa.duration : 30;
+    var p = Math.min(100, sa.currentTime / dur * 100);
+    document.querySelectorAll('.audio-bar-fill').forEach(function (f) { f.style.width = p + '%'; });
+  }, 100);
 </script>
 </body>
 </html>
