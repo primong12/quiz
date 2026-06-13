@@ -56,6 +56,7 @@
   .c9 { background: linear-gradient(135deg,#f7971e,#ffd200); }
   .c10 { background: linear-gradient(135deg,#2193b0,#6dd5ed); }
   .c11 { background: linear-gradient(135deg,#654ea3,#eaafc8); }
+  .c12 { background: linear-gradient(135deg,#8e2de2,#4a00e0); }
   .card.locked { cursor: not-allowed; }
   .card.locked::after {
     content: '🔒 준비 중'; position: absolute; inset: 0;
@@ -338,6 +339,10 @@
       <div class="card c11" onclick="startQuiz('pager')">
         <div class="emoji">📟</div>
         <div><div class="title">암호·신조어 퀴즈</div><div class="sub">뜻을 맞혀보세요</div></div>
+      </div>
+      <div class="card c12" onclick="startQuiz('role')">
+        <div class="emoji">🎭</div>
+        <div><div class="title">배역 이름 맞히기</div><div class="sub">사진 속 배역은?</div></div>
       </div>
     </div>
     <div class="admin-link"><button onclick="showAdmin()">🔧 관리자</button></div>
@@ -787,6 +792,35 @@
     { q: 'TMI', answer: '너무 과한 정보 (Too Much Information)' },
   ];
 
+  const ROLE = [
+    { photo: 'images/role10.jpg', company: '전두광', ceo: '〈서울의 봄〉 · 황정민' },
+    { photo: 'images/role21.jpg', company: '우영우', ceo: '〈이상한 변호사 우영우〉 · 박은빈' },
+    { photo: 'images/role11.webp', company: '박태수', ceo: '〈모래시계〉 · 최민수' },
+    { photo: 'images/role06.jpg', company: '주몽', ceo: '〈주몽〉 · 송일국' },
+    { photo: 'images/role01.jpg', company: '대조영', ceo: '〈대조영〉 · 최수종' },
+    { photo: 'images/role02.webp', company: '김춘추', ceo: '〈대왕의 꿈〉 · 최수종' },
+    { photo: 'images/role03.jpg', company: '강감찬', ceo: '〈고려거란전쟁〉 · 최수종' },
+    { photo: 'images/role04.jpg', company: '태조 왕건', ceo: '〈태조 왕건〉 · 최수종' },
+    { photo: 'images/role05.jpg', company: '장보고', ceo: '〈해신〉 · 최수종' },
+    { photo: 'images/role17.jpg', company: '하선', ceo: '〈광해〉 · 이병헌' },
+    { photo: 'images/role19.png', company: '김신', ceo: '〈도깨비〉 · 공유' },
+    { photo: 'images/role09.jpg', company: '윤여옥', ceo: '〈여명의 눈동자〉 · 채시라' },
+    { photo: 'images/role07.jpg', company: '장금이', ceo: '〈대장금〉 · 이영애' },
+    { photo: 'images/role25.png', company: '박영한 (박 반장)', ceo: '〈수사반장〉 · 최불암' },
+    { photo: 'images/role15.webp', company: '동수', ceo: '〈친구〉 · 장동건' },
+    { photo: 'images/role16.jpg', company: '세종 (이도)', ceo: '〈뿌리깊은 나무〉 · 한석규' },
+    { photo: 'images/role13.jpg', company: '강민', ceo: '〈별은 내 가슴에〉 · 안재욱' },
+    { photo: 'images/role14.jpg', company: '강준상', ceo: '〈겨울연가〉 · 배용준' },
+    { photo: 'images/role18.jpg', company: '마석도', ceo: '〈범죄도시〉 · 마동석' },
+    { photo: 'images/role08.webp', company: '허준', ceo: '〈허준〉 · 전광렬' },
+    { photo: 'images/role12.webp', company: '김두한', ceo: '〈야인시대〉 · 김영철' },
+    { photo: 'images/role22.jpg', company: '오대수', ceo: '〈올드보이〉 · 최민식' },
+    { photo: 'images/role24.jpg', company: '유시진', ceo: '〈태양의 후예〉 · 송중기' },
+    { photo: 'images/role26.webp', company: '고은찬', ceo: '〈커피프린스 1호점〉 · 윤은혜' },
+    { photo: 'images/role23.jpg', company: '리정혁', ceo: '〈사랑의 불시착〉 · 현빈' },
+    { photo: 'images/role20.webp', company: '성기훈', ceo: '〈오징어 게임〉 · 이정재' },
+  ];
+
   const QUIZZES = {
     ceo:      { title: 'CEO 기업 맞히기',  question: '이 분이 이끄는 기업은? 🤔', items: CEO_QUIZ,
                 emoji: '👔', sub: '사진 속 CEO의 기업을 맞혀보세요', grad: 'linear-gradient(135deg,#f857a6,#ff5858)' },
@@ -810,6 +844,8 @@
                 emoji: '🌍', sub: '사진 속 선수는?', grad: 'linear-gradient(135deg,#2193b0,#6dd5ed)' },
     pager:    { title: '암호·신조어 퀴즈', question: '이 암호·신조어의 뜻은? 📟', items: PAGER, mode: 'ticker',
                 emoji: '📟', sub: '뜻을 맞혀보세요', grad: 'linear-gradient(135deg,#654ea3,#eaafc8)' },
+    role:     { title: '배역 이름 맞히기', question: '이 배역의 이름은? 🎭', items: ROLE,
+                emoji: '🎭', sub: '사진 속 배역은?', grad: 'linear-gradient(135deg,#8e2de2,#4a00e0)' },
   };
 
   let cur = QUIZZES.ceo;
@@ -834,7 +870,7 @@
 
   function showAdmin() {
     let html = '';
-    for (const key of ['ceo', 'female', 'male', 'krTicker', 'usTicker', 'cast', 'foreignM', 'foreignF', 'sportsKR', 'sportsF', 'pager']) {
+    for (const key of ['ceo', 'female', 'male', 'krTicker', 'usTicker', 'cast', 'foreignM', 'foreignF', 'sportsKR', 'sportsF', 'pager', 'role']) {
       const q = QUIZZES[key];
       const rows = q.items.map((it, i) => {
         let ans;
