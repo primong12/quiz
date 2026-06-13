@@ -76,6 +76,7 @@
   .c15 { background: linear-gradient(135deg,#8d7b68,#544a3d); }
   .card.soon { opacity: .72; filter: grayscale(.25); cursor: default; }
   .card.locked { cursor: not-allowed; }
+  .card.visited { opacity: .42; filter: grayscale(.5); }
   .card.checked::after { content: '✅'; position: absolute; top: 8px; right: 10px; font-size: 30px; filter: drop-shadow(0 2px 3px rgba(0,0,0,.35)); z-index: 2; }
   .card .count-badge { position: absolute; top: 8px; left: 10px; background: rgba(0,0,0,.4); color: #fff; font-size: 14px; font-weight: 800; padding: 3px 10px; border-radius: 99px; z-index: 2; }
   .card.locked::after {
@@ -271,7 +272,8 @@
   body.audience-mode .hero { margin: 0 0 12px; }
   body.audience-mode .hero .crown { font-size: 40px; }
   body.audience-mode .hero h1 { font-size: 34px; }
-  body.audience-mode .random-btn, body.audience-mode .present-toggle, body.audience-mode .admin-link { display: none; }
+  body.audience-mode .present-toggle, body.audience-mode .admin-link { display: none; }
+  body.audience-mode .random-btn { pointer-events: none; opacity: .85; }
   #audience { text-align: center; color: #fff; width: 100%; }
   .aud-progress { font-size: 22px; font-weight: 800; margin-bottom: 12px; text-shadow: 0 2px 8px rgba(0,0,0,.3); }
   .aud-photo-box { height: min(76vh, 900px); aspect-ratio: 4/3; width: auto; max-width: 100%; margin: 0 auto;
@@ -1064,10 +1066,11 @@
   }
 
   function startQuiz(key) {
+    visited.add(key);
     if (presSessionOn) { startPresent(key); return; }
     cur = QUIZZES[key]; idx = 0; show('quiz'); renderQuestion();
   }
-  function goHome() { show('home'); if (presSessionOn) broadcastHome(); }
+  function goHome() { show('home'); markVisited(); if (presSessionOn) broadcastHome(); }
 
   function openAudience() {
     if (audienceWin && !audienceWin.closed) { audienceWin.focus(); return; }
@@ -1078,14 +1081,29 @@
     if (on) { openAudience(); }
     else { presMode = false; if (audienceWin && !audienceWin.closed) audienceWin.close(); audienceWin = null; }
   }
-  function broadcastHome() { if (BC) BC.postMessage({ type: 'home' }); }
+  function broadcastHome() { if (BC) BC.postMessage({ type: 'home', visited: Array.from(visited) }); }
+
+  function markVisited() {
+    document.querySelectorAll('#home .card').forEach(function (card) {
+      var m = (card.getAttribute('onclick') || '').match(/startQuiz\('(\w+)'\)/);
+      if (m) card.classList.toggle('visited', visited.has(m[1]));
+    });
+  }
+  function showSlotMirror(d) {
+    var overlay = document.getElementById('slotOverlay'), item = document.getElementById('slotItem');
+    overlay.style.display = 'flex'; item.textContent = d.text;
+    if (d.done) { item.classList.add('slot-hit'); setTimeout(function () { overlay.style.display = 'none'; item.classList.remove('slot-hit'); }, 950); }
+    else { item.classList.remove('slot-hit'); }
+  }
   function comingSoon() { alert('이 퀴즈는 곧 만나요! 😊'); }
 
   // 랜덤 슬롯: 퀴즈 목록이 돌아가다 1개 선택 후 시작
   function randomStart() {
     const keys = Object.keys(QUIZZES);
     if (!keys.length) return;
-    const target = keys[Math.floor(Math.random() * keys.length)];
+    const pool = keys.filter(function (k) { return !visited.has(k); });
+    if (!pool.length) { alert('모든 퀴즈를 다 했어요! 🎉 새로고침하면 초기화됩니다.'); return; }
+    const target = pool[Math.floor(Math.random() * pool.length)];
     const overlay = document.getElementById('slotOverlay');
     const item = document.getElementById('slotItem');
     overlay.style.display = 'flex';
@@ -1094,15 +1112,19 @@
     const total = 28 + Math.floor(Math.random() * 8);
     (function spin() {
       const q = QUIZZES[keys[i % keys.length]];
-      item.textContent = q.emoji + ' ' + q.title;
+      var txt = q.emoji + ' ' + q.title;
+      item.textContent = txt;
+      if (presSessionOn && BC) BC.postMessage({ type: 'slot', text: txt });
       i++; count++;
       if (count < total) {
         if (count > total * 0.55) delay += 16;  // 점점 느리게
         setTimeout(spin, delay);
       } else {
         const tq = QUIZZES[target];
-        item.textContent = tq.emoji + ' ' + tq.title;
+        var ftxt = tq.emoji + ' ' + tq.title;
+        item.textContent = ftxt;
         item.classList.add('slot-hit');
+        if (presSessionOn && BC) BC.postMessage({ type: 'slot', text: ftxt, done: true });
         setTimeout(function () { overlay.style.display = 'none'; startQuiz(target); }, 950);
       }
     })();
@@ -1210,6 +1232,7 @@
   let growthScore = 0, valueScore = 0, pickedTeam = null;
   let audioCtx = null;
   let presSessionOn = false;
+  let visited = new Set();
 
   function startPresent(key) {
     presKey = key; cur = QUIZZES[key]; idx = 0;
@@ -1244,6 +1267,7 @@
   function exitPresent() {
     presMode = false;
     show('home');
+    markVisited();
     if (presSessionOn) broadcastHome();   // 관객도 메인으로 (빔 창은 유지)
   }
 
@@ -1439,7 +1463,8 @@
         BC.onmessage = function (e) {
           const d = e.data; if (!d) return;
           if (d.type === 'exit') { window.close(); return; }
-          if (d.type === 'home') { show('home'); return; }
+          if (d.type === 'home') { if (d.visited) { visited = new Set(d.visited); } show('home'); markVisited(); return; }
+          if (d.type === 'slot') { showSlotMirror(d); return; }
           if (d.type === 'state') { renderAudience(d); }
         };
         BC.postMessage({ type: 'request' });
@@ -1464,6 +1489,7 @@
       card.appendChild(b);
     }
   });
+  markVisited();
 </script>
 </body>
 </html>
