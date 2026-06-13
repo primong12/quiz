@@ -81,6 +81,7 @@
   .c16 { background: linear-gradient(135deg,#36d1dc,#5b86e5); }
   .c17 { background: linear-gradient(135deg,#f7b733,#fc4a1a); }
   .c18 { background: linear-gradient(135deg,#c471f5,#fa71cd); }
+  .c19 { background: linear-gradient(135deg,#fc466b,#3f5efb); }
   .c14 { background: linear-gradient(135deg,#909497,#566573); }
   .c15 { background: linear-gradient(135deg,#8d7b68,#544a3d); }
   .card.soon { opacity: .72; filter: grayscale(.25); cursor: default; }
@@ -373,17 +374,33 @@
         <div class="emoji">🎭</div>
         <div><div class="title">등장인물</div><div class="sub">사진 속 배역은?</div></div>
       </div>
-      <div class="card c14" onclick="startQuiz('charL')">
-        <div class="emoji">🧸</div>
-        <div><div class="title">캐릭터 (하)</div><div class="sub">사진 속 캐릭터는?</div></div>
+      <div class="card c13 checked" onclick="startQuiz('quote')">
+        <div class="emoji">💬</div>
+        <div><div class="title">명대사</div><div class="sub">사진 속 명대사는?</div></div>
       </div>
-      <div class="card c15 soon" onclick="comingSoon()">
-        <div class="emoji">📺</div>
-        <div><div class="title">캐릭터 (상)</div><div class="sub">준비 중 🔒</div></div>
+      <div class="card c18" onclick="startQuiz('song')">
+        <div class="emoji">🎵</div>
+        <div><div class="title">7080</div><div class="sub">노래를 듣고 맞혀요</div></div>
       </div>
-      <div class="card c11" onclick="startQuiz('pager')">
-        <div class="emoji">📟</div>
-        <div><div class="title">암호, 신조어</div><div class="sub">뜻을 맞혀보세요</div></div>
+      <div class="card c19 soon" onclick="comingSoon()">
+        <div class="emoji">🕹️</div>
+        <div><div class="title">Y2K</div><div class="sub">준비 중 🔒</div></div>
+      </div>
+      <div class="card c17" onclick="startQuiz('econ')">
+        <div class="emoji">📊</div>
+        <div><div class="title">경제·투자 용어</div><div class="sub">설명에 맞는 용어는?</div></div>
+      </div>
+      <div class="card c16" onclick="startQuiz('landmark')">
+        <div class="emoji">🏛️</div>
+        <div><div class="title">세계 랜드마크</div><div class="sub">사진 속 명소는?</div></div>
+      </div>
+      <div class="card c9" onclick="startQuiz('sportsKR')">
+        <div class="emoji">🏅</div>
+        <div><div class="title">국내 운동선수</div><div class="sub">사진 속 선수는?</div></div>
+      </div>
+      <div class="card c10" onclick="startQuiz('sportsF')">
+        <div class="emoji">🌍</div>
+        <div><div class="title">해외 운동선수</div><div class="sub">사진 속 선수는?</div></div>
       </div>
       <div class="card c3 checked" onclick="startQuiz('male')">
         <div class="emoji">🧑‍🎤</div>
@@ -401,29 +418,9 @@
         <div class="emoji">💃</div>
         <div><div class="title">해외 여자 스타</div><div class="sub">사진 속 인물은?</div></div>
       </div>
-      <div class="card c9" onclick="startQuiz('sportsKR')">
-        <div class="emoji">🏅</div>
-        <div><div class="title">국내 운동선수</div><div class="sub">사진 속 선수는?</div></div>
-      </div>
-      <div class="card c10" onclick="startQuiz('sportsF')">
-        <div class="emoji">🌍</div>
-        <div><div class="title">해외 운동선수</div><div class="sub">사진 속 선수는?</div></div>
-      </div>
-      <div class="card c13 checked" onclick="startQuiz('quote')">
-        <div class="emoji">💬</div>
-        <div><div class="title">명대사</div><div class="sub">사진 속 명대사는?</div></div>
-      </div>
-      <div class="card c16" onclick="startQuiz('landmark')">
-        <div class="emoji">🏛️</div>
-        <div><div class="title">세계 랜드마크</div><div class="sub">사진 속 명소는?</div></div>
-      </div>
-      <div class="card c17" onclick="startQuiz('econ')">
-        <div class="emoji">📊</div>
-        <div><div class="title">경제·투자 용어</div><div class="sub">용어의 뜻은?</div></div>
-      </div>
-      <div class="card c18" onclick="startQuiz('song')">
-        <div class="emoji">🎵</div>
-        <div><div class="title">7080</div><div class="sub">노래를 듣고 맞혀요</div></div>
+      <div class="card c14" onclick="startQuiz('charL')">
+        <div class="emoji">🧸</div>
+        <div><div class="title">캐릭터</div><div class="sub">사진 속 캐릭터는?</div></div>
       </div>
     </div>
     <div class="admin-link"><button onclick="showAdmin()">🔧 관리자</button></div>
@@ -952,33 +949,6 @@
   ];
 
   // 삐삐(무선호출기) 숫자 암호
-  const PAGER = [
-    { q: '0000', answer: '빵빵 / 꽝 (할 말 없음)' },
-    { q: '0024', answer: '영원히 사랑해' },
-    { q: '0027', answer: '영원히 친구' },
-    { q: '0124', answer: '영원히 사랑해' },
-    { q: '017942', answer: '공일친구사이' },
-    { q: '0909', answer: '구질구질 (빨리 와)' },
-    { q: '100', answer: '백 / 돌아와 (back)' },
-    { q: '1010235', answer: '열렬히 사모' },
-    { q: '486', answer: '사랑해' },
-    { q: '8282', answer: '빨리빨리' },
-    { q: '1004', answer: '천사' },
-    { q: '1212', answer: '12시에 만나' },
-    { q: '7942', answer: '친구사이' },
-    { q: '9090', answer: '구질구질' },
-    { q: '5882', answer: '오빠빨리' },
-    { q: '알잘딱깔센', answer: '알아서 잘 딱 깔끔하고 센스 있게' },
-    { q: '갓생', answer: '부지런하고 모범적인 삶' },
-    { q: '점메추', answer: '점심 메뉴 추천' },
-    { q: '어쩔티비', answer: '반박 시 받아치는 말' },
-    { q: '스불재', answer: '스스로 불러온 재앙' },
-    { q: '만반잘부', answer: '만나서 반가워 잘 부탁해' },
-    { q: '킹받다', answer: '열받다의 강조 표현' },
-    { q: '중꺾마', answer: '중요한 건 꺾이지 않는 마음' },
-    { q: '오저치고', answer: '오늘 저녁 치킨 고' },
-    { q: 'TMI', answer: '너무 과한 정보 (Too Much Information)' },
-  ];
 
   const ROLE = [
     { photo: 'images/role10.jpg', company: '전두광', ceo: '〈서울의 봄〉 · 황정민' },
@@ -1111,36 +1081,36 @@
   ];
 
   const ECON = [
-    { q: "PER", answer: "주가수익비율 (주가÷주당순이익)" },
-    { q: "PBR", answer: "주가순자산비율" },
-    { q: "ROE", answer: "자기자본이익률" },
-    { q: "EPS", answer: "주당순이익" },
-    { q: "GDP", answer: "국내총생산" },
-    { q: "인플레이션", answer: "물가가 지속적으로 오르는 현상" },
-    { q: "디플레이션", answer: "물가가 지속적으로 내리는 현상" },
-    { q: "스태그플레이션", answer: "경기침체 + 물가상승 동시 발생" },
-    { q: "기준금리", answer: "중앙은행이 정하는 정책 금리" },
-    { q: "양적완화 (QE)", answer: "중앙은행이 돈을 풀어 경기 부양" },
-    { q: "레버리지", answer: "빚을 지렛대 삼아 투자" },
-    { q: "공매도", answer: "주식을 빌려 팔고 나중에 되사서 갚기" },
-    { q: "배당", answer: "기업이 이익을 주주에게 나눠주는 것" },
-    { q: "시가총액", answer: "주식 수 × 주가" },
-    { q: "블루칩", answer: "실적 좋은 우량 대형주" },
-    { q: "분산투자", answer: "여러 자산에 나눠 위험 줄이기" },
-    { q: "복리", answer: "이자에 다시 이자가 붙는 것" },
-    { q: "채권", answer: "정부·기업이 발행하는 빚 증서" },
-    { q: "ETF", answer: "상장지수펀드" },
-    { q: "코스피", answer: "한국 대표 주가지수" },
-    { q: "나스닥", answer: "미국 기술주 중심 주가지수" },
-    { q: "베어마켓", answer: "약세장 (하락장)" },
-    { q: "불마켓", answer: "강세장 (상승장)" },
-    { q: "손절매", answer: "손해를 감수하고 파는 것" },
-    { q: "변동성", answer: "가격이 출렁이는 정도" },
-    { q: "유동성", answer: "자산을 현금화하기 쉬운 정도" },
-    { q: "헤지", answer: "위험을 회피하는 것" },
-    { q: "서킷브레이커", answer: "주가 급락 시 거래 일시정지" },
-    { q: "환율", answer: "두 나라 화폐의 교환 비율" },
-    { q: "버블", answer: "실제 가치보다 부풀려진 거품" },
+    { q: "HS아카데미 정신", answer: "인테그리티" },
+    { q: "주가수익비율 (주가÷주당순이익)", answer: "PER" },
+    { q: "주가순자산비율", answer: "PBR" },
+    { q: "자기자본이익률", answer: "ROE" },
+    { q: "주당순이익", answer: "EPS" },
+    { q: "국내총생산", answer: "GDP" },
+    { q: "물가가 지속적으로 오르는 현상", answer: "인플레이션" },
+    { q: "물가가 지속적으로 내리는 현상", answer: "디플레이션" },
+    { q: "경기침체 + 물가상승 동시 발생", answer: "스태그플레이션" },
+    { q: "중앙은행이 정하는 정책 금리", answer: "기준금리" },
+    { q: "중앙은행이 돈을 풀어 경기 부양 (QE)", answer: "양적완화" },
+    { q: "빚을 지렛대 삼아 투자", answer: "레버리지" },
+    { q: "주식을 빌려 팔고 나중에 되사서 갚기", answer: "공매도" },
+    { q: "기업이 이익을 주주에게 나눠주는 것", answer: "배당" },
+    { q: "주식 수 × 주가", answer: "시가총액" },
+    { q: "실적 좋은 우량 대형주", answer: "블루칩" },
+    { q: "여러 자산에 나눠 위험을 줄이는 것", answer: "분산투자" },
+    { q: "이자에 다시 이자가 붙는 것", answer: "복리" },
+    { q: "정부·기업이 발행하는 빚 증서", answer: "채권" },
+    { q: "상장지수펀드", answer: "ETF" },
+    { q: "한국의 대표 주가지수", answer: "코스피" },
+    { q: "미국 기술주 중심 주가지수", answer: "나스닥" },
+    { q: "손해를 감수하고 파는 것", answer: "손절매" },
+    { q: "가격이 출렁이는 정도", answer: "변동성" },
+    { q: "자산을 현금화하기 쉬운 정도", answer: "유동성" },
+    { q: "위험을 회피하는 것", answer: "헤지" },
+    { q: "주가 급락 시 거래를 일시정지하는 것", answer: "서킷브레이커" },
+    { q: "두 나라 화폐의 교환 비율", answer: "환율" },
+    { q: "실제 가치보다 부풀려진 거품", answer: "버블" },
+    { q: "국제 거래의 기준이 되는 통화 (예: 달러)", answer: "기축통화" },
   ];
 
   const SONG = [
@@ -1194,17 +1164,15 @@
                 emoji: '🏅', sub: '사진 속 선수는?', grad: 'linear-gradient(135deg,#f7971e,#ffd200)' },
     sportsF:  { title: '해외 운동선수',   question: '이 선수는 누구일까요? 🏅', items: SPORTS_F,
                 emoji: '🌍', sub: '사진 속 선수는?', grad: 'linear-gradient(135deg,#2193b0,#6dd5ed)' },
-    pager:    { title: '암호, 신조어',  question: '이 암호·신조어의 뜻은? 📟', items: PAGER, mode: 'ticker',
-                emoji: '📟', sub: '뜻을 맞혀보세요', grad: 'linear-gradient(135deg,#654ea3,#eaafc8)' },
     role:     { title: '등장인물',      question: '이 배역의 이름은? 🎭', items: ROLE,
                 emoji: '🎭', sub: '사진 속 배역은?', grad: 'linear-gradient(135deg,#8e2de2,#4a00e0)' },
     quote:    { title: '명대사',          question: '이 명장면의 명대사는? 💬', items: QUOTE,
                 emoji: '💬', sub: '사진 속 명대사는?', grad: 'linear-gradient(135deg,#ff512f,#dd2476)' },
-    charL:    { title: '캐릭터 (하)',    question: '이 캐릭터의 이름은? 🧸', items: CHAR_L,
+    charL:    { title: '캐릭터',         question: '이 캐릭터의 이름은? 🧸', items: CHAR_L,
                 emoji: '🧸', sub: '사진 속 캐릭터는?', grad: 'linear-gradient(135deg,#909497,#566573)' },
     landmark: { title: '세계 랜드마크',   question: '이곳은 어디일까요? 🏛️', items: LANDMARK,
                 emoji: '🏛️', sub: '사진 속 명소는?', grad: 'linear-gradient(135deg,#36d1dc,#5b86e5)' },
-    econ:     { title: '경제·투자 용어',  question: '이 용어의 뜻은? 📊', items: ECON, mode: 'ticker',
+    econ:     { title: '경제·투자 용어',  question: '설명에 맞는 용어는? 📊', items: ECON, mode: 'ticker',
                 emoji: '📊', sub: '용어의 뜻은?', grad: 'linear-gradient(135deg,#f7b733,#fc4a1a)' },
     song:     { title: '7080',           question: '이 노래의 제목은? 🎵', items: SONG, mode: 'audio',
                 emoji: '🎵', sub: '노래를 듣고 맞혀요', grad: 'linear-gradient(135deg,#c471f5,#fa71cd)' },
@@ -1302,7 +1270,7 @@
 
   function showAdmin() {
     let html = '';
-    for (const key of ['ceo', 'female', 'male', 'krTicker', 'usTicker', 'cast', 'foreignM', 'foreignF', 'sportsKR', 'sportsF', 'pager', 'role', 'quote', 'charL', 'landmark', 'econ', 'song']) {
+    for (const key of ['ceo', 'female', 'male', 'krTicker', 'usTicker', 'cast', 'foreignM', 'foreignF', 'sportsKR', 'sportsF', 'role', 'quote', 'charL', 'landmark', 'econ', 'song']) {
       const q = QUIZZES[key];
       const rows = q.items.map((it, i) => {
         let ans;
