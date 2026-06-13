@@ -57,6 +57,7 @@
   .c10 { background: linear-gradient(135deg,#2193b0,#6dd5ed); }
   .c11 { background: linear-gradient(135deg,#654ea3,#eaafc8); }
   .c12 { background: linear-gradient(135deg,#8e2de2,#4a00e0); }
+  .c13 { background: linear-gradient(135deg,#ff512f,#dd2476); }
   .card.locked { cursor: not-allowed; }
   .card.locked::after {
     content: '🔒 준비 중'; position: absolute; inset: 0;
@@ -343,6 +344,10 @@
       <div class="card c12" onclick="startQuiz('role')">
         <div class="emoji">🎭</div>
         <div><div class="title">배역 이름 맞히기</div><div class="sub">사진 속 배역은?</div></div>
+      </div>
+      <div class="card c13" onclick="startQuiz('quote')">
+        <div class="emoji">💬</div>
+        <div><div class="title">명대사 맞히기</div><div class="sub">사진 속 명대사는?</div></div>
       </div>
     </div>
     <div class="admin-link"><button onclick="showAdmin()">🔧 관리자</button></div>
@@ -821,6 +826,35 @@
     { photo: 'images/role20.webp', company: '성기훈', ceo: '〈오징어 게임〉 · 이정재' },
   ];
 
+  const QUOTE = [
+    { photo: 'images/quote01.jpg', company: "나 떨고 있니?", ceo: "〈모래시계〉 (1995)" },
+    { photo: 'images/quote02.webp', company: "느그 아부지 뭐하시노", ceo: "〈친구〉 (2001)" },
+    { photo: 'images/quote03.jpg', company: "고마해라 마이무따 아이가", ceo: "〈친구〉 (2001)" },
+    { photo: 'images/quote04.png', company: "사딸라", ceo: "〈야인시대〉 (2002)" },
+    { photo: 'images/quote05.jpg', company: "밥은 먹고 다니냐", ceo: "〈살인의 추억〉 (2003)" },
+    { photo: 'images/quote06.jpg', company: "누구냐, 넌", ceo: "〈올드보이〉 (2003)" },
+    { photo: 'images/quote07.jpg', company: "이 안에 너 있다", ceo: "〈파리의 연인〉 (2004)" },
+    { photo: 'images/quote08.png', company: "묻고 더블로 가!", ceo: "〈타짜〉 (2006)" },
+    { photo: 'images/quote09.jpg', company: "마포대교는 무너졌나 이××야", ceo: "〈작품 미상〉" },
+    { photo: 'images/quote10.jpg', company: "드루와, 드루와", ceo: "〈신세계〉 (2013)" },
+    { photo: 'images/quote11.jpg', company: "신에게는 아직 열두 척의 배가 남아 있사옵니다", ceo: "〈명량〉 (2014)" },
+    { photo: 'images/quote12.jpg', company: "어이가 없네", ceo: "〈베테랑〉 (2015)" },
+    { photo: 'images/quote13.jpg', company: "모히토 가서 몰디브 한 잔", ceo: "〈내부자들〉 (2015)" },
+    { photo: 'images/quote14.png', company: "뭣이 중헌디", ceo: "〈곡성〉 (2016)" },
+    { photo: 'images/quote15.jpg', company: "너는 다 계획이 있구나", ceo: "〈기생충〉 (2019)" },
+    { photo: 'images/quote16.jpg', company: "I'll be back", ceo: "〈터미네이터〉 (1984)" },
+    { photo: 'images/quote17.jpg', company: "느그 서장 남천동 살제", ceo: "〈범죄와의 전쟁〉 (2012)" },
+    { photo: 'images/quote18.png', company: "낙수야 행복해라", ceo: "〈서울 자가에 대기업 다니는 김부장 이야기〉 (2025)" },
+    { photo: 'images/quote19.jpg', company: "너나 잘하세요", ceo: "〈친절한 금자씨〉 (2005)" },
+    { photo: 'images/quote20.jpg', company: "넌 나에게 모욕감을 줬어", ceo: "〈달콤한 인생〉 (2005)" },
+    { photo: 'images/quote21.jpg', company: "지금까지 이런 맛은 없었다. 이것은 갈비인가 통닭인가", ceo: "〈극한직업〉 (2019)" },
+    { photo: 'images/quote22.jpg', company: "거 죽기 딱 좋은 날씨네", ceo: "〈신세계〉 (2013)" },
+    { photo: 'images/quote23.jpg', company: "이거 마시면 나랑 사귀는 거다", ceo: "〈내 머리 속의 지우개〉 (2004)" },
+    { photo: 'images/quote24.png', company: "밥 먹을래, 나랑 같이 죽을래", ceo: "〈미안하다, 사랑한다〉 (2004)" },
+    { photo: 'images/quote25.jpg', company: "초원이 다리는 백만불짜리 다리", ceo: "〈말아톤〉 (2005)" },
+    { photo: 'images/quote26.jpg', company: "I am Iron Man", ceo: "〈어벤져스: 엔드게임〉 (2019)" },
+  ];
+
   const QUIZZES = {
     ceo:      { title: 'CEO 기업 맞히기',  question: '이 분이 이끄는 기업은? 🤔', items: CEO_QUIZ,
                 emoji: '👔', sub: '사진 속 CEO의 기업을 맞혀보세요', grad: 'linear-gradient(135deg,#f857a6,#ff5858)' },
@@ -846,6 +880,8 @@
                 emoji: '📟', sub: '뜻을 맞혀보세요', grad: 'linear-gradient(135deg,#654ea3,#eaafc8)' },
     role:     { title: '배역 이름 맞히기', question: '이 배역의 이름은? 🎭', items: ROLE,
                 emoji: '🎭', sub: '사진 속 배역은?', grad: 'linear-gradient(135deg,#8e2de2,#4a00e0)' },
+    quote:    { title: '명대사 맞히기',   question: '이 명장면의 명대사는? 💬', items: QUOTE,
+                emoji: '💬', sub: '사진 속 명대사는?', grad: 'linear-gradient(135deg,#ff512f,#dd2476)' },
   };
 
   let cur = QUIZZES.ceo;
@@ -870,7 +906,7 @@
 
   function showAdmin() {
     let html = '';
-    for (const key of ['ceo', 'female', 'male', 'krTicker', 'usTicker', 'cast', 'foreignM', 'foreignF', 'sportsKR', 'sportsF', 'pager', 'role']) {
+    for (const key of ['ceo', 'female', 'male', 'krTicker', 'usTicker', 'cast', 'foreignM', 'foreignF', 'sportsKR', 'sportsF', 'pager', 'role', 'quote']) {
       const q = QUIZZES[key];
       const rows = q.items.map((it, i) => {
         let ans;
