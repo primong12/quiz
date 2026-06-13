@@ -134,6 +134,8 @@
   .photo-box.ticker-mode { aspect-ratio: auto; height: auto; min-height: 160px;
     background: linear-gradient(135deg,#1e2746,#2d3a6b); box-shadow: none; }
   .photo-box.ticker-mode { min-height: 230px; }
+  .photo-box.audio-mode { aspect-ratio: auto; height: auto; min-height: 240px; background: transparent; box-shadow: none; }
+  .aud-photo-box.audio-on { aspect-ratio: auto; min-height: 0; background: transparent; box-shadow: none; }
   .ticker-display {
     font-family: 'SF Mono','Consolas',monospace; font-weight: 800;
     font-size: 72px; letter-spacing: 3px; color: #ffe259;
@@ -1339,18 +1341,18 @@
 
     const audioDisp = document.getElementById('audioDisplay');
     if (cur.mode === 'audio') {
-      photoBox.classList.add('ticker-mode');
+      photoBox.classList.add('audio-mode'); photoBox.classList.remove('ticker-mode');
       photo.style.display = 'none'; loading.style.display = 'none'; ticker.style.display = 'none';
       audioDisp.style.display = 'block';
       var sa = document.getElementById('songAudio'); if (sa.dataset.cur !== it.preview) { sa.dataset.cur = it.preview; sa.src = it.preview; sa.play().catch(function () {}); }
     } else if (cur.mode === 'ticker') {
       audioDisp.style.display = 'none';
-      photoBox.classList.add('ticker-mode');
+      photoBox.classList.add('ticker-mode'); photoBox.classList.remove('audio-mode');
       photo.style.display = 'none'; loading.style.display = 'none';
       ticker.style.display = 'block'; ticker.textContent = it.q;
     } else {
       audioDisp.style.display = 'none';
-      photoBox.classList.remove('ticker-mode');
+      photoBox.classList.remove('ticker-mode'); photoBox.classList.remove('audio-mode');
       ticker.style.display = 'none'; photo.style.display = 'none';
       loading.style.display = 'block'; loading.textContent = '사진 불러오는 중…';
       photo.src = it.photo;
@@ -1501,15 +1503,15 @@
   // 사진/티커 채우기 (발표자·관객 공용)
   function fillMedia(box, img, ticker, it, mode, audioDisp, doPlay) {
     if (mode === 'audio') {
-      box.classList.add('ticker'); img.style.display = 'none'; ticker.style.display = 'none';
+      box.classList.add('audio-on'); box.classList.remove('ticker'); img.style.display = 'none'; ticker.style.display = 'none';
       if (audioDisp) audioDisp.style.display = 'block';
       if (doPlay) { var a = document.getElementById('songAudio'); if (a.dataset.cur !== it.preview) { a.dataset.cur = it.preview; a.src = it.preview; a.play().catch(function () {}); } }
     } else if (mode === 'ticker') {
-      box.classList.add('ticker'); img.style.display = 'none';
+      box.classList.add('ticker'); box.classList.remove('audio-on'); img.style.display = 'none';
       ticker.style.display = 'block'; ticker.textContent = it.q;
       if (audioDisp) audioDisp.style.display = 'none';
     } else {
-      box.classList.remove('ticker'); ticker.style.display = 'none';
+      box.classList.remove('ticker'); box.classList.remove('audio-on'); ticker.style.display = 'none';
       img.style.display = 'block'; img.src = it.photo;
       if (audioDisp) audioDisp.style.display = 'none';
     }
@@ -1678,10 +1680,11 @@
   updateHomeScore();
   setInterval(function () {
     var sa = document.getElementById('songAudio');
-    if (!sa || sa.paused || !sa.dataset.cur) return;
+    if (!sa || !sa.src) return;
     var dur = (sa.duration && isFinite(sa.duration) && sa.duration > 0) ? sa.duration : 30;
-    var p = Math.min(100, sa.currentTime / dur * 100);
-    document.querySelectorAll('.audio-bar-fill').forEach(function (f) { f.style.width = p + '%'; });
+    var p = Math.min(100, (sa.currentTime || 0) / dur * 100);
+    var fills = document.querySelectorAll('.audio-bar-fill');
+    for (var i = 0; i < fills.length; i++) fills[i].style.width = p + '%';
   }, 100);
 </script>
 </body>
