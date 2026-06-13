@@ -406,6 +406,7 @@
   <section id="presenter" class="screen">
     <div class="pres-top">
       <button onclick="exitPresent()">← 종료</button>
+      <button onclick="finishQuiz()" style="background:#ffd200;color:#7a5c00">🏁 결과 발표</button>
       <span id="presProgress">1 / 1</span>
       <span class="pres-hint">Enter: 정답공개/다음 · 1=GROWTH 2=VALUE 정답체크 · ←: 이전 · Esc: 종료</span>
     </div>
@@ -1129,6 +1130,17 @@
     if (presIntro || presDone) return;
     pickedTeam = (pickedTeam === team) ? null : team;
     renderPresenter();
+  }
+
+  // 중간에 결과 발표 (현재 점수로 우승 팀 확정)
+  function finishQuiz() {
+    if (!presMode || presDone) return;
+    if (pickedTeam === 'growth') growthScore++;
+    else if (pickedTeam === 'value') valueScore++;
+    pickedTeam = null;
+    presDone = true;
+    playFanfare();
+    renderPresenter(); broadcast();
   }
 
   // 승리 팡파레 (Web Audio로 합성 — 파일 불필요)
