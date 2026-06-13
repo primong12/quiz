@@ -122,6 +122,14 @@
   .audio-display .audio-hint { display: block; font-size: 18px; opacity: .8; margin-top: 10px; font-weight: 600; }
   .audio-bar { width: 80%; max-width: 420px; height: 12px; background: rgba(255,255,255,.25); border-radius: 99px; margin: 26px auto 0; overflow: hidden; }
   .audio-bar-fill { height: 100%; width: 0; background: #fff; border-radius: 99px; transition: width .2s linear; }
+  .lp { width: 320px; height: 320px; max-width: 60vh; max-height: 60vh; border-radius: 50%; margin: 0 auto; position: relative;
+    aspect-ratio: 1; animation: lpspin 2.6s linear infinite; box-shadow: 0 14px 44px rgba(0,0,0,.55);
+    background: repeating-radial-gradient(circle at center, #181818 0px, #181818 3px, #2a2a2a 4px, #181818 5px); }
+  .lp-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 36%; height: 36%; border-radius: 50%;
+    background: linear-gradient(135deg,#c471f5,#fa71cd); box-shadow: 0 0 0 6px rgba(0,0,0,.35); }
+  .lp-label::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 4px #1a1a1a; }
+  @keyframes lpspin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
   /* 티커 표시 (사진 대신 종목코드/티커를 크게) */
   .photo-box.ticker-mode { aspect-ratio: auto; height: auto; min-height: 160px;
     background: linear-gradient(135deg,#1e2746,#2d3a6b); box-shadow: none; }
@@ -525,7 +533,7 @@
     <div class="aud-photo-box" id="audPhotoBox">
       <img id="audPhoto" alt="">
       <div id="audTicker" style="display:none"></div>
-      <div id="audAudioDisp" class="audio-display" style="display:none">🎵<br>노래가 재생되고 있어요<div class="audio-bar"><div class="audio-bar-fill"></div></div></div>
+      <div id="audAudioDisp" class="audio-display" style="display:none"><div class="lp"><div class="lp-label"></div></div><div class="audio-bar" style="margin-top:30px"><div class="audio-bar-fill"></div></div></div>
     </div>
     <div class="aud-reveal" id="audReveal">
       <div class="logo-box" id="audLogoBox"><img id="audLogo" alt=""></div>
