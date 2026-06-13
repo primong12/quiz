@@ -1679,17 +1679,22 @@
   });
   markVisited();
   updateHomeScore();
+  var __songTick = 0;
   setInterval(function () {
+    __songTick++;
     var sa = document.getElementById('songAudio');
-    if (!sa || !sa.src) return;
-    var dur = (sa.duration && isFinite(sa.duration) && sa.duration > 0) ? sa.duration : 30;
-    var p = Math.min(100, (sa.currentTime || 0) / dur * 100);
-    var fills = document.querySelectorAll('.audio-bar-fill');
-    for (var i = 0; i < fills.length; i++) fills[i].style.width = p + '%';
-    var fmt = function (s) { var m = Math.floor(s / 60), ss = Math.floor(s % 60); return m + ':' + (ss < 10 ? '0' : '') + ss; };
-    var txt = fmt(sa.currentTime || 0) + ' / ' + fmt(dur);
     var times = document.querySelectorAll('.audio-time');
-    for (var j = 0; j < times.length; j++) times[j].textContent = txt;
+    var fills = document.querySelectorAll('.audio-bar-fill');
+    var fmt = function (s) { var m = Math.floor(s / 60), ss = Math.floor(s % 60); return m + ':' + (ss < 10 ? '0' : '') + ss; };
+    if (sa && sa.src && sa.currentTime > 0) {
+      var dur = (sa.duration && isFinite(sa.duration) && sa.duration > 0) ? sa.duration : 30;
+      var cur = sa.currentTime;
+      var p = Math.min(100, cur / dur * 100);
+      for (var i = 0; i < fills.length; i++) fills[i].style.width = p + '%';
+      for (var j = 0; j < times.length; j++) times[j].textContent = fmt(cur) + ' / ' + fmt(dur);
+    } else {
+      for (var k = 0; k < times.length; k++) times[k].textContent = '준비중 (' + __songTick + ')';
+    }
   }, 100);
 </script>
 </body>
