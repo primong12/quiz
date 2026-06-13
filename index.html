@@ -32,7 +32,7 @@
              text-shadow: 0 4px 16px rgba(0,0,0,.25); }
   .hero p { font-size: 20px; opacity: .92; }
 
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
   .card {
     border-radius: 26px; padding: 34px 28px; min-height: 210px;
     color: #fff; cursor: pointer; position: relative; overflow: hidden;
@@ -58,6 +58,9 @@
   .c11 { background: linear-gradient(135deg,#654ea3,#eaafc8); }
   .c12 { background: linear-gradient(135deg,#8e2de2,#4a00e0); }
   .c13 { background: linear-gradient(135deg,#ff512f,#dd2476); }
+  .c14 { background: linear-gradient(135deg,#909497,#566573); }
+  .c15 { background: linear-gradient(135deg,#8d7b68,#544a3d); }
+  .card.soon { opacity: .72; filter: grayscale(.25); cursor: default; }
   .card.locked { cursor: not-allowed; }
   .card.locked::after {
     content: '🔒 준비 중'; position: absolute; inset: 0;
@@ -266,6 +269,7 @@
   @media (max-width: 760px) { .pres-main { grid-template-columns: 1fr; } #audTicker { font-size: 64px; } }
 
   /* ===== 반응형: 화면 좁아지면 열 수 줄이기 ===== */
+  @media (max-width: 1080px) { .grid { grid-template-columns: repeat(3, 1fr); } }
   @media (max-width: 920px) {
     .grid { grid-template-columns: repeat(2, 1fr); }
     .hero h1 { font-size: 44px; }
@@ -296,30 +300,43 @@
     <div class="grid">
       <div class="card c1" onclick="startQuiz('ceo')">
         <div class="emoji">👔</div>
-        <div>
-          <div class="title">CEO 기업 맞히기</div>
-          <div class="sub">사진 속 CEO의 기업은?</div>
-        </div>
-      </div>
-      <div class="card c2" onclick="startQuiz('female')">
-        <div class="emoji">👩‍🎤</div>
-        <div><div class="title">여자 연예인 맞히기</div><div class="sub">이 사람은 누구?</div></div>
-      </div>
-      <div class="card c3" onclick="startQuiz('male')">
-        <div class="emoji">🧑‍🎤</div>
-        <div><div class="title">남자 연예인 맞히기</div><div class="sub">이 사람은 누구?</div></div>
+        <div><div class="title">CEO</div><div class="sub">사진 속 CEO의 기업은?</div></div>
       </div>
       <div class="card c4" onclick="startQuiz('krTicker')">
         <div class="emoji">📈</div>
-        <div><div class="title">국내 주식 티커</div><div class="sub">종목코드로 기업 맞히기</div></div>
+        <div><div class="title">종목 코드</div><div class="sub">종목코드로 기업 맞히기</div></div>
       </div>
       <div class="card c5" onclick="startQuiz('usTicker')">
         <div class="emoji">🌎</div>
-        <div><div class="title">해외 주식 티커</div><div class="sub">티커로 기업 맞히기</div></div>
+        <div><div class="title">티커</div><div class="sub">티커로 기업 맞히기</div></div>
       </div>
       <div class="card c6" onclick="startQuiz('cast')">
         <div class="emoji">🎬</div>
-        <div><div class="title">출연자 맞히기</div><div class="sub">사진 속 출연자는?</div></div>
+        <div><div class="title">HS 출연자</div><div class="sub">사진 속 출연자는?</div></div>
+      </div>
+      <div class="card c12" onclick="startQuiz('role')">
+        <div class="emoji">🎭</div>
+        <div><div class="title">등장인물</div><div class="sub">사진 속 배역은?</div></div>
+      </div>
+      <div class="card c14 soon" onclick="comingSoon()">
+        <div class="emoji">🧸</div>
+        <div><div class="title">캐릭터 (하)</div><div class="sub">준비 중 🔒</div></div>
+      </div>
+      <div class="card c15 soon" onclick="comingSoon()">
+        <div class="emoji">📺</div>
+        <div><div class="title">캐릭터 (상)</div><div class="sub">준비 중 🔒</div></div>
+      </div>
+      <div class="card c11" onclick="startQuiz('pager')">
+        <div class="emoji">📟</div>
+        <div><div class="title">암호, 신조어</div><div class="sub">뜻을 맞혀보세요</div></div>
+      </div>
+      <div class="card c3" onclick="startQuiz('male')">
+        <div class="emoji">🧑‍🎤</div>
+        <div><div class="title">국내 남자 스타</div><div class="sub">사진 속 인물은?</div></div>
+      </div>
+      <div class="card c2" onclick="startQuiz('female')">
+        <div class="emoji">👩‍🎤</div>
+        <div><div class="title">국내 여자 스타</div><div class="sub">사진 속 인물은?</div></div>
       </div>
       <div class="card c7" onclick="startQuiz('foreignM')">
         <div class="emoji">🎩</div>
@@ -337,17 +354,9 @@
         <div class="emoji">🌍</div>
         <div><div class="title">해외 운동선수</div><div class="sub">사진 속 선수는?</div></div>
       </div>
-      <div class="card c11" onclick="startQuiz('pager')">
-        <div class="emoji">📟</div>
-        <div><div class="title">암호·신조어 퀴즈</div><div class="sub">뜻을 맞혀보세요</div></div>
-      </div>
-      <div class="card c12" onclick="startQuiz('role')">
-        <div class="emoji">🎭</div>
-        <div><div class="title">배역 이름 맞히기</div><div class="sub">사진 속 배역은?</div></div>
-      </div>
       <div class="card c13" onclick="startQuiz('quote')">
         <div class="emoji">💬</div>
-        <div><div class="title">명대사 맞히기</div><div class="sub">사진 속 명대사는?</div></div>
+        <div><div class="title">명대사</div><div class="sub">사진 속 명대사는?</div></div>
       </div>
     </div>
     <div class="admin-link"><button onclick="showAdmin()">🔧 관리자</button></div>
@@ -856,17 +865,17 @@
   ];
 
   const QUIZZES = {
-    ceo:      { title: 'CEO 기업 맞히기',  question: '이 분이 이끄는 기업은? 🤔', items: CEO_QUIZ,
+    ceo:      { title: 'CEO',             question: '이 분이 이끄는 기업은? 🤔', items: CEO_QUIZ,
                 emoji: '👔', sub: '사진 속 CEO의 기업을 맞혀보세요', grad: 'linear-gradient(135deg,#f857a6,#ff5858)' },
-    female:   { title: '여자 연예인 맞히기', question: '이 사람은 누구일까요? 🤔',  items: FEMALE,
+    female:   { title: '국내 여자 스타', question: '이 사람은 누구일까요? 🤔',  items: FEMALE,
                 emoji: '👩‍🎤', sub: '사진 속 인물의 이름은?', grad: 'linear-gradient(135deg,#43cea2,#185a9d)' },
-    male:     { title: '남자 연예인 맞히기', question: '이 사람은 누구일까요? 🤔',  items: MALE,
+    male:     { title: '국내 남자 스타', question: '이 사람은 누구일까요? 🤔',  items: MALE,
                 emoji: '🧑‍🎤', sub: '사진 속 인물의 이름은?', grad: 'linear-gradient(135deg,#fa709a,#fee140)' },
-    krTicker: { title: '국내 주식 티커',   question: '이 종목코드의 기업은? 📈', items: KR_TICKER, mode: 'ticker',
+    krTicker: { title: '종목 코드',       question: '이 종목코드의 기업은? 📈', items: KR_TICKER, mode: 'ticker',
                 emoji: '📈', sub: '종목코드로 기업 맞히기', grad: 'linear-gradient(135deg,#4facfe,#00f2fe)' },
-    usTicker: { title: '해외 주식 티커',   question: '이 티커의 기업은? 📈',     items: US_TICKER, mode: 'ticker',
+    usTicker: { title: '티커',            question: '이 티커의 기업은? 📈',     items: US_TICKER, mode: 'ticker',
                 emoji: '🌎', sub: '티커로 기업 맞히기', grad: 'linear-gradient(135deg,#a06bff,#6a3093)' },
-    cast:     { title: '출연자 맞히기',    question: '이 출연자는 누구일까요? 🤔', items: CAST,
+    cast:     { title: 'HS 출연자',       question: '이 출연자는 누구일까요? 🤔', items: CAST,
                 emoji: '🎬', sub: '사진 속 출연자의 이름은?', grad: 'linear-gradient(135deg,#ff9966,#ff5e62)' },
     foreignM: { title: '해외 남자 스타',   question: '이 사람은 누구일까요? 🎬', items: FOREIGN_M,
                 emoji: '🎩', sub: '사진 속 해외 스타는?', grad: 'linear-gradient(135deg,#11998e,#38ef7d)' },
@@ -876,11 +885,11 @@
                 emoji: '🏅', sub: '사진 속 선수는?', grad: 'linear-gradient(135deg,#f7971e,#ffd200)' },
     sportsF:  { title: '해외 운동선수',   question: '이 선수는 누구일까요? 🏅', items: SPORTS_F,
                 emoji: '🌍', sub: '사진 속 선수는?', grad: 'linear-gradient(135deg,#2193b0,#6dd5ed)' },
-    pager:    { title: '암호·신조어 퀴즈', question: '이 암호·신조어의 뜻은? 📟', items: PAGER, mode: 'ticker',
+    pager:    { title: '암호, 신조어',  question: '이 암호·신조어의 뜻은? 📟', items: PAGER, mode: 'ticker',
                 emoji: '📟', sub: '뜻을 맞혀보세요', grad: 'linear-gradient(135deg,#654ea3,#eaafc8)' },
-    role:     { title: '배역 이름 맞히기', question: '이 배역의 이름은? 🎭', items: ROLE,
+    role:     { title: '등장인물',      question: '이 배역의 이름은? 🎭', items: ROLE,
                 emoji: '🎭', sub: '사진 속 배역은?', grad: 'linear-gradient(135deg,#8e2de2,#4a00e0)' },
-    quote:    { title: '명대사 맞히기',   question: '이 명장면의 명대사는? 💬', items: QUOTE,
+    quote:    { title: '명대사',          question: '이 명장면의 명대사는? 💬', items: QUOTE,
                 emoji: '💬', sub: '사진 속 명대사는?', grad: 'linear-gradient(135deg,#ff512f,#dd2476)' },
   };
 
