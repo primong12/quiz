@@ -121,7 +121,8 @@
   .audio-display { font-size: 56px; font-weight: 900; color: #fff; text-align: center; line-height: 1.3; }
   .audio-display .audio-hint { display: block; font-size: 18px; opacity: .8; margin-top: 10px; font-weight: 600; }
   .audio-bar { width: 80%; max-width: 420px; height: 12px; background: rgba(255,255,255,.25); border-radius: 99px; margin: 26px auto 0; overflow: hidden; }
-  .audio-bar-fill { height: 100%; width: 0; background: #fff; border-radius: 99px; transition: width .2s linear; }
+  .audio-bar-fill { height: 100%; width: 0; background: #fff; border-radius: 99px; }
+  .audio-time { display: block; font-size: 24px; font-weight: 800; opacity: .92; margin-top: 14px; }
   .lp { width: 320px; height: 320px; max-width: 60vh; max-height: 60vh; border-radius: 50%; margin: 0 auto; position: relative;
     aspect-ratio: 1; animation: lpspin 2.6s linear infinite; box-shadow: 0 14px 44px rgba(0,0,0,.55);
     background: repeating-radial-gradient(circle at center, #181818 0px, #181818 3px, #2a2a2a 4px, #181818 5px); }
@@ -451,7 +452,7 @@
              onload="this.style.display='block'; document.getElementById('photoLoading').style.display='none';"
              onerror="document.getElementById('photoLoading').textContent='사진을 불러오지 못했어요 (인터넷 확인)';">
         <div id="tickerDisplay" class="ticker-display" style="display:none"></div>
-        <div id="audioDisplay" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스: 정지·재생</span><div class="audio-bar"><div class="audio-bar-fill"></div></div></div>
+        <div id="audioDisplay" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스: 정지·재생</span><div class="audio-bar"><div class="audio-bar-fill"></div></div><span class="audio-time">0:00 / 0:30</span></div>
       </div>
       <audio id="songAudio"></audio>
       <div class="answer-area">
@@ -500,7 +501,7 @@
         <div class="pres-mediabox" id="presPhotoBox">
           <img id="presPhoto" alt="">
           <div id="presTicker" class="pres-ticker" style="display:none"></div>
-          <div id="presAudioDisp" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스: 정지·재생</span><div class="audio-bar"><div class="audio-bar-fill"></div></div></div>
+          <div id="presAudioDisp" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스: 정지·재생</span><div class="audio-bar"><div class="audio-bar-fill"></div></div><span class="audio-time">0:00 / 0:30</span></div>
         </div>
         <div id="presQ"></div>
       </div>
@@ -535,7 +536,7 @@
     <div class="aud-photo-box" id="audPhotoBox">
       <img id="audPhoto" alt="">
       <div id="audTicker" style="display:none"></div>
-      <div id="audAudioDisp" class="audio-display" style="display:none"><div class="lp"><div class="lp-label"></div></div><div class="audio-bar" style="margin-top:30px"><div class="audio-bar-fill"></div></div></div>
+      <div id="audAudioDisp" class="audio-display" style="display:none"><div class="lp"><div class="lp-label"></div></div><div class="audio-bar" style="margin-top:30px"><div class="audio-bar-fill"></div></div><span class="audio-time" style="color:#fff">0:00 / 0:30</span></div>
     </div>
     <div class="aud-reveal" id="audReveal">
       <div class="logo-box" id="audLogoBox"><img id="audLogo" alt=""></div>
@@ -1685,6 +1686,10 @@
     var p = Math.min(100, (sa.currentTime || 0) / dur * 100);
     var fills = document.querySelectorAll('.audio-bar-fill');
     for (var i = 0; i < fills.length; i++) fills[i].style.width = p + '%';
+    var fmt = function (s) { var m = Math.floor(s / 60), ss = Math.floor(s % 60); return m + ':' + (ss < 10 ? '0' : '') + ss; };
+    var txt = fmt(sa.currentTime || 0) + ' / ' + fmt(dur);
+    var times = document.querySelectorAll('.audio-time');
+    for (var j = 0; j < times.length; j++) times[j].textContent = txt;
   }, 100);
 </script>
 </body>
