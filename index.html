@@ -120,6 +120,8 @@
   .loading { color: #aaa; font-size: 14px; }
   .audio-display { font-size: 56px; font-weight: 900; color: #fff; text-align: center; line-height: 1.3; }
   .audio-display .audio-hint { display: block; font-size: 18px; opacity: .8; margin-top: 10px; font-weight: 600; }
+  .audio-bar { width: 80%; max-width: 420px; height: 12px; background: rgba(255,255,255,.25); border-radius: 99px; margin: 26px auto 0; overflow: hidden; }
+  .audio-bar-fill { height: 100%; width: 0; background: #fff; border-radius: 99px; transition: width .2s linear; }
   /* 티커 표시 (사진 대신 종목코드/티커를 크게) */
   .photo-box.ticker-mode { aspect-ratio: auto; height: auto; min-height: 160px;
     background: linear-gradient(135deg,#1e2746,#2d3a6b); box-shadow: none; }
@@ -439,7 +441,7 @@
              onload="this.style.display='block'; document.getElementById('photoLoading').style.display='none';"
              onerror="document.getElementById('photoLoading').textContent='사진을 불러오지 못했어요 (인터넷 확인)';">
         <div id="tickerDisplay" class="ticker-display" style="display:none"></div>
-        <div id="audioDisplay" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스: 정지·재생</span></div>
+        <div id="audioDisplay" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스: 정지·재생</span><div class="audio-bar"><div class="audio-bar-fill"></div></div></div>
       </div>
       <audio id="songAudio"></audio>
       <div class="answer-area">
@@ -488,7 +490,7 @@
         <div class="pres-mediabox" id="presPhotoBox">
           <img id="presPhoto" alt="">
           <div id="presTicker" class="pres-ticker" style="display:none"></div>
-          <div id="presAudioDisp" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스: 정지·재생</span></div>
+          <div id="presAudioDisp" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스: 정지·재생</span><div class="audio-bar"><div class="audio-bar-fill"></div></div></div>
         </div>
         <div id="presQ"></div>
       </div>
@@ -523,7 +525,7 @@
     <div class="aud-photo-box" id="audPhotoBox">
       <img id="audPhoto" alt="">
       <div id="audTicker" style="display:none"></div>
-      <div id="audAudioDisp" class="audio-display" style="display:none">🎵<br>노래가 재생되고 있어요</div>
+      <div id="audAudioDisp" class="audio-display" style="display:none">🎵<br>노래가 재생되고 있어요<div class="audio-bar"><div class="audio-bar-fill"></div></div></div>
     </div>
     <div class="aud-reveal" id="audReveal">
       <div class="logo-box" id="audLogoBox"><img id="audLogo" alt=""></div>
@@ -1332,7 +1334,7 @@
       photoBox.classList.add('ticker-mode');
       photo.style.display = 'none'; loading.style.display = 'none'; ticker.style.display = 'none';
       audioDisp.style.display = 'block';
-      var sa = document.getElementById('songAudio'); sa.src = it.preview; sa.play().catch(function () {});
+      var sa = document.getElementById('songAudio'); if (sa.dataset.cur !== it.preview) { sa.dataset.cur = it.preview; sa.src = it.preview; sa.play().catch(function () {}); }
     } else if (cur.mode === 'ticker') {
       audioDisp.style.display = 'none';
       photoBox.classList.add('ticker-mode');
@@ -1493,7 +1495,7 @@
     if (mode === 'audio') {
       box.classList.add('ticker'); img.style.display = 'none'; ticker.style.display = 'none';
       if (audioDisp) audioDisp.style.display = 'block';
-      if (doPlay) { var a = document.getElementById('songAudio'); a.src = it.preview; a.play().catch(function () {}); }
+      if (doPlay) { var a = document.getElementById('songAudio'); if (a.dataset.cur !== it.preview) { a.dataset.cur = it.preview; a.src = it.preview; a.play().catch(function () {}); } }
     } else if (mode === 'ticker') {
       box.classList.add('ticker'); img.style.display = 'none';
       ticker.style.display = 'block'; ticker.textContent = it.q;
@@ -1666,6 +1668,13 @@
   });
   markVisited();
   updateHomeScore();
+  (function () {
+    var sa = document.getElementById('songAudio');
+    if (sa) sa.addEventListener('timeupdate', function () {
+      var p = sa.duration ? (sa.currentTime / sa.duration * 100) : 0;
+      document.querySelectorAll('.audio-bar-fill').forEach(function (f) { f.style.width = p + '%'; });
+    });
+  })();
 </script>
 </body>
 </html>
