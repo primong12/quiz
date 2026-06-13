@@ -1653,6 +1653,7 @@
           if (d.type === 'exit') { window.close(); return; }
           if (d.type === 'home') { if (d.visited) { visited = new Set(d.visited); } if (d.g !== undefined) growthScore = d.g; if (d.v !== undefined) valueScore = d.v; show('home'); markVisited(); updateHomeScore(); return; }
           if (d.type === 'slot') { showSlotMirror(d); return; }
+          if (d.type === 'songtime') { applySongTime(d.cur, d.dur); return; }
           if (d.type === 'state') { renderAudience(d); }
         };
         BC.postMessage({ type: 'request' });
@@ -1679,22 +1680,21 @@
   });
   markVisited();
   updateHomeScore();
-  var __songTick = 0;
-  setInterval(function () {
-    __songTick++;
-    var sa = document.getElementById('songAudio');
-    var times = document.querySelectorAll('.audio-time');
-    var fills = document.querySelectorAll('.audio-bar-fill');
+  function applySongTime(cur, dur) {
+    var p = Math.min(100, cur / dur * 100);
     var fmt = function (s) { var m = Math.floor(s / 60), ss = Math.floor(s % 60); return m + ':' + (ss < 10 ? '0' : '') + ss; };
-    if (sa && sa.src && sa.currentTime > 0) {
-      var dur = (sa.duration && isFinite(sa.duration) && sa.duration > 0) ? sa.duration : 30;
-      var cur = sa.currentTime;
-      var p = Math.min(100, cur / dur * 100);
-      for (var i = 0; i < fills.length; i++) fills[i].style.width = p + '%';
-      for (var j = 0; j < times.length; j++) times[j].textContent = fmt(cur) + ' / ' + fmt(dur);
-    } else {
-      for (var k = 0; k < times.length; k++) times[k].textContent = '준비중 (' + __songTick + ')';
-    }
+    var txt = fmt(cur) + ' / ' + fmt(dur);
+    var fills = document.querySelectorAll('.audio-bar-fill');
+    for (var i = 0; i < fills.length; i++) fills[i].style.width = p + '%';
+    var times = document.querySelectorAll('.audio-time');
+    for (var j = 0; j < times.length; j++) times[j].textContent = txt;
+  }
+  setInterval(function () {
+    var sa = document.getElementById('songAudio');
+    if (!sa || !sa.src || !(sa.currentTime > 0)) return;
+    var dur = (sa.duration && isFinite(sa.duration) && sa.duration > 0) ? sa.duration : 30;
+    applySongTime(sa.currentTime, dur);
+    if (BC) BC.postMessage({ type: 'songtime', cur: sa.currentTime, dur: dur });
   }, 100);
 </script>
 </body>
