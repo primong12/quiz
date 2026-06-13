@@ -48,16 +48,16 @@
 
   .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 13px; }
   .card {
-    border-radius: 22px; padding: 18px 22px; min-height: 132px;
+    border-radius: 22px; padding: 16px 18px; min-height: 108px;
     color: #fff; cursor: pointer; position: relative; overflow: hidden;
-    display: flex; flex-direction: column; justify-content: space-between;
+    display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 14px; text-align: center;
     box-shadow: 0 10px 24px rgba(0,0,0,.18);
     transition: transform .15s ease, box-shadow .15s ease;
   }
   .card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 16px 32px rgba(0,0,0,.28); }
   .card:active { transform: translateY(-1px) scale(.99); }
-  .card .emoji { font-size: 46px; }
-  .card .title { font-size: 22px; font-weight: 800; margin-top: 8px; }
+  .card .emoji { font-size: 50px; flex-shrink: 0; }
+  .card .title { font-size: 28px; font-weight: 800; line-height: 1.2; }
   .card .sub { display: none; }
   .c1 { background: linear-gradient(135deg,#f857a6,#ff5858); }
   .c2 { background: linear-gradient(135deg,#43cea2,#185a9d); }
