@@ -267,6 +267,8 @@
   /* 관객 화면 (빔프로젝터) */
   body.audience-mode { align-items: center; padding: 14px; }
   body.audience-mode .wrap { max-width: 96vw; }
+  body.audience-mode #home .card { pointer-events: none; }
+  body.audience-mode .random-btn, body.audience-mode .present-toggle, body.audience-mode .admin-link { display: none; }
   #audience { text-align: center; color: #fff; width: 100%; }
   .aud-progress { font-size: 22px; font-weight: 800; margin-bottom: 12px; text-shadow: 0 2px 8px rgba(0,0,0,.3); }
   .aud-photo-box { height: min(76vh, 900px); aspect-ratio: 4/3; width: auto; max-width: 100%; margin: 0 auto;
@@ -312,7 +314,7 @@
       <h1>엘리트 클럽 퀴즈</h1>
       <p>도전할 퀴즈를 골라보세요!</p>
       <div><button class="random-btn" onclick="randomStart()">🎰 랜덤 시작</button></div>
-      <label class="present-toggle"><input type="checkbox" id="presentChk"> 🎤 발표 모드 (빔프로젝터·듀얼모니터)</label>
+      <label class="present-toggle"><input type="checkbox" id="presentChk" onchange="togglePresent(this.checked)"> 🎤 발표 모드 (빔프로젝터·듀얼모니터)</label>
     </div>
     <div class="grid">
       <div class="card c1 checked" onclick="startQuiz('ceo')">
@@ -1059,11 +1061,21 @@
   }
 
   function startQuiz(key) {
-    const chk = document.getElementById('presentChk');
-    if (chk && chk.checked) { startPresent(key); return; }
+    if (presSessionOn) { startPresent(key); return; }
     cur = QUIZZES[key]; idx = 0; show('quiz'); renderQuestion();
   }
-  function goHome() { show('home'); }
+  function goHome() { show('home'); if (presSessionOn) broadcastHome(); }
+
+  function openAudience() {
+    if (audienceWin && !audienceWin.closed) { audienceWin.focus(); return; }
+    audienceWin = window.open(location.pathname + '?view=audience', 'quizAudience', 'width=1100,height=760');
+  }
+  function togglePresent(on) {
+    presSessionOn = on;
+    if (on) { openAudience(); }
+    else { presMode = false; if (audienceWin && !audienceWin.closed) audienceWin.close(); audienceWin = null; }
+  }
+  function broadcastHome() { if (BC) BC.postMessage({ type: 'home' }); }
   function comingSoon() { alert('이 퀴즈는 곧 만나요! 😊'); }
 
   // 랜덤 슬롯: 퀴즈 목록이 돌아가다 1개 선택 후 시작
@@ -1194,12 +1206,13 @@
   let presMode = false, presKey = 'ceo', presIntro = true, presRevealed = false, presDone = false, audienceWin = null;
   let growthScore = 0, valueScore = 0, pickedTeam = null;
   let audioCtx = null;
+  let presSessionOn = false;
 
   function startPresent(key) {
     presKey = key; cur = QUIZZES[key]; idx = 0;
     presIntro = true; presRevealed = false; presDone = false; presMode = true;
     growthScore = 0; valueScore = 0; pickedTeam = null;
-    audienceWin = window.open(location.pathname + '?view=audience', 'quizAudience', 'width=1100,height=760');
+    if (!audienceWin || audienceWin.closed) openAudience();
     renderPresenter();   // 표지(준비) 화면부터
     broadcast();
   }
@@ -1227,9 +1240,8 @@
   }
   function exitPresent() {
     presMode = false;
-    if (BC) BC.postMessage({ type: 'exit' });
-    if (audienceWin && !audienceWin.closed) audienceWin.close();
     show('home');
+    if (presSessionOn) broadcastHome();   // 관객도 메인으로 (빔 창은 유지)
   }
 
   function pickTeam(team) {
@@ -1419,13 +1431,22 @@
     const isAudience = new URLSearchParams(location.search).get('view') === 'audience';
     if (isAudience) {
       document.body.classList.add('audience-mode');
-      show('audience');
+      show('home');   // 초기엔 메인(선택화면) 미러
       if (BC) {
-        BC.onmessage = function (e) { renderAudience(e.data); };
-        BC.postMessage({ type: 'request' });   // 발표자에게 현재 상태 요청
+        BC.onmessage = function (e) {
+          const d = e.data; if (!d) return;
+          if (d.type === 'exit') { window.close(); return; }
+          if (d.type === 'home') { show('home'); return; }
+          if (d.type === 'state') { renderAudience(d); }
+        };
+        BC.postMessage({ type: 'request' });
       }
     } else if (BC) {
-      BC.onmessage = function (e) { if (e.data && e.data.type === 'request') broadcast(); };
+      BC.onmessage = function (e) {
+        if (e.data && e.data.type === 'request') {
+          if (presMode && !presDone) broadcast(); else broadcastHome();
+        }
+      };
     }
   })();
 
