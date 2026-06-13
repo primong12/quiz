@@ -1203,7 +1203,15 @@
 
   // 키보드: 발표자 화면에서만 동작
   document.addEventListener('keydown', function (e) {
-    if (!presMode) return;
+    if (!presMode) {
+      // 일반 모드: 퀴즈 화면에서 Enter로 정답 보기 / 다음 문제
+      if (document.getElementById('quiz').classList.contains('active') && e.key === 'Enter') {
+        e.preventDefault();
+        if (document.getElementById('reveal').classList.contains('show')) nextQuestion();
+        else showAnswer();
+      }
+      return;
+    }
     if (e.key === 'Enter' || e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); presAdvance(); }
     else if (e.key === 'ArrowLeft') { e.preventDefault(); presBack(); }
     else if (e.key === '1') { e.preventDefault(); pickTeam('growth'); }
