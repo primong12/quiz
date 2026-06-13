@@ -318,9 +318,9 @@
         <div class="emoji">🎭</div>
         <div><div class="title">등장인물</div><div class="sub">사진 속 배역은?</div></div>
       </div>
-      <div class="card c14 soon" onclick="comingSoon()">
+      <div class="card c14" onclick="startQuiz('charL')">
         <div class="emoji">🧸</div>
-        <div><div class="title">캐릭터 (하)</div><div class="sub">준비 중 🔒</div></div>
+        <div><div class="title">캐릭터 (하)</div><div class="sub">사진 속 캐릭터는?</div></div>
       </div>
       <div class="card c15 soon" onclick="comingSoon()">
         <div class="emoji">📺</div>
@@ -943,6 +943,36 @@
     { photo: 'images/quote26.jpg', company: "I am Iron Man", ceo: "〈어벤져스: 엔드게임〉 (2019)" },
   ];
 
+  const CHAR_L = [
+    { photo: 'images/chl01.webp', company: '피카츄', ceo: '〈포켓몬스터〉' },
+    { photo: 'images/chl02.jpg', company: '채치수', ceo: '〈슬램덩크〉' },
+    { photo: 'images/chl03.webp', company: 'L', ceo: '〈데스노트〉' },
+    { photo: 'images/chl04.jpg', company: '네티', ceo: '〈천사소녀 네티〉' },
+    { photo: 'images/chl05.jpg', company: '김전일 (긴다이치 하지메)', ceo: '〈소년탐정 김전일〉' },
+    { photo: 'images/chl06.jpg', company: '아톰', ceo: '〈우주소년 아톰〉' },
+    { photo: 'images/chl07.jpg', company: '아리', ceo: '〈닥터슬럼프〉' },
+    { photo: 'images/chl08.webp', company: '손오천', ceo: '〈드래곤볼〉' },
+    { photo: 'images/chl09.webp', company: '메텔', ceo: '〈은하철도 999〉' },
+    { photo: 'images/chl10.webp', company: '밍키', ceo: '〈요술공주 밍키〉' },
+    { photo: 'images/chl11.webp', company: '왕눈이', ceo: '〈개구리 왕눈이〉' },
+    { photo: 'images/chl12.webp', company: '케로로', ceo: '〈개구리 중사 케로로〉' },
+    { photo: 'images/chl13.jpg', company: '앤', ceo: '〈빨강머리 앤〉' },
+    { photo: 'images/chl14.webp', company: '나애리', ceo: '〈달려라 하니〉' },
+    { photo: 'images/chl15.webp', company: '머털', ceo: '〈머털도사〉' },
+    { photo: 'images/chl16.webp', company: '사오정', ceo: '〈날아라 슈퍼보드〉' },
+    { photo: 'images/chl17.webp', company: '이기영', ceo: '〈검정고무신〉' },
+    { photo: 'images/chl18.webp', company: '포비', ceo: '〈미래소년 코난〉' },
+    { photo: 'images/chl19.webp', company: '고길동', ceo: '〈아기공룡 둘리〉' },
+    { photo: 'images/chl20.webp', company: '미키마우스', ceo: '〈미키마우스〉' },
+    { photo: 'images/chl21.webp', company: '도라에몽', ceo: '〈도라에몽〉' },
+    { photo: 'images/chl22.webp', company: '무파사', ceo: '〈라이온 킹〉' },
+    { photo: 'images/chl23.webp', company: '엘사', ceo: '〈겨울왕국〉' },
+    { photo: 'images/chl24.jpg', company: '형사 가제트', ceo: '〈형사 가제트〉' },
+    { photo: 'images/chl25.webp', company: '오영심', ceo: '〈영심이〉' },
+    { photo: 'images/chl26.webp', company: '톰', ceo: '〈톰과 제리〉' },
+    { photo: 'images/chl27.jpg', company: '마징가Z', ceo: '〈마징가 Z〉' },
+  ];
+
   const QUIZZES = {
     ceo:      { title: 'CEO',             question: '이 분이 이끄는 기업은? 🤔', items: CEO_QUIZ,
                 emoji: '👔', sub: '사진 속 CEO의 기업을 맞혀보세요', grad: 'linear-gradient(135deg,#f857a6,#ff5858)' },
@@ -970,6 +1000,8 @@
                 emoji: '🎭', sub: '사진 속 배역은?', grad: 'linear-gradient(135deg,#8e2de2,#4a00e0)' },
     quote:    { title: '명대사',          question: '이 명장면의 명대사는? 💬', items: QUOTE,
                 emoji: '💬', sub: '사진 속 명대사는?', grad: 'linear-gradient(135deg,#ff512f,#dd2476)' },
+    charL:    { title: '캐릭터 (하)',    question: '이 캐릭터의 이름은? 🧸', items: CHAR_L,
+                emoji: '🧸', sub: '사진 속 캐릭터는?', grad: 'linear-gradient(135deg,#909497,#566573)' },
   };
 
   let cur = QUIZZES.ceo;
@@ -994,7 +1026,7 @@
 
   function showAdmin() {
     let html = '';
-    for (const key of ['ceo', 'female', 'male', 'krTicker', 'usTicker', 'cast', 'foreignM', 'foreignF', 'sportsKR', 'sportsF', 'pager', 'role', 'quote']) {
+    for (const key of ['ceo', 'female', 'male', 'krTicker', 'usTicker', 'cast', 'foreignM', 'foreignF', 'sportsKR', 'sportsF', 'pager', 'role', 'quote', 'charL']) {
       const q = QUIZZES[key];
       const rows = q.items.map((it, i) => {
         let ans;
