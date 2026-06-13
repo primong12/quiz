@@ -63,6 +63,7 @@
   .card.soon { opacity: .72; filter: grayscale(.25); cursor: default; }
   .card.locked { cursor: not-allowed; }
   .card.checked::after { content: '✅'; position: absolute; top: 8px; right: 10px; font-size: 30px; filter: drop-shadow(0 2px 3px rgba(0,0,0,.35)); z-index: 2; }
+  .card .count-badge { position: absolute; top: 8px; left: 10px; background: rgba(0,0,0,.4); color: #fff; font-size: 14px; font-weight: 800; padding: 3px 10px; border-radius: 99px; z-index: 2; }
   .card.locked::after {
     content: '🔒 준비 중'; position: absolute; inset: 0;
     background: rgba(20,20,40,.55); color: #fff; font-weight: 700; font-size: 18px;
@@ -355,7 +356,7 @@
         <div class="emoji">🌍</div>
         <div><div class="title">해외 운동선수</div><div class="sub">사진 속 선수는?</div></div>
       </div>
-      <div class="card c13" onclick="startQuiz('quote')">
+      <div class="card c13 checked" onclick="startQuiz('quote')">
         <div class="emoji">💬</div>
         <div><div class="title">명대사</div><div class="sub">사진 속 명대사는?</div></div>
       </div>
@@ -1377,6 +1378,18 @@
       BC.onmessage = function (e) { if (e.data && e.data.type === 'request') broadcast(); };
     }
   })();
+
+  // 고르는 화면 각 카드 좌상단에 문항 수 표시
+  document.querySelectorAll('#home .card').forEach(function (card) {
+    var oc = card.getAttribute('onclick') || '';
+    var mm = oc.match(/startQuiz\('(\w+)'\)/);
+    if (mm && QUIZZES[mm[1]]) {
+      var b = document.createElement('div');
+      b.className = 'count-badge';
+      b.textContent = QUIZZES[mm[1]].items.length + '문제';
+      card.appendChild(b);
+    }
+  });
 </script>
 </body>
 </html>
