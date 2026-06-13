@@ -382,9 +382,9 @@
         <div class="emoji">🎵</div>
         <div><div class="title">7080</div><div class="sub">노래를 듣고 맞혀요</div></div>
       </div>
-      <div class="card c19 soon" onclick="comingSoon()">
+      <div class="card c19" onclick="startQuiz('y2k')">
         <div class="emoji">🕹️</div>
-        <div><div class="title">Y2K</div><div class="sub">준비 중 🔒</div></div>
+        <div><div class="title">Y2K</div><div class="sub">노래를 듣고 맞혀요</div></div>
       </div>
       <div class="card c17" onclick="startQuiz('econ')">
         <div class="emoji">📊</div>
@@ -1143,6 +1143,10 @@
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/ca/75/ae/ca75ae95-4e60-5de8-a03d-bf62538c8cc3/mzaf_13816739955672336971.plus.aac.p.m4a", company: "님은 먼 곳에", ceo: "김추자" },
   ];
 
+  const SONG_Y2K = [
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/e2/6f/ee/e26feea5-5b5b-98e7-a969-ea18491b790e/mzaf_9114597391113564647.plus.aac.p.m4a", company: "광화문 연가", ceo: "이문세" },
+  ];
+
   const QUIZZES = {
     ceo:      { title: 'CEO',             question: '이 분이 이끄는 기업은? 🤔', items: CEO_QUIZ,
                 emoji: '👔', sub: '사진 속 CEO의 기업을 맞혀보세요', grad: 'linear-gradient(135deg,#f857a6,#ff5858)' },
@@ -1176,6 +1180,8 @@
                 emoji: '📊', sub: '용어의 뜻은?', grad: 'linear-gradient(135deg,#f7b733,#fc4a1a)' },
     song:     { title: '7080',           question: '이 노래의 제목은? 🎵', items: SONG, mode: 'audio',
                 emoji: '🎵', sub: '노래를 듣고 맞혀요', grad: 'linear-gradient(135deg,#c471f5,#fa71cd)' },
+    y2k:      { title: 'Y2K',             question: '이 노래의 제목은? 🎵', items: SONG_Y2K, mode: 'audio',
+                emoji: '🕹️', sub: '노래를 듣고 맞혀요', grad: 'linear-gradient(135deg,#fc466b,#3f5efb)' },
   };
 
   let cur = QUIZZES.ceo;
@@ -1270,7 +1276,7 @@
 
   function showAdmin() {
     let html = '';
-    for (const key of ['ceo', 'female', 'male', 'krTicker', 'usTicker', 'cast', 'foreignM', 'foreignF', 'sportsKR', 'sportsF', 'role', 'quote', 'charL', 'landmark', 'econ', 'song']) {
+    for (const key of ['ceo', 'female', 'male', 'krTicker', 'usTicker', 'cast', 'foreignM', 'foreignF', 'sportsKR', 'sportsF', 'role', 'quote', 'charL', 'landmark', 'econ', 'song', 'y2k']) {
       const q = QUIZZES[key];
       const rows = q.items.map((it, i) => {
         let ans;
