@@ -80,6 +80,7 @@
   .c13 { background: linear-gradient(135deg,#ff512f,#dd2476); }
   .c16 { background: linear-gradient(135deg,#36d1dc,#5b86e5); }
   .c17 { background: linear-gradient(135deg,#f7b733,#fc4a1a); }
+  .c18 { background: linear-gradient(135deg,#c471f5,#fa71cd); }
   .c14 { background: linear-gradient(135deg,#909497,#566573); }
   .c15 { background: linear-gradient(135deg,#8d7b68,#544a3d); }
   .card.soon { opacity: .72; filter: grayscale(.25); cursor: default; }
@@ -117,6 +118,8 @@
   }
   .photo-box img { width: 100%; height: 100%; object-fit: contain; }
   .loading { color: #aaa; font-size: 14px; }
+  .audio-display { font-size: 56px; font-weight: 900; color: #fff; text-align: center; line-height: 1.3; }
+  .audio-display .audio-hint { display: block; font-size: 18px; opacity: .8; margin-top: 10px; font-weight: 600; }
   /* 티커 표시 (사진 대신 종목코드/티커를 크게) */
   .photo-box.ticker-mode { aspect-ratio: auto; height: auto; min-height: 160px;
     background: linear-gradient(135deg,#1e2746,#2d3a6b); box-shadow: none; }
@@ -405,6 +408,10 @@
         <div class="emoji">📊</div>
         <div><div class="title">경제·투자 용어</div><div class="sub">용어의 뜻은?</div></div>
       </div>
+      <div class="card c18" onclick="startQuiz('song')">
+        <div class="emoji">🎵</div>
+        <div><div class="title">노래 맞히기</div><div class="sub">노래를 듣고 맞혀요</div></div>
+      </div>
     </div>
     <div class="admin-link"><button onclick="showAdmin()">🔧 관리자</button></div>
   </section>
@@ -432,7 +439,9 @@
              onload="this.style.display='block'; document.getElementById('photoLoading').style.display='none';"
              onerror="document.getElementById('photoLoading').textContent='사진을 불러오지 못했어요 (인터넷 확인)';">
         <div id="tickerDisplay" class="ticker-display" style="display:none"></div>
+        <div id="audioDisplay" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스: 정지·재생</span></div>
       </div>
+      <audio id="songAudio"></audio>
       <div class="answer-area">
         <div class="reveal" id="reveal">
           <div class="logo-box" id="logoBox"><img id="companyLogo" alt="기업 로고"></div>
@@ -479,6 +488,7 @@
         <div class="pres-mediabox" id="presPhotoBox">
           <img id="presPhoto" alt="">
           <div id="presTicker" class="pres-ticker" style="display:none"></div>
+          <div id="presAudioDisp" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스: 정지·재생</span></div>
         </div>
         <div id="presQ"></div>
       </div>
@@ -513,6 +523,7 @@
     <div class="aud-photo-box" id="audPhotoBox">
       <img id="audPhoto" alt="">
       <div id="audTicker" style="display:none"></div>
+      <div id="audAudioDisp" class="audio-display" style="display:none">🎵<br>노래가 재생되고 있어요</div>
     </div>
     <div class="aud-reveal" id="audReveal">
       <div class="logo-box" id="audLogoBox"><img id="audLogo" alt=""></div>
@@ -1119,6 +1130,39 @@
     { q: "버블", answer: "실제 가치보다 부풀려진 거품" },
   ];
 
+  const SONG = [
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/21/da/0a/21da0a6a-d9d5-8ca8-8b84-c916a0725aa7/mzaf_14964076629808944061.plus.aac.p.m4a", company: "사랑은 늘 도망가", ceo: "임영웅" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/e9/40/15/e940150d-0cde-c74e-893c-ddab87f921c7/mzaf_17571703730484332698.plus.aac.p.m4a", company: "좋은 날", ceo: "아이유" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/ff/16/f7/ff16f7fb-4381-f30d-003c-0246ca04ba7b/mzaf_15287705409035931194.plus.aac.p.m4a", company: "그대 발길이 머무는 곳에", ceo: "조용필" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/e5/a7/44/e5a744f0-5e4c-45b7-a500-9ef79c59343c/mzaf_17210876166294494869.plus.aac.p.m4a", company: "서른 즈음에", ceo: "김광석" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/e2/6f/ee/e26feea5-5b5b-98e7-a969-ea18491b790e/mzaf_9114597391113564647.plus.aac.p.m4a", company: "광화문 연가", ceo: "이문세" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/d6/7b/24/d67b246d-9a39-6796-b40b-79662464224a/mzaf_8829003572260761887.plus.aac.p.m4a", company: "보이지 않는 사랑", ceo: "신승훈" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/53/6a/f3/536af32f-13d3-c184-57b4-f350f80d251c/mzaf_5318198812174015654.plus.aac.p.m4a", company: "거짓말", ceo: "god" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/52/9d/8e/529d8e7c-6daa-3284-5239-007cd7489d57/mzaf_11871617255773568729.plus.aac.p.m4a", company: "그런 사람 또 없습니다", ceo: "이승철" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/b2/98/05/b2980550-df52-b634-083a-416fd5c3d8ee/mzaf_12343801191932917548.plus.aac.p.m4a", company: "네버엔딩스토리", ceo: "부활" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/59/7b/be/597bbec0-e892-7069-6c9b-d84af1ecb173/mzaf_8740762921626122907.plus.aac.p.m4a", company: "거짓말", ceo: "빅뱅" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/c6/9e/fa/c69efa2d-cac1-a131-39c6-a2b98a70d245/mzaf_10391037118527938646.plus.aac.p.m4a", company: "Gee", ceo: "소녀시대" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/e7/c7/b7/e7c7b7cb-f845-8863-95f0-469eb25359c0/mzaf_12411128261620647858.plus.aac.p.m4a", company: "테스형", ceo: "나훈아" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/75/e3/fb/75e3fbe4-f301-4a83-2744-aa8cce471cc3/mzaf_16131889593201457764.plus.aac.p.m4a", company: "남자는 배 여자는 항구", ceo: "심수봉" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/38/fb/05/38fb0578-c32f-5fba-80ae-a72be35784d6/mzaf_15822574434953244220.plus.aac.p.m4a", company: "그것만이 내 세상", ceo: "들국화" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/b0/ea/85/b0ea850d-881f-69e7-bf00-9b562b432582/mzaf_14159311126904900939.plus.aac.p.m4a", company: "잘못된 만남", ceo: "김건모" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/33/bd/92/33bd9227-55e8-776e-9bf1-d5b49e0495e3/mzaf_2579457300533113674.plus.aac.p.m4a", company: "좋은 사람", ceo: "토이" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/df/17/3c/df173c1c-3d13-971c-1476-72dc7b010d7e/mzaf_12254722545518746256.plus.aac.p.m4a", company: "다행이다", ceo: "이적" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/7e/85/24/7e852442-0f34-49f5-dead-b35850f62189/mzaf_15323070878610035438.plus.aac.p.m4a", company: "벌써 일년", ceo: "브라운아이즈" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/7f/cb/ae/7fcbae10-e463-ca59-2094-81cf875e199e/mzaf_3664734411788512450.plus.aac.p.m4a", company: "거리에서", ceo: "성시경" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/d6/0f/4e/d60f4e7a-54ac-61a2-7a31-2cf08d868620/mzaf_17699761827889300613.plus.aac.p.m4a", company: "야생화", ceo: "박효신" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/51/29/f4/5129f4ff-6ea4-a00a-a11b-c911713d9d70/mzaf_10819770660885468929.plus.aac.p.m4a", company: "벚꽃 엔딩", ceo: "버스커 버스커" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/9d/79/02/9d790212-7f41-df5b-bd77-f93268a66cf8/mzaf_13528148262790830846.plus.aac.p.m4a", company: "우주를 줄게", ceo: "볼빨간사춘기" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/3b/f2/5c/3bf25cc9-a395-6858-1ef8-5c29956afaf6/mzaf_6007556042949037280.plus.aac.p.m4a", company: "Dynamite", ceo: "방탄소년단" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/27/ad/ca/27adca22-d3e7-50bb-9ea5-7a29c6ce4ac0/mzaf_1409044628709112202.plus.aac.p.m4a", company: "뚜두뚜두", ceo: "블랙핑크" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/8e/85/29/8e85291a-d894-9940-1942-6b284fa6c4b4/mzaf_14206141927925811767.plus.aac.p.m4a", company: "강남스타일", ceo: "싸이" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview113/v4/69/dc/e5/69dce59b-317d-aca4-1055-3d5a4b3bf71d/mzaf_1293278814483812758.plus.aac.p.m4a", company: "총 맞은 것처럼", ceo: "백지영" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/a4/b0/3b/a4b03b14-b2c6-9daa-9777-c6a79c66a6d8/mzaf_15561590852732394949.plus.aac.p.m4a", company: "만약에", ceo: "태연" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview124/v4/80/6a/49/806a4961-ecce-c090-e64d-5997490e86b8/mzaf_1241518945565148568.plus.aac.p.m4a", company: "여우비", ceo: "이선희" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview123/v4/12/9a/76/129a7669-aa7b-8d58-7b9e-5063ba7d69a5/mzaf_6533091214360330276.plus.aac.p.m4a", company: "보고 싶다", ceo: "김범수" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/79/ba/a1/79baa19e-bb5b-3a64-9561-ffe998b41e44/mzaf_1777193182644347843.plus.aac.p.m4a", company: "흩어진 나날들", ceo: "이수" },
+  ];
+
   const QUIZZES = {
     ceo:      { title: 'CEO',             question: '이 분이 이끄는 기업은? 🤔', items: CEO_QUIZ,
                 emoji: '👔', sub: '사진 속 CEO의 기업을 맞혀보세요', grad: 'linear-gradient(135deg,#f857a6,#ff5858)' },
@@ -1152,6 +1196,8 @@
                 emoji: '🏛️', sub: '사진 속 명소는?', grad: 'linear-gradient(135deg,#36d1dc,#5b86e5)' },
     econ:     { title: '경제·투자 용어',  question: '이 용어의 뜻은? 📊', items: ECON, mode: 'ticker',
                 emoji: '📊', sub: '용어의 뜻은?', grad: 'linear-gradient(135deg,#f7b733,#fc4a1a)' },
+    song:     { title: '노래 맞히기',     question: '이 노래의 제목은? 🎵', items: SONG, mode: 'audio',
+                emoji: '🎵', sub: '노래를 듣고 맞혀요', grad: 'linear-gradient(135deg,#c471f5,#fa71cd)' },
   };
 
   let cur = QUIZZES.ceo;
@@ -1168,7 +1214,7 @@
     if (presSessionOn) { startPresent(key); return; }
     cur = QUIZZES[key]; idx = 0; show('quiz'); renderQuestion();
   }
-  function goHome() { show('home'); markVisited(); updateHomeScore(); if (presSessionOn) broadcastHome(); }
+  function goHome() { var a=document.getElementById('songAudio'); if(a)a.pause(); show('home'); markVisited(); updateHomeScore(); if (presSessionOn) broadcastHome(); }
 
   function openAudience() {
     if (audienceWin && !audienceWin.closed) { audienceWin.focus(); return; }
@@ -1246,7 +1292,7 @@
 
   function showAdmin() {
     let html = '';
-    for (const key of ['ceo', 'female', 'male', 'krTicker', 'usTicker', 'cast', 'foreignM', 'foreignF', 'sportsKR', 'sportsF', 'pager', 'role', 'quote', 'charL', 'landmark', 'econ']) {
+    for (const key of ['ceo', 'female', 'male', 'krTicker', 'usTicker', 'cast', 'foreignM', 'foreignF', 'sportsKR', 'sportsF', 'pager', 'role', 'quote', 'charL', 'landmark', 'econ', 'song']) {
       const q = QUIZZES[key];
       const rows = q.items.map((it, i) => {
         let ans;
@@ -1281,19 +1327,22 @@
     const loading = document.getElementById('photoLoading');
     const ticker = document.getElementById('tickerDisplay');
 
-    if (cur.mode === 'ticker') {
-      // 사진 대신 티커/종목코드를 크게 표시
+    const audioDisp = document.getElementById('audioDisplay');
+    if (cur.mode === 'audio') {
       photoBox.classList.add('ticker-mode');
-      photo.style.display = 'none';
-      loading.style.display = 'none';
-      ticker.style.display = 'block';
-      ticker.textContent = it.q;
+      photo.style.display = 'none'; loading.style.display = 'none'; ticker.style.display = 'none';
+      audioDisp.style.display = 'block';
+      var sa = document.getElementById('songAudio'); sa.src = it.preview; sa.play().catch(function () {});
+    } else if (cur.mode === 'ticker') {
+      audioDisp.style.display = 'none';
+      photoBox.classList.add('ticker-mode');
+      photo.style.display = 'none'; loading.style.display = 'none';
+      ticker.style.display = 'block'; ticker.textContent = it.q;
     } else {
+      audioDisp.style.display = 'none';
       photoBox.classList.remove('ticker-mode');
-      ticker.style.display = 'none';
-      photo.style.display = 'none';
-      loading.style.display = 'block';
-      loading.textContent = '사진 불러오는 중…';
+      ticker.style.display = 'none'; photo.style.display = 'none';
+      loading.style.display = 'block'; loading.textContent = '사진 불러오는 중…';
       photo.src = it.photo;
     }
 
@@ -1377,6 +1426,7 @@
   }
   function exitPresent() {
     presMode = false;
+    var a = document.getElementById('songAudio'); if (a) a.pause();
     show('home');
     markVisited();
     updateHomeScore();
@@ -1439,14 +1489,24 @@
   }
 
   // 사진/티커 채우기 (발표자·관객 공용)
-  function fillMedia(box, img, ticker, it, mode) {
-    if (mode === 'ticker') {
+  function fillMedia(box, img, ticker, it, mode, audioDisp, doPlay) {
+    if (mode === 'audio') {
+      box.classList.add('ticker'); img.style.display = 'none'; ticker.style.display = 'none';
+      if (audioDisp) audioDisp.style.display = 'block';
+      if (doPlay) { var a = document.getElementById('songAudio'); a.src = it.preview; a.play().catch(function () {}); }
+    } else if (mode === 'ticker') {
       box.classList.add('ticker'); img.style.display = 'none';
       ticker.style.display = 'block'; ticker.textContent = it.q;
+      if (audioDisp) audioDisp.style.display = 'none';
     } else {
       box.classList.remove('ticker'); ticker.style.display = 'none';
       img.style.display = 'block'; img.src = it.photo;
+      if (audioDisp) audioDisp.style.display = 'none';
     }
+  }
+  function toggleSong() {
+    var a = document.getElementById('songAudio');
+    if (a.paused) a.play().catch(function () {}); else a.pause();
   }
 
   function renderPresenter() {
@@ -1476,7 +1536,7 @@
     const it = q.items[idx];
     document.getElementById('presProgress').textContent = (idx + 1) + ' / ' + q.items.length;
     fillMedia(document.getElementById('presPhotoBox'), document.getElementById('presPhoto'),
-              document.getElementById('presTicker'), it, q.mode);
+              document.getElementById('presTicker'), it, q.mode, document.getElementById('presAudioDisp'), true);
     document.getElementById('presQ').textContent = q.question;
 
     if (it.company !== undefined) {
@@ -1525,7 +1585,7 @@
     box.style.display = 'flex';
 
     const it = q.items[data.idx];
-    fillMedia(box, document.getElementById('audPhoto'), document.getElementById('audTicker'), it, q.mode);
+    fillMedia(box, document.getElementById('audPhoto'), document.getElementById('audTicker'), it, q.mode, document.getElementById('audAudioDisp'), false);
     document.getElementById('audProgress').textContent = (data.idx + 1) + ' / ' + q.items.length;
 
     if (data.revealed) {
@@ -1549,6 +1609,8 @@
   // 키보드: 발표자 화면에서만 동작
   document.addEventListener('keydown', function (e) {
     if (!presMode) {
+      var quizOn = document.getElementById('quiz').classList.contains('active');
+      if (quizOn && cur && cur.mode === 'audio' && e.key === ' ') { e.preventDefault(); toggleSong(); return; }
       // 일반 모드: 퀴즈 화면에서 Enter로 정답 보기 / 다음 문제
       if (e.key === 'Enter' && !e.isComposing && document.getElementById('quiz').classList.contains('active')) {
         e.preventDefault();
@@ -1558,6 +1620,7 @@
       }
       return;
     }
+    if (cur && cur.mode === 'audio' && !presIntro && !presDone && e.key === ' ') { e.preventDefault(); toggleSong(); return; }
     if (e.key === 'Enter' || e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); presAdvance(); }
     else if (e.key === 'ArrowLeft') { e.preventDefault(); presBack(); }
     else if (e.key === '1') { e.preventDefault(); pickTeam('growth'); }
