@@ -38,6 +38,12 @@
   .hs-team.value { background: linear-gradient(135deg,#eb3349,#f45c43); }
   .hs-team .hs-name { font-size: 15px; font-weight: 900; letter-spacing: 1px; }
   .hs-team .hs-num { font-size: 40px; font-weight: 900; line-height: 1; }
+  .hs-adj { display: none; justify-content: center; gap: 6px; margin-top: 8px; }
+  .hs-adj button { background: rgba(255,255,255,.25); border: 2px solid rgba(255,255,255,.9); color: #fff;
+    border-radius: 9px; padding: 3px 13px; font-weight: 900; font-size: 19px; line-height: 1; cursor: pointer; }
+  .hs-adj button:hover { background: rgba(255,255,255,.45); }
+  body.present-on .hs-adj { display: flex; }
+  body.audience-mode .hs-adj { display: none !important; }
   .random-btn { display: inline-block; background: linear-gradient(135deg,#ff6a00,#ee0979); color: #fff;
     border: none; border-radius: 99px; padding: 16px 44px; font-size: 23px; font-weight: 900; cursor: pointer;
     box-shadow: 0 10px 28px rgba(238,9,121,.45); margin: 18px 0 6px; transition: transform .15s ease;
@@ -343,7 +349,7 @@
   <!-- 메인 화면 -->
   <section id="home" class="screen active">
     <div class="hero-row">
-      <div class="hs-team growth"><div class="hs-name">GROWTH</div><div class="hs-num" id="homeScoreG">0</div></div>
+      <div class="hs-team growth"><div class="hs-name">GROWTH</div><div class="hs-num" id="homeScoreG">0</div><div class="hs-adj"><button onclick="addScore('growth',1)">＋</button><button onclick="addScore('growth',-1)">－</button></div></div>
       <div class="hero">
         <div class="crown">🏆</div>
         <h1>엘리트 클럽 퀴즈</h1>
@@ -351,7 +357,7 @@
         <div><button class="random-btn" onclick="randomStart()">🎰 랜덤 시작</button></div>
         <label class="present-toggle"><input type="checkbox" id="presentChk" onchange="togglePresent(this.checked)"> 🎤 발표 모드 (빔프로젝터·듀얼모니터)</label>
       </div>
-      <div class="hs-team value"><div class="hs-name">VALUE</div><div class="hs-num" id="homeScoreV">0</div></div>
+      <div class="hs-team value"><div class="hs-name">VALUE</div><div class="hs-num" id="homeScoreV">0</div><div class="hs-adj"><button onclick="addScore('value',1)">＋</button><button onclick="addScore('value',-1)">－</button></div></div>
     </div>
     <div class="grid">
       <div class="card c1" onclick="startQuiz('ceo')">
@@ -1226,6 +1232,7 @@
   }
   function togglePresent(on) {
     presSessionOn = on;
+    document.body.classList.toggle('present-on', on);
     if (on) { openAudience(); }
     else { presMode = false; if (audienceWin && !audienceWin.closed) audienceWin.close(); audienceWin = null; }
   }
@@ -1239,9 +1246,9 @@
   function addScore(team, d) {
     if (team === 'growth') growthScore = Math.max(0, growthScore + d);
     else valueScore = Math.max(0, valueScore + d);
-    if (presMode) renderPresenter();
     updateHomeScore();
-    broadcast();
+    if (presMode) { renderPresenter(); broadcast(); }
+    else if (presSessionOn) { broadcastHome(); }
   }
 
   function markVisited() {
