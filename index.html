@@ -1074,7 +1074,7 @@
 
   function openAudience() {
     if (audienceWin && !audienceWin.closed) { audienceWin.focus(); return; }
-    audienceWin = window.open(location.pathname + '?view=audience', 'quizAudience', 'width=1100,height=760');
+    audienceWin = window.open(location.pathname + '?view=audience&t=' + Date.now(), 'quizAudience', 'width=1100,height=760');
   }
   function togglePresent(on) {
     presSessionOn = on;
