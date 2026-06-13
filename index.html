@@ -1205,8 +1205,9 @@
   document.addEventListener('keydown', function (e) {
     if (!presMode) {
       // 일반 모드: 퀴즈 화면에서 Enter로 정답 보기 / 다음 문제
-      if (document.getElementById('quiz').classList.contains('active') && e.key === 'Enter') {
+      if (e.key === 'Enter' && !e.isComposing && document.getElementById('quiz').classList.contains('active')) {
         e.preventDefault();
+        if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
         if (document.getElementById('reveal').classList.contains('show')) nextQuestion();
         else showAnswer();
       }
