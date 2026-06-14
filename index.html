@@ -370,6 +370,21 @@
   #audSub { font-size: 24px; opacity: .9; margin-top: 8px; }
   @media (max-width: 760px) { .pres-main { grid-template-columns: 1fr; } #audTicker { font-size: 64px; } }
 
+  /* 관객(빔) 화면: 어떤 해상도에서도 창에 꽉 차고, 창 크기 따라 같이 커지고 작아지게 */
+  body.audience-mode { padding: 0; }
+  body.audience-mode .wrap { max-width: 100vw; width: 100vw; }
+  body.audience-mode #audience.active { display: flex; flex-direction: column; width: 100vw; height: 100vh; padding: 2vmin; box-sizing: border-box; }
+  body.audience-mode #audience .aud-layout { flex: 1; min-height: 0; align-items: stretch; gap: 1.6vmin; }
+  body.audience-mode #audience .aud-center { display: flex; flex-direction: column; justify-content: center; min-height: 0; gap: 1.2vmin; }
+  body.audience-mode #audience .aud-photo-box { flex: 1 1 auto; min-height: 0; height: auto; width: 100%; max-width: none; aspect-ratio: auto; }
+  body.audience-mode #audience .aud-progress { font-size: clamp(22px, 5vmin, 110px); margin: 0; }
+  body.audience-mode #audience .aud-answer-name { font-size: clamp(36px, 8.5vmin, 150px); }
+  body.audience-mode #audience #audSub { font-size: clamp(16px, 3vmin, 44px); }
+  body.audience-mode #audience .aud-done { font-size: clamp(40px, 9vmin, 150px); margin: 0; }
+  body.audience-mode #audience .team-side { width: clamp(110px, 13vw, 300px); justify-content: center; }
+  body.audience-mode #audience .team-side .ts-name { font-size: clamp(16px, 3vmin, 44px); }
+  body.audience-mode #audience .team-side .ts-score { font-size: clamp(40px, 9vmin, 150px); }
+
   /* ===== 반응형: 화면 좁아지면 열 수 줄이기 ===== */
   @media (max-width: 1080px) { .grid { grid-template-columns: repeat(3, 1fr); } }
   @media (max-width: 920px) {
@@ -588,7 +603,7 @@
       <div class="aud-answer-name" id="audName"></div>
       <div id="audSub"></div>
     </div>
-    <div id="audDoneMsg" style="display:none;font-size:64px;margin-top:24px">🎉 끝!</div>
+    <div id="audDoneMsg" class="aud-done" style="display:none">🎉 끝!</div>
       </div>
       <div class="team-side value"><div class="ts-name">VALUE</div><div class="ts-score" id="audScoreV">0</div></div>
     </div>
@@ -1588,7 +1603,7 @@
     if (!el || el.style.display === 'none') return;
     if (el.classList.contains('desc')) { el.style.whiteSpace = ''; el.style.fontSize = ''; return; } // 설명형은 여러 줄 허용
     el.style.whiteSpace = 'nowrap';
-    const max = TICKER_MAXFS[el.id] || 72;
+    const max = el.id === 'audTicker' ? Math.max(60, Math.round(window.innerHeight * 0.34)) : (TICKER_MAXFS[el.id] || 72);
     let fs = max; el.style.fontSize = fs + 'px';
     const parent = el.parentElement || el;
     const target = parent.clientWidth * 0.94;
