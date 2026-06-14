@@ -343,6 +343,8 @@
     padding: 16px 24px; display: flex; align-items: center; gap: 16px; }
   .pres-next .pres-label { margin: 0; color: #ffe259; }
   #presNext { font-size: 23px; font-weight: 800; }
+  .pres-hintline { font-size: 30px; font-weight: 900; letter-spacing: 6px; color: #ffd200; margin-top: 12px; }
+  .aud-hint { font-size: 64px; font-weight: 900; letter-spacing: 14px; color: #ffe259; margin-top: 22px; text-shadow: 0 3px 14px rgba(0,0,0,.45); }
 
   /* 관객 화면 (빔프로젝터) */
   body.audience-mode { align-items: center; padding: 14px; }
@@ -441,9 +443,9 @@
         <div class="emoji">📊</div>
         <div><div class="title">경제·투자 용어</div><div class="sub">설명에 맞는 용어는?</div></div>
       </div>
-      <div class="card c16" onclick="startQuiz('landmark')">
-        <div class="emoji">🏛️</div>
-        <div><div class="title">세계 랜드마크</div><div class="sub">사진 속 명소는?</div></div>
+      <div class="card c16" onclick="startQuiz('chosung')">
+        <div class="emoji">🔤</div>
+        <div><div class="title">기업 초성</div><div class="sub">초성으로 기업 맞히기</div></div>
       </div>
       <div class="card c9" onclick="startQuiz('sports')">
         <div class="emoji">🏅</div>
@@ -528,8 +530,9 @@
     <div class="pres-top">
       <button onclick="exitPresent()">← 종료</button>
       <button onclick="finishQuiz()" style="background:#ffd200;color:#7a5c00">🏁 결과 발표</button>
+      <button onclick="giveHint()" style="background:#ff9f1c;color:#5a3a00">💡 힌트 (h)</button>
       <span id="presProgress">1 / 1</span>
-      <span class="pres-hint">Enter: 정답공개/다음 · 1=GROWTH 2=VALUE 정답체크 · ←: 이전 · Esc: 종료</span>
+      <span class="pres-hint">Enter: 정답공개/다음 · 1=GROWTH 2=VALUE 정답체크 · h: 힌트 · ←: 이전 · Esc: 종료</span>
     </div>
     <div class="pres-body">
       <div class="team-side growth" id="presTeamG">
@@ -548,6 +551,7 @@
           <div id="presAudioDisp" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스: 정지·재생</span><div class="audio-bar"><div class="audio-bar-fill"></div></div><span class="audio-time">0:00 / 0:30</span></div>
         </div>
         <div id="presQ"></div>
+        <div id="presHintDisp" class="pres-hintline" style="display:none"></div>
       </div>
       <div class="pres-answer">
         <div class="pres-label">정답</div>
@@ -582,6 +586,7 @@
       <div id="audTicker" style="display:none"></div>
       <div id="audAudioDisp" class="audio-display" style="display:none"><div class="lp"><div class="lp-label"></div></div><div class="audio-bar" style="margin-top:30px"><div class="audio-bar-fill"></div></div><span class="audio-time" style="color:#fff">0:00 / 0:30</span></div>
     </div>
+    <div id="audHint" class="aud-hint" style="display:none"></div>
     <div class="aud-reveal" id="audReveal">
       <div class="logo-box" id="audLogoBox"><img id="audLogo" alt=""></div>
       <div class="aud-answer-name" id="audName"></div>
@@ -1010,37 +1015,37 @@
     { photo: 'https://i.namu.wiki/i/9vLblhdMllALQ3pnNs_xtYxkIY9aWbLgq0MJW31YnB_1lH6GcA2L1RdTaIcFroNPbfTrZbTeiUrzPsHZmodf1A.webp', company: '품바', ceo: '〈티몬과 품바〉' },
   ];
 
-  const LANDMARK = [
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/8/85/Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg", company: "에펠탑", ceo: "프랑스 · 파리" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/8/89/Front_view_of_Statue_of_Liberty_%28cropped%29.jpg", company: "자유의 여신상", ceo: "미국 · 뉴욕" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/1/1d/Taj_Mahal_%28Edited%29.jpeg", company: "타지마할", ceo: "인도 · 아그라" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/d/de/Colosseo_2020.jpg", company: "콜로세움", ceo: "이탈리아 · 로마" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Italy_-_Pisa_-_Leaning_Tower.jpg", company: "피사의 사탑", ceo: "이탈리아 · 피사" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/4/43/Elizabeth_Tower%2C_June_2022.jpg", company: "빅벤", ceo: "영국 · 런던" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/a/a0/Sydney_Australia._%2821339175489%29.jpg", company: "시드니 오페라하우스", ceo: "호주 · 시드니" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/2/23/The_Great_Wall_of_China_at_Jinshanling-edit.jpg", company: "만리장성", ceo: "중국" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/e/e7/Great_Pyramid_of_Giza_-_Pyramid_of_Khufu.jpg", company: "기자의 대피라미드", ceo: "이집트" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/4/42/Sphinx_with_the_third_pyramid.jpg", company: "스핑크스", ceo: "이집트 · 기자" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/3/31/Canyon_River_Tree_%28165872763%29.jpeg", company: "그랜드 캐니언", ceo: "미국" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/a/ab/3Falls_Niagara.jpg", company: "나이아가라 폭포", ceo: "미국 · 캐나다" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/b/bb/Machu_Picchu%2C_2023_%28012%29.jpg", company: "마추픽추", ceo: "페루" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/4/4f/Christ_the_Redeemer_-_Cristo_Redentor.jpg", company: "예수상", ceo: "브라질 · 리우" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/5/50/AhuTongariki.JPG", company: "모아이 석상", ceo: "칠레 · 이스터섬" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Stonehenge2007_07_30.jpg", company: "스톤헨지", ceo: "영국" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/f/f8/Schloss_Neuschwanstein_2013.jpg", company: "노이슈반슈타인 성", ceo: "독일" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/e/ef/SF_maig_2_cropped.jpg", company: "사그라다 파밀리아", ceo: "스페인 · 바르셀로나" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/7/79/Arc_de_Triomphe%2C_Paris_21_October_2010.jpg", company: "개선문", ceo: "프랑스 · 파리" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/a/a6/Brandenburger_Tor_abends.jpg", company: "브란덴부르크 문", ceo: "독일 · 베를린" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/1/18/Saint_Basil%27s_Cathedral_in_Moscow.jpg", company: "성 바실리 대성당", ceo: "러시아 · 모스크바" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/9/90/Burj_Khalifa_%28worlds_tallest_building%29_and_the_Dubai_skyline_%2825781049892%29.jpg", company: "부르즈 할리파", ceo: "UAE · 두바이" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/e/e8/Al_Deir_Petra.JPG", company: "페트라", ceo: "요르단" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/4/41/Angkor_Wat.jpg", company: "앙코르와트", ceo: "캄보디아" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/b/bf/Golden_Gate_Bridge_as_seen_from_Battery_East.jpg", company: "금문교", ceo: "미국 · 샌프란시스코" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/f/f8/View_of_Mount_Fuji_from_%C5%8Cwakudani_20211202.jpg", company: "후지산", ceo: "일본" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/6/63/%EA%B4%91%ED%99%94%EB%AC%B8_%EC%9B%94%EB%8C%80.jpg", company: "경복궁", ceo: "한국 · 서울" },
-    { photo: "https://upload.wikimedia.org/wikipedia/en/a/a6/NamsanTower_%28Cropped%29.jpeg", company: "N서울타워", ceo: "한국 · 서울" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/5/58/Tokyo_Tower_2023.jpg", company: "도쿄타워", ceo: "일본 · 도쿄" },
-    { photo: "https://upload.wikimedia.org/wikipedia/commons/1/10/Empire_State_Building_%28aerial_view%29.jpg", company: "엠파이어 스테이트 빌딩", ceo: "미국 · 뉴욕" },
+  const CHOSUNG = [
+    { q: 'ㅇㅇㅊㅇㅅ ㅇㅋㄷㅁ', answer: '에이치에스 아카데미' },
+    { q: 'ㅇㅅㅋㅇ ㅎㅇㄴㅅ', answer: '에스케이 하이닉스' },
+    { q: 'ㅇㅈ ㅇㄴㅈ ㅅㄹㅅ', answer: '엘지 에너지 솔루션' },
+    { q: 'ㅇㅇㅊㅇㅂ', answer: '에이치엘비' },
+    { q: 'ㅍㅇㅂㅅ', answer: '펄어비스' },
+    { q: 'ㅋㅋ ㅋㄹ', answer: '코카 콜라' },
+    { q: 'ㅅㄷㅅㅋ', answer: '샌디스크' },
+    { q: 'ㄹㅁㅌ', answer: '루멘텀' },
+    { q: 'ㅅㅍㅇㅅ ㅇㅅ', answer: '스페이스 엑스' },
+    { q: 'ㅇㅅ ㅁㅂ', answer: '엑손 모빌' },
+    { q: 'ㅎㅎ ㅇㅇㄹ ㅅㅍㅇㅅ', answer: '한화 에어로 스페이스' },
+    { q: 'ㄱㅇ', answer: '기아' },
+    { q: 'ㅇㅇㅊㄷ ㅎㄷ ㅈㄱㅇ', answer: '에이치디 현대 중공업' },
+    { q: 'ㅇㅇㅍㅇ', answer: '에이피알' },
+    { q: 'ㄹㄱㅋ ㅂㅇㅇ', answer: '리가켐 바이오' },
+    { q: 'ㅈㅇㅍ ㅁㄱ', answer: '제이피 모건' },
+    { q: 'ㅋㅅㅌㅋ', answer: '코스트코' },
+    { q: 'ㅇㄷㅂ', answer: '어도비' },
+    { q: 'ㅁㅇㅋㄹ ㅅㅍㅌ', answer: '마이크로 소프트' },
+    { q: 'ㅎㄷㅊ', answer: '현대차' },
+    { q: 'ㄷㅅ ㅇㄴㅂㄹㅌ', answer: '두산 에너빌리티' },
+    { q: 'ㅅㅅ ㅂㅇㅇ ㄹㅈㅅ', answer: '삼성 바이오 로직스' },
+    { q: 'ㅇㅂㄷㅇ', answer: '엔비디아' },
+    { q: 'ㅇㅈ ㅈㅈ', answer: '엘지 전자' },
+    { q: 'ㅇㅋㅍㄹ ㅂㅇ', answer: '에코프로 비엠' },
+    { q: 'ㄴㅇㅂ', answer: '네이버' },
+    { q: 'ㅍㅁ ㄹㅅㅊ', answer: '파마 리서치' },
+    { q: 'ㅇㅁㅈ', answer: '아마존' },
+    { q: 'ㅋㅋㅇ', answer: '카카오' },
+    { q: 'ㅇㅌㅇㅈ', answer: '알테오젠' },
   ];
 
   const ECON = [
@@ -1230,8 +1235,8 @@
                 emoji: '💬', sub: '사진 속 명대사는?', grad: 'linear-gradient(135deg,#ff512f,#dd2476)' },
     charL:    { title: '캐릭터',         question: '이 캐릭터의 이름은? 🧸', items: CHAR_L,
                 emoji: '🧸', sub: '사진 속 캐릭터는?', grad: 'linear-gradient(135deg,#909497,#566573)' },
-    landmark: { title: '세계 랜드마크',   question: '이곳은 어디일까요? 🏛️', items: LANDMARK,
-                emoji: '🏛️', sub: '사진 속 명소는?', grad: 'linear-gradient(135deg,#36d1dc,#5b86e5)' },
+    chosung:  { title: '기업 초성',       question: '이 초성의 기업은? 🔤', items: CHOSUNG, mode: 'ticker',
+                emoji: '🔤', sub: '초성으로 기업 맞히기', grad: 'linear-gradient(135deg,#36d1dc,#5b86e5)' },
     econ:     { title: '경제·투자 용어',  question: '설명에 맞는 용어는? 📊', items: ECON, mode: 'ticker', desc: true,
                 emoji: '📊', sub: '용어의 뜻은?', grad: 'linear-gradient(135deg,#f7b733,#fc4a1a)' },
     song:     { title: '7080',           question: '이 노래의 제목은? 🎵', items: SONG, mode: 'audio',
@@ -1335,7 +1340,7 @@
   // 준비 중인 다른 퀴즈 목록 (정답지 화면에 함께 표시)
   const UPCOMING = [];
 
-  const ADMIN_KEYS = ['ceo', 'krTicker', 'usTicker', 'cast', 'role', 'quote', 'song', 'y2k', 'econ', 'landmark', 'sports', 'charL', 'krStar', 'intlStar', 'logoIntl', 'logoKr'];
+  const ADMIN_KEYS = ['ceo', 'krTicker', 'usTicker', 'cast', 'role', 'quote', 'song', 'y2k', 'econ', 'chosung', 'sports', 'charL', 'krStar', 'intlStar', 'logoIntl', 'logoKr'];
 
   // 관리자 1단계: 퀴즈 선택 화면
   function showAdmin() {
@@ -1455,6 +1460,23 @@
   const BC = ('BroadcastChannel' in window) ? new BroadcastChannel('elite-quiz') : null;
   let presMode = false, presKey = 'ceo', presIntro = true, presRevealed = false, presDone = false, audienceWin = null;
   let growthScore = 0, valueScore = 0, pickedTeam = null;
+  let presHint = 0;   // 현재 문제에서 공개된 정답 글자 수(힌트)
+
+  // 정답 문자열을 앞에서 n글자만 공개, 나머지는 ○ (공백은 유지)
+  function maskHint(ans, n) {
+    return ans.split('').map(function (ch, i) { return ch === ' ' ? ' ' : (i < n ? ch : '○'); }).join('');
+  }
+  function curAnsText() {
+    const it = QUIZZES[presKey].items[idx];
+    return it.company !== undefined ? it.company : it.answer;
+  }
+  // 힌트 한 글자 공개 (발표자 조작 화면 · h키 또는 💡버튼)
+  function giveHint() {
+    if (!presMode || presIntro || presDone || presRevealed) return;
+    const ans = curAnsText();
+    if (presHint < ans.length) presHint++;
+    renderPresenter(); broadcast();
+  }
   let audioCtx = null;
   let presSessionOn = false;
   let visited = new Set();
@@ -1462,7 +1484,7 @@
   function startPresent(key) {
     presKey = key; cur = QUIZZES[key]; idx = 0;
     presIntro = true; presRevealed = false; presDone = false; presMode = true;
-    growthScore = 0; valueScore = 0; pickedTeam = null;
+    growthScore = 0; valueScore = 0; pickedTeam = null; presHint = 0;
     if (!audienceWin || audienceWin.closed) openAudience();
     renderPresenter();   // 표지(준비) 화면부터
     broadcast();
@@ -1470,6 +1492,7 @@
 
   function presAdvance() {
     if (presDone) return;
+    presHint = 0;                                       // 단계 이동 시 힌트 초기화
     if (presIntro) presIntro = false;                  // 표지 → 첫 문제 시작
     else if (!presRevealed) presRevealed = true;       // 1단계: 관객에게 정답 공개
     else {                                              // 2단계: 다음 문제 (점수는 ✓정답 시 이미 반영됨)
@@ -1480,7 +1503,7 @@
     renderPresenter(); broadcast();
   }
   function presBack() {
-    pickedTeam = null;
+    pickedTeam = null; presHint = 0;
     if (presDone) presDone = false;
     else if (presRevealed) presRevealed = false;
     else if (idx > 0) { idx--; presRevealed = false; }
@@ -1546,7 +1569,7 @@
   }
 
   function broadcast() {
-    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone, g: growthScore, v: valueScore });
+    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone, g: growthScore, v: valueScore, hint: presHint });
   }
 
   // 표지(준비) 화면 렌더 — 발표자·관객 공용
@@ -1626,6 +1649,10 @@
     if (presRevealed) { st.textContent = '● 관객 화면에 정답 공개됨'; st.className = 'reveal-shown'; }
     else { st.textContent = '○ 관객 화면엔 아직 숨김 — Enter로 공개'; st.className = 'reveal-hidden'; }
 
+    const phint = document.getElementById('presHintDisp');
+    if (!presRevealed && presHint > 0) { phint.textContent = '💡 ' + maskHint(curAnsText(), presHint); phint.style.display = 'block'; }
+    else { phint.style.display = 'none'; }
+
     const nx = q.items[idx + 1];
     document.getElementById('presNext').textContent = nx ? (nx.company !== undefined ? nx.company : nx.answer) : '— (마지막 문제)';
   }
@@ -1680,6 +1707,12 @@
     } else {
       reveal.classList.remove('show');
     }
+
+    const ah = document.getElementById('audHint');
+    if (!data.revealed && (data.hint || 0) > 0) {
+      ah.textContent = maskHint(it.company !== undefined ? it.company : it.answer, data.hint);
+      ah.style.display = 'block';
+    } else { ah.style.display = 'none'; }
   }
 
   // 키보드: 발표자 화면에서만 동작
@@ -1701,6 +1734,7 @@
     else if (e.key === 'ArrowLeft') { e.preventDefault(); presBack(); }
     else if (e.key === '1') { e.preventDefault(); pickTeam('growth'); }
     else if (e.key === '2') { e.preventDefault(); pickTeam('value'); }
+    else if (e.key === 'h' || e.key === 'H' || e.key === 'ㅗ') { e.preventDefault(); giveHint(); }
     else if (e.key === 'Escape') { exitPresent(); }
   });
 
