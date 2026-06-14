@@ -343,8 +343,6 @@
     padding: 16px 24px; display: flex; align-items: center; gap: 16px; }
   .pres-next .pres-label { margin: 0; color: #ffe259; }
   #presNext { font-size: 23px; font-weight: 800; }
-  .pres-hintline { font-size: 30px; font-weight: 900; letter-spacing: 6px; color: #ffd200; margin-top: 12px; }
-  .aud-hint { font-size: 64px; font-weight: 900; letter-spacing: 14px; color: #ffe259; margin-top: 22px; text-shadow: 0 3px 14px rgba(0,0,0,.45); }
 
   /* 관객 화면 (빔프로젝터) */
   body.audience-mode { align-items: center; padding: 14px; }
@@ -551,7 +549,6 @@
           <div id="presAudioDisp" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스: 정지·재생</span><div class="audio-bar"><div class="audio-bar-fill"></div></div><span class="audio-time">0:00 / 0:30</span></div>
         </div>
         <div id="presQ"></div>
-        <div id="presHintDisp" class="pres-hintline" style="display:none"></div>
       </div>
       <div class="pres-answer">
         <div class="pres-label">정답</div>
@@ -586,7 +583,6 @@
       <div id="audTicker" style="display:none"></div>
       <div id="audAudioDisp" class="audio-display" style="display:none"><div class="lp"><div class="lp-label"></div></div><div class="audio-bar" style="margin-top:30px"><div class="audio-bar-fill"></div></div><span class="audio-time" style="color:#fff">0:00 / 0:30</span></div>
     </div>
-    <div id="audHint" class="aud-hint" style="display:none"></div>
     <div class="aud-reveal" id="audReveal">
       <div class="logo-box" id="audLogoBox"><img id="audLogo" alt=""></div>
       <div class="aud-answer-name" id="audName"></div>
@@ -1018,31 +1014,31 @@
   const CHOSUNG = [
     { q: 'ㅇㅇㅊㅇㅅ ㅇㅋㄷㅁ', answer: '에이치에스 아카데미' },
     { q: 'ㅇㅅㅋㅇ ㅎㅇㄴㅅ', answer: '에스케이 하이닉스' },
-    { q: 'ㅇㅈ ㅇㄴㅈ ㅅㄹㅅ', answer: '엘지 에너지 솔루션' },
+    { q: 'ㅇㅈ ㅇㄴㅈㅅㄹㅅ', answer: '엘지 에너지솔루션' },
     { q: 'ㅇㅇㅊㅇㅂ', answer: '에이치엘비' },
     { q: 'ㅍㅇㅂㅅ', answer: '펄어비스' },
-    { q: 'ㅋㅋ ㅋㄹ', answer: '코카 콜라' },
+    { q: 'ㅋㅋㅋㄹ', answer: '코카콜라' },
     { q: 'ㅅㄷㅅㅋ', answer: '샌디스크' },
     { q: 'ㄹㅁㅌ', answer: '루멘텀' },
     { q: 'ㅅㅍㅇㅅ ㅇㅅ', answer: '스페이스 엑스' },
-    { q: 'ㅇㅅ ㅁㅂ', answer: '엑손 모빌' },
-    { q: 'ㅎㅎ ㅇㅇㄹ ㅅㅍㅇㅅ', answer: '한화 에어로 스페이스' },
+    { q: 'ㅇㅅㅁㅂ', answer: '엑손모빌' },
+    { q: 'ㅎㅎ ㅇㅇㄹㅅㅍㅇㅅ', answer: '한화 에어로스페이스' },
     { q: 'ㄱㅇ', answer: '기아' },
-    { q: 'ㅇㅇㅊㄷ ㅎㄷ ㅈㄱㅇ', answer: '에이치디 현대 중공업' },
+    { q: 'ㅇㅇㅊㄷ ㅎㄷㅈㄱㅇ', answer: '에이치디 현대중공업' },
     { q: 'ㅇㅇㅍㅇ', answer: '에이피알' },
-    { q: 'ㄹㄱㅋ ㅂㅇㅇ', answer: '리가켐 바이오' },
+    { q: 'ㄹㄱㅋㅂㅇㅇ', answer: '리가켐바이오' },
     { q: 'ㅈㅇㅍ ㅁㄱ', answer: '제이피 모건' },
     { q: 'ㅋㅅㅌㅋ', answer: '코스트코' },
     { q: 'ㅇㄷㅂ', answer: '어도비' },
-    { q: 'ㅁㅇㅋㄹ ㅅㅍㅌ', answer: '마이크로 소프트' },
+    { q: 'ㅁㅇㅋㄹㅅㅍㅌ', answer: '마이크로소프트' },
     { q: 'ㅎㄷㅊ', answer: '현대차' },
     { q: 'ㄷㅅ ㅇㄴㅂㄹㅌ', answer: '두산 에너빌리티' },
-    { q: 'ㅅㅅ ㅂㅇㅇ ㄹㅈㅅ', answer: '삼성 바이오 로직스' },
+    { q: 'ㅅㅅ ㅂㅇㅇㄹㅈㅅ', answer: '삼성 바이오로직스' },
     { q: 'ㅇㅂㄷㅇ', answer: '엔비디아' },
     { q: 'ㅇㅈ ㅈㅈ', answer: '엘지 전자' },
     { q: 'ㅇㅋㅍㄹ ㅂㅇ', answer: '에코프로 비엠' },
     { q: 'ㄴㅇㅂ', answer: '네이버' },
-    { q: 'ㅍㅁ ㄹㅅㅊ', answer: '파마 리서치' },
+    { q: 'ㅍㅁㄹㅅㅊ', answer: '파마리서치' },
     { q: 'ㅇㅁㅈ', answer: '아마존' },
     { q: 'ㅋㅋㅇ', answer: '카카오' },
     { q: 'ㅇㅌㅇㅈ', answer: '알테오젠' },
@@ -1235,7 +1231,7 @@
                 emoji: '💬', sub: '사진 속 명대사는?', grad: 'linear-gradient(135deg,#ff512f,#dd2476)' },
     charL:    { title: '캐릭터',         question: '이 캐릭터의 이름은? 🧸', items: CHAR_L,
                 emoji: '🧸', sub: '사진 속 캐릭터는?', grad: 'linear-gradient(135deg,#909497,#566573)' },
-    chosung:  { title: '기업 초성',       question: '이 초성의 기업은? 🔤', items: CHOSUNG, mode: 'ticker',
+    chosung:  { title: '기업 초성',       question: '이 초성의 기업은? 🔤', items: CHOSUNG, mode: 'ticker', initials: true,
                 emoji: '🔤', sub: '초성으로 기업 맞히기', grad: 'linear-gradient(135deg,#36d1dc,#5b86e5)' },
     econ:     { title: '경제·투자 용어',  question: '설명에 맞는 용어는? 📊', items: ECON, mode: 'ticker', desc: true,
                 emoji: '📊', sub: '용어의 뜻은?', grad: 'linear-gradient(135deg,#f7b733,#fc4a1a)' },
@@ -1460,21 +1456,25 @@
   const BC = ('BroadcastChannel' in window) ? new BroadcastChannel('elite-quiz') : null;
   let presMode = false, presKey = 'ceo', presIntro = true, presRevealed = false, presDone = false, audienceWin = null;
   let growthScore = 0, valueScore = 0, pickedTeam = null;
-  let presHint = 0;   // 현재 문제에서 공개된 정답 글자 수(힌트)
+  let hintPos = [];   // 현재 문제에서 힌트로 공개된 글자 위치(랜덤 순서)
 
-  // 정답 문자열을 앞에서 n글자만 공개, 나머지는 ○ (공백은 유지)
-  function maskHint(ans, n) {
-    return ans.split('').map(function (ch, i) { return ch === ' ' ? ' ' : (i < n ? ch : '○'); }).join('');
+  // 초성 문제에 힌트 적용: 공개된 위치는 실제 글자로, 나머지는 초성으로 표시
+  function tickerText(it, positions) {
+    if (!positions || !positions.length || it.answer === undefined) return it.q;
+    const q = it.q, a = it.answer;
+    let out = '';
+    for (let i = 0; i < q.length; i++) out += (positions.indexOf(i) >= 0 ? (a[i] || q[i]) : q[i]);
+    return out;
   }
-  function curAnsText() {
-    const it = QUIZZES[presKey].items[idx];
-    return it.company !== undefined ? it.company : it.answer;
-  }
-  // 힌트 한 글자 공개 (발표자 조작 화면 · h키 또는 💡버튼)
+  // 힌트: 아직 안 나온 위치 중 하나를 랜덤으로 골라 한 글자 공개 (발표자 h키/💡버튼)
   function giveHint() {
-    if (!presMode || presIntro || presDone || presRevealed) return;
-    const ans = curAnsText();
-    if (presHint < ans.length) presHint++;
+    const q = QUIZZES[presKey];
+    if (!presMode || presIntro || presDone || presRevealed || !q.initials) return;
+    const it = q.items[idx];
+    const cand = [];
+    for (let i = 0; i < it.q.length; i++) { if (it.q[i] !== ' ' && hintPos.indexOf(i) < 0) cand.push(i); }
+    if (!cand.length) return;
+    hintPos.push(cand[Math.floor(Math.random() * cand.length)]);
     renderPresenter(); broadcast();
   }
   let audioCtx = null;
@@ -1484,7 +1484,7 @@
   function startPresent(key) {
     presKey = key; cur = QUIZZES[key]; idx = 0;
     presIntro = true; presRevealed = false; presDone = false; presMode = true;
-    growthScore = 0; valueScore = 0; pickedTeam = null; presHint = 0;
+    growthScore = 0; valueScore = 0; pickedTeam = null; hintPos = [];
     if (!audienceWin || audienceWin.closed) openAudience();
     renderPresenter();   // 표지(준비) 화면부터
     broadcast();
@@ -1492,7 +1492,7 @@
 
   function presAdvance() {
     if (presDone) return;
-    presHint = 0;                                       // 단계 이동 시 힌트 초기화
+    hintPos = [];                                       // 단계 이동 시 힌트 초기화
     if (presIntro) presIntro = false;                  // 표지 → 첫 문제 시작
     else if (!presRevealed) presRevealed = true;       // 1단계: 관객에게 정답 공개
     else {                                              // 2단계: 다음 문제 (점수는 ✓정답 시 이미 반영됨)
@@ -1503,7 +1503,7 @@
     renderPresenter(); broadcast();
   }
   function presBack() {
-    pickedTeam = null; presHint = 0;
+    pickedTeam = null; hintPos = [];
     if (presDone) presDone = false;
     else if (presRevealed) presRevealed = false;
     else if (idx > 0) { idx--; presRevealed = false; }
@@ -1569,7 +1569,7 @@
   }
 
   function broadcast() {
-    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone, g: growthScore, v: valueScore, hint: presHint });
+    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone, g: growthScore, v: valueScore, hint: hintPos });
   }
 
   // 표지(준비) 화면 렌더 — 발표자·관객 공용
@@ -1651,6 +1651,7 @@
     fillMedia(document.getElementById('presPhotoBox'), document.getElementById('presPhoto'),
               document.getElementById('presTicker'), it, q.mode, document.getElementById('presAudioDisp'), true);
     document.getElementById('presTicker').classList.toggle('desc', !!q.desc);
+    if (q.mode === 'ticker') document.getElementById('presTicker').textContent = tickerText(q.items[idx], q.initials ? hintPos : []);
     fitTicker(document.getElementById('presTicker'));
     document.getElementById('presPhotoBox').classList.toggle('logo-mode', !!q.logoQuiz);
     document.getElementById('presQ').textContent = q.question;
@@ -1667,11 +1668,7 @@
     }
 
     if (presRevealed) { st.textContent = '● 관객 화면에 정답 공개됨'; st.className = 'reveal-shown'; }
-    else { st.textContent = '○ 관객 화면엔 아직 숨김 — Enter로 공개'; st.className = 'reveal-hidden'; }
-
-    const phint = document.getElementById('presHintDisp');
-    if (!presRevealed && presHint > 0) { phint.textContent = '💡 ' + maskHint(curAnsText(), presHint); phint.style.display = 'block'; }
-    else { phint.style.display = 'none'; }
+    else { st.textContent = (q.initials && hintPos.length ? '💡 힌트 ' + hintPos.length + '개 공개 · ' : '') + '○ 관객 화면엔 아직 숨김 — Enter로 공개'; st.className = 'reveal-hidden'; }
 
     const nx = q.items[idx + 1];
     document.getElementById('presNext').textContent = nx ? (nx.company !== undefined ? nx.company : nx.answer) : '— (마지막 문제)';
@@ -1707,6 +1704,7 @@
     const it = q.items[data.idx];
     fillMedia(box, document.getElementById('audPhoto'), document.getElementById('audTicker'), it, q.mode, document.getElementById('audAudioDisp'), false);
     document.getElementById('audTicker').classList.toggle('desc', !!q.desc);
+    if (q.mode === 'ticker') document.getElementById('audTicker').textContent = tickerText(it, q.initials ? (data.hint || []) : []);
     fitTicker(document.getElementById('audTicker'));
     box.classList.toggle('desc', !!q.desc);
     box.classList.toggle('logo-mode', !!q.logoQuiz);
@@ -1728,12 +1726,6 @@
     } else {
       reveal.classList.remove('show');
     }
-
-    const ah = document.getElementById('audHint');
-    if (!data.revealed && (data.hint || 0) > 0) {
-      ah.textContent = maskHint(it.company !== undefined ? it.company : it.answer, data.hint);
-      ah.style.display = 'block';
-    } else { ah.style.display = 'none'; }
   }
 
   // 키보드: 발표자 화면에서만 동작
