@@ -343,6 +343,16 @@
     padding: 16px 24px; display: flex; align-items: center; gap: 16px; }
   .pres-next .pres-label { margin: 0; color: #ffe259; }
   #presNext { font-size: 23px; font-weight: 800; }
+  /* 발표자(조작) 화면: 스크롤 없이 한 화면에 딱 들어오게 */
+  #presenter.active { display: flex; flex-direction: column; height: calc(100vh - 80px); overflow: hidden; }
+  #presenter .pres-top { flex: 0 0 auto; margin-bottom: 12px; }
+  #presenter .pres-body { flex: 1 1 auto; min-height: 0; }
+  #presenter .pres-center { display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; min-height: 0; }
+  #presenter .pres-main { flex: 1 1 auto; min-height: 0; }
+  #presenter .pres-current, #presenter .pres-answer { min-height: 0; }
+  #presenter .pres-mediabox { min-height: 0; }
+  #presenter .pres-mediabox img { max-height: 100%; }
+  #presenter .pres-next { flex: 0 0 auto; margin-top: 12px; }
 
   /* 관객 화면 (빔프로젝터) */
   body.audience-mode { align-items: center; padding: 14px; }
