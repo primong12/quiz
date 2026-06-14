@@ -431,21 +431,13 @@
         <div class="emoji">🧸</div>
         <div><div class="title">캐릭터</div><div class="sub">사진 속 캐릭터는?</div></div>
       </div>
-      <div class="card c3" onclick="startQuiz('male')">
-        <div class="emoji">🧑‍🎤</div>
-        <div><div class="title">국내 남자 스타</div><div class="sub">사진 속 인물은?</div></div>
+      <div class="card c3" onclick="startQuiz('krStar')">
+        <div class="emoji">🌟</div>
+        <div><div class="title">국내 연예인</div><div class="sub">사진 속 인물은?</div></div>
       </div>
-      <div class="card c2" onclick="startQuiz('female')">
-        <div class="emoji">👩‍🎤</div>
-        <div><div class="title">국내 여자 스타</div><div class="sub">사진 속 인물은?</div></div>
-      </div>
-      <div class="card c7" onclick="startQuiz('foreignM')">
-        <div class="emoji">🎩</div>
-        <div><div class="title">해외 남자 스타</div><div class="sub">사진 속 인물은?</div></div>
-      </div>
-      <div class="card c8" onclick="startQuiz('foreignF')">
-        <div class="emoji">💃</div>
-        <div><div class="title">해외 여자 스타</div><div class="sub">사진 속 인물은?</div></div>
+      <div class="card c7" onclick="startQuiz('intlStar')">
+        <div class="emoji">🌍</div>
+        <div><div class="title">해외 연예인</div><div class="sub">사진 속 인물은?</div></div>
       </div>
       <div class="card c20" onclick="startQuiz('logoKospi1')">
         <div class="emoji">🏢</div>
@@ -720,60 +712,82 @@
       logo:  'https://upload.wikimedia.org/wikipedia/commons/7/7c/Hanwha_logo.svg' },
   ];
 
-  const FEMALE = [
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/f/fc/220428_Le_Sserafim_Kim_Chae-won_%281%29.jpg', answer: '김채원' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/3/3f/Shin_Ji.jpg', answer: '신지 (코요테)' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/8/8e/Yoon_Eun-hye_in_April_2021.png', answer: '윤은혜 (베이비복스)' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/f/fb/Karina_at_Love_Your_W_event_2025.jpg', answer: '카리나 (에스파)' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/6/6c/Jang_Mi-Hee.jpg', answer: '장미희' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/6/60/260508_YOONA_%40_62nd_BAEKSANG_AWARDS_with_GUCCI.jpg', answer: '윤아' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/e/e9/191012_%EB%AC%B8%EA%B7%BC%EC%98%81.jpg', answer: '문근영' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/a/af/190713_%EB%82%98%EB%AC%B8%ED%9D%AC.jpg', answer: '나문희' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/5/52/Ko_Hyun-jung_2023.png', answer: '고현정' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/f/f9/Han_Ga-in_%ED%95%9C%EA%B0%80%EC%9D%B8_2024_02.jpg', answer: '한가인' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/7/78/Youn_Yuh-jung_in_December_2016.jpg', answer: '윤여정' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/a/a0/Kim_Hye-ja_in_Feb_2019.png', answer: '김혜자' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/4/45/%EA%B9%80%ED%9D%AC%EC%84%A0%2C_%22%EC%B2%AD%EC%88%9C%EB%AF%B8_%EA%B5%90%EA%B3%BC%EC%84%9C%22_%281%29.jpg', answer: '김희선' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/1/1f/Jun_Ji-hyun.jpg', answer: '전지현' },
+  const KR_STARS = [
     { photo: 'https://upload.wikimedia.org/wikipedia/commons/3/33/Bae_Suzy_at_OB_Beer_Hanmac_%27As_Smooth_As_Possible%27_campaign%2C_3_April_2024_04.jpg', answer: '수지' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/9/93/Uhm_Junghwa_Kolon_Sports_50th_Anniversary_Event_1.jpg', answer: '엄정화' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/e/e7/YuNaKimInVancouver.jpg', answer: '김연아' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/f/f1/Younha_at_Incheon_Airport_on_050123_%285%29.png', answer: '윤하' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/c/c1/Um_Aing-ran_in_the_1962_film_Prince_Hodong.jpg', answer: '엄앵란' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Lee_Byung-hun_2025_Toronto_%28cropped%29.jpg', answer: '이병헌' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/0/09/Lee_Deok-Hwa_from_acrofan.jpg', answer: '이덕화' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/4/49/%28%ED%83%80%EC%A7%9C-%EC%8B%A0%EC%9D%98_%EC%86%90%29_%EC%A3%BC%EA%B1%B0%EB%8B%88_%EB%B0%9B%EA%B1%B0%EB%8B%88_%ED%86%A0%ED%81%AC_%EC%98%81%EC%83%81_%28%EC%9C%A0%ED%95%B4%EC%A7%84%29.jpg', answer: '유해진' },
     { photo: 'https://upload.wikimedia.org/wikipedia/commons/a/af/20240719_Park_Bo-young_3rd_Blue_Dragon_Series_Awards.jpg', answer: '박보영' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/a/ad/250313_Kim_Hye_Soo_%28%EA%B9%80%ED%98%9C%EC%88%98%29.png', answer: '김혜수' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/0/02/Lee_Young-ae_at_the_17th_Asian_Film_Awards_in_Hong_Kong_on_March_10%2C_2024.jpg', answer: '이영애' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/a/ac/Shin_Hye-sun_in_April_2024.png', answer: '신혜선' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/a/ae/Park_Shin-hye_in_September_2024_02.png', answer: '박신혜' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/4/45/%EA%B9%80%ED%9D%AC%EC%84%A0%2C_%22%EC%B2%AD%EC%88%9C%EB%AF%B8_%EA%B5%90%EA%B3%BC%EC%84%9C%22_%281%29.jpg', answer: '김희선' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/a/af/190713_%EB%82%98%EB%AC%B8%ED%9D%AC.jpg', answer: '나문희' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/5/55/190812_%EC%9D%B4%EC%84%9C%EC%A7%84.jpg', answer: '이서진' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/5/52/Ko_Hyun-jung_2023.png', answer: '고현정' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/c/c1/Um_Aing-ran_in_the_1962_film_Prince_Hodong.jpg', answer: '엄앵란' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/b/b8/%EA%B4%91%EC%88%98_%EB%82%98%EC%B2%B4%EC%94%AC%EC%97%90_%EB%B9%B5%ED%84%B0%EC%A7%84_%EB%A5%98%EC%8A%B9%EB%B2%94%E3%85%8B%E3%85%8B%E3%85%8B%E3%85%8B%E3%85%8B%E3%85%8B%E3%85%8B_5m_46s.jpg', answer: '박정민' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/f/f9/Han_Ga-in_%ED%95%9C%EA%B0%80%EC%9D%B8_2024_02.jpg', answer: '한가인' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/e/e9/191012_%EB%AC%B8%EA%B7%BC%EC%98%81.jpg', answer: '문근영' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/8/84/Temp_1662384481565.-511956263.jpg', answer: '임영웅' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/1/1f/Jun_Ji-hyun.jpg', answer: '전지현' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/e/e7/YuNaKimInVancouver.jpg', answer: '김연아' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Song_Gangho_2016.jpg', answer: '송강호' },
     { photo: 'https://upload.wikimedia.org/wikipedia/commons/0/0c/Son_Ye-jin_%EC%86%90%EC%98%88%EC%A7%84_2024_02.jpg', answer: '손예진' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/9/9e/20220801_Son_Seok-koo_%EC%86%90%EC%84%9D%EA%B5%AC_Marie_Claire_Korea_%281%29.jpg', answer: '손석구' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/a/a0/Kim_Hye-ja_in_Feb_2019.png', answer: '김혜자' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/8/87/Ji_Chang-wook.jpg', answer: '지창욱' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/0/02/Lee_Young-ae_at_the_17th_Asian_Film_Awards_in_Hong_Kong_on_March_10%2C_2024.jpg', answer: '이영애' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/7/7d/Ryu_Seung-beom.jpg', answer: '류승범' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/2/2d/181112_%EB%8F%84%EA%B2%BD%EC%88%98%28%EB%94%94%EC%98%A4%29_%ED%8F%AC%EC%BB%A4%EC%8A%A4%EB%A1%9C_%EC%A7%88%EB%AC%B8%EA%B3%BC_%ED%83%AD%EB%8C%84%EC%8A%A4_%EC%8B%9C%EC%97%B0_%EC%98%81%ED%99%94_%27%EC%8A%A4%EC%9C%99%ED%82%A4%EC%A6%88%27_%EC%A0%9C%EC%9E%91%EB%B3%B4%EA%B3%A0%ED%9A%8C_%EC%A7%81%EC%BA%A0_%EC%98%81%EC%83%81_03.png', answer: '디오 (도경수)' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/8/8e/Yoon_Eun-hye_in_April_2021.png', answer: '윤은혜 (베이비복스)' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/9/93/Uhm_Junghwa_Kolon_Sports_50th_Anniversary_Event_1.jpg', answer: '엄정화' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/8/85/Koo_Kyo-hwan.jpg', answer: '구교환' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/a/ac/Shin_Hye-sun_in_April_2024.png', answer: '신혜선' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/7/78/Youn_Yuh-jung_in_December_2016.jpg', answer: '윤여정' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/f/fb/Karina_at_Love_Your_W_event_2025.jpg', answer: '카리나 (에스파)' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/0/00/181202_%EB%93%9C%EB%A0%81%ED%81%B0%ED%83%80%EC%9D%B4%EA%B1%B0_AK%ED%94%8C%EB%9D%BC%EC%9E%90_%EB%B6%84%EB%8B%B9%EC%A0%90_%ED%8C%AC%EC%8B%B8%EC%9D%B8%ED%9A%8C_2.jpg', answer: '타이거 JK' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/a/ae/Park_Shin-hye_in_September_2024_02.png', answer: '박신혜' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/6/6e/211227_%EC%B5%9C%EC%9A%B0%EC%8B%9D.png', answer: '최우식' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/6/6c/Jang_Mi-Hee.jpg', answer: '장미희' },
   ];
 
-  const MALE = [
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/a/af/190402_%EB%B0%95%EC%A4%80%ED%98%95.jpg', answer: '박준형 (god)' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/7/7d/Ryu_Seung-beom.jpg', answer: '류승범' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Lee_Byung-hun_2025_Toronto_%28cropped%29.jpg', answer: '이병헌' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/9/9e/20220801_Son_Seok-koo_%EC%86%90%EC%84%9D%EA%B5%AC_Marie_Claire_Korea_%281%29.jpg', answer: '손석구' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/4/49/%28%ED%83%80%EC%A7%9C-%EC%8B%A0%EC%9D%98_%EC%86%90%29_%EC%A3%BC%EA%B1%B0%EB%8B%88_%EB%B0%9B%EA%B1%B0%EB%8B%88_%ED%86%A0%ED%81%AC_%EC%98%81%EC%83%81_%28%EC%9C%A0%ED%95%B4%EC%A7%84%29.jpg', answer: '유해진' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/c/c3/Korea_Makgeolli_Wanderers_05_Song_Il_Gook.png', answer: '송일국' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/2/2d/181112_%EB%8F%84%EA%B2%BD%EC%88%98%28%EB%94%94%EC%98%A4%29_%ED%8F%AC%EC%BB%A4%EC%8A%A4%EB%A1%9C_%EC%A7%88%EB%AC%B8%EA%B3%BC_%ED%83%AD%EB%8C%84%EC%8A%A4_%EC%8B%9C%EC%97%B0_%EC%98%81%ED%99%94_%27%EC%8A%A4%EC%9C%99%ED%82%A4%EC%A6%88%27_%EC%A0%9C%EC%9E%91%EB%B3%B4%EA%B3%A0%ED%9A%8C_%EC%A7%81%EC%BA%A0_%EC%98%81%EC%83%81_03.png', answer: '디오 (도경수)' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/0/00/181202_%EB%93%9C%EB%A0%81%ED%81%B0%ED%83%80%EC%9D%B4%EA%B1%B0_AK%ED%94%8C%EB%9D%BC%EC%9E%90_%EB%B6%84%EB%8B%B9%EC%A0%90_%ED%8C%AC%EC%8B%B8%EC%9D%B8%ED%9A%8C_2.jpg', answer: '타이거 JK' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/b/b8/%EA%B4%91%EC%88%98_%EB%82%98%EC%B2%B4%EC%94%AC%EC%97%90_%EB%B9%B5%ED%84%B0%EC%A7%84_%EB%A5%98%EC%8A%B9%EB%B2%94%E3%85%8B%E3%85%8B%E3%85%8B%E3%85%8B%E3%85%8B%E3%85%8B%E3%85%8B_5m_46s.jpg', answer: '박정민' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/5/5e/180503_%EC%8B%A0%EB%8F%99%EC%97%BD.png', answer: '신동엽' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/8/85/Koo_Kyo-hwan.jpg', answer: '구교환' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/2/29/KBS_%22The_Producers%22_press_conference%2C_11_May_2015_06.jpg', answer: '차태현' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/5/55/190812_%EC%9D%B4%EC%84%9C%EC%A7%84.jpg', answer: '이서진' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/6/6e/211227_%EC%B5%9C%EC%9A%B0%EC%8B%9D.png', answer: '최우식' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/8/87/Ji_Chang-wook.jpg', answer: '지창욱' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/6/6a/190702_%ED%95%9C%EC%84%9D%EA%B7%9C.jpg', answer: '한석규' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/4/45/180915_%EC%95%A4%EB%94%94_02.png', answer: '앤디 (H.O.T)' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/8/84/Temp_1662384481565.-511956263.jpg', answer: '임영웅' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/0/09/Lee_Deok-Hwa_from_acrofan.jpg', answer: '이덕화' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/6/60/Hyun_Bin_at_the_2024_Toronto_International_Film_Festival_2_%28cropped%29.jpg', answer: '현빈' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/c/ce/So_Ji-sub.jpg', answer: '소지섭' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Song_Gangho_2016.jpg', answer: '송강호' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/0/03/Jo_Jung-suk_in_June_2024_02.png', answer: '조정석' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/e/ea/Ryu_Seung-ryong_in_2025.png', answer: '류승룡' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/0/06/161009_eunjiwon_tvN10_%EC%96%B4%EC%9B%8C%EC%A6%88.jpg', answer: '은지원 (젝스키스)' },
+  const INTL_STARS = [
+    { photo: 'https://i.namu.wiki/i/jCX26mNWl3TM5p8ub22JtKbRA5OTCzTEegP-AGpNWuDxp_69NrqDWOzYP-4BlTPXe1OLt1tVTej0Bg8tGLyuVw.webp', answer: '멜 깁슨' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/3/39/TomHanksPrincEdw031223_%2811_of_41%29_%28cropped%29.jpg', answer: '톰 행크스' },
+    { photo: 'https://i.namu.wiki/i/UDeGEUaC4-km1AQFHk8KxHN4gczVWp76Hg5mIG4KnyIqrp-zC2gwPpjIAivD-xaEcYI0M1fgdsN9wa0wIE6FSM1-31fRskfU3L-_FD2fceYvikr_wXiwNPd0EEjOwsof1K8IhSBKZdpvciHDrI2tJw.webp', answer: '잉그리드 버그만' },
+    { photo: 'https://cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/XSZ4KGLPPRB5RMOR5NECAWFJQA.jpg', answer: '잭 니콜슨' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Taylor_Swift_at_the_2023_MTV_Video_Music_Awards_%283%29.png', answer: '테일러 스위프트' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/4/4e/Monroecirca1953.jpg', answer: '마릴린 먼로' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/b/b9/Michael_Jackson_1983_%283x4_cropped%29_%28contrast%29.jpg', answer: '마이클 잭슨' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/9/90/Brad_Pitt-69858.jpg', answer: '브래드 피트' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/3/35/Jackie_Chan.jpg', answer: '성룡' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/2/23/Tom_Cruise_at_53rd_Saturn_Awards_2026-01.jpg', answer: '톰 크루즈' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/b/b4/Keanu_Reeves_at_TIFF_2025_02_%28Cropped%29.jpg', answer: '키아누 리브스' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/5/53/KateWinslet_%28cropped%29.jpg', answer: '케이트 윈슬렛' },
+    { photo: 'https://i.namu.wiki/i/43ReWDty7rBrlE268BT8RPONRdrNYcPkq2Z7SBQrngyPjgt9svxfYwGpbynfYqaRG6rrWJopbdqfYcnkbhakTQ.webp', answer: '양조위' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/5/55/TechCrunch_Disrupt_San_Francisco_2019_-_Day_1_%2848834070763%29_%28cropped%29.jpg', answer: '윌 스미스' },
+    { photo: 'https://i.namu.wiki/i/pmd9z7u4fT0y8o0-YII5h7bhIuznFqSY_ruZTUdyV4YrIxMGwublEqkz__jRznizVtX1PoMuaaK-L3nU8Ep8vA.webp', answer: '실베스터 스탤론' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/e/e2/Olivia_Hussey_ca._1970s_%28cropped%29.png', answer: '올리비아 핫세' },
+    { photo: 'https://cdn.yjb0802.com/news/photo/202306/34914_33141_2321.jpg', answer: '해리슨 포드' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/0/02/Hugh_Jackman_by_Gage_Skidmore_3.jpg', answer: '휴 잭맨' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/9/99/Elvis_Presley_promoting_Jailhouse_Rock.jpg', answer: '엘비스 프레슬리' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/c/c8/Alain_Delon_1961.jpg', answer: '알랭 들롱' },
+    { photo: 'https://i.namu.wiki/i/5yJjRqMKia9ozIiE8Z0VKYLIIH1vxejevfd4N9U_hOCD0-WVwAayoN43cadcxGcy8Wj2WZLKYsWWqNkRKV8jgg.webp', answer: '장국영' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Bruce_Lee_as_Chen_Zhen_%284x5_cropped%29.jpg', answer: '브루스 리 (이소룡)' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/7/78/MadonnaO2171023_%2897_of_133%29_%2853269593787%29_%28cropped%29.jpg', answer: '마돈나' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/2/21/Johnny_Depp_2020.jpg', answer: '조니 뎁' },
+    { photo: 'https://i.namu.wiki/i/DIfroWVbOSz6AVn_710krt5h6P1yzaoL0KXf1kdqmBLOspSOWTNAH7i74KGceFj6QkNeBSMBwaQSdyefYWbBWg.webp', answer: '알 파치노' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/2/2d/LeoPTABFI191125-28_%28cropped%29.jpg', answer: '레오나르도 디카프리오' },
+    { photo: 'https://i.namu.wiki/i/W533ugIOAASE9_GOIHkrBy1h0dwOR9BMJRRkHlOJpJZwKU2pUU_6cohBt5jNFZ62CZBit_RzKW10C7-SIkgT_g.webp', answer: '제임스 딘' },
+    { photo: 'https://i.namu.wiki/i/_XVfgpBy0Sb1kdIxXVDk5Vi3ghOIuhumpvP2ApZT0eqxRTlHoNHRboOjL0Oc-YqyBrq5HJVNMjDjNf5Tjtq2Aw.webp', answer: '오드리 헵번' },
+    { photo: 'https://mblogthumb-phinf.pstatic.net/MjAyMDEwMjlfMjA0/MDAxNjAzOTY5NzI3MTgy.YOkcL2toI82C1ch5WZXrfoI8Hbd9ZB-gIZY7CYplLZcg.cKK0_SBaUpb_UXhxH1RDxFMNqTw5TRLBVyjmCJXzfw4g.PNG.bagina/%EC%9C%A0%EB%8D%95%ED%99%941-1.png?type=w800', answer: '유덕화' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/0/0e/Lady_Gaga_at_Joe_Biden%27s_inauguration_%28cropped_5%29.jpg', answer: '레이디 가가' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/d/d3/Jason_Statham_2018.jpg', answer: '제이슨 스타뎀' },
+    { photo: 'https://img4.daumcdn.net/thumb/R658x0.q70/?fname=https://t1.daumcdn.net/news/202208/16/wjbook/20220816195351277tgmj.jpg', answer: '아놀드 슈왈제네거' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/7/74/Sandra_Bullock_at_The_Egyptian_Theatre_2024.jpg', answer: '산드라 블록' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/d/da/Anne_Hathaway-_Press_conference_for_the_film_%22The_Devil_Wears_Prada_2%22_-_55194764955_%28cropped%29.jpg', answer: '앤 해서웨이' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/c/cc/Nicole_Kidman-66059_%28cropped%29.jpg', answer: '니콜 키드먼' },
+    { photo: 'https://i.namu.wiki/i/LTRtQZs3U-Ea50J5ZDXwUICtqA3RqCsXmyuVRzsa6xk3OX21C_EE_0C-2SmiJ7Y5LXlJwOKf6LUMQCbHUp7j3Q.webp', answer: '케빈 코스트너' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/1/12/Angelina_Jolie-643531_%28cropped%29.jpg', answer: '안젤리나 졸리' },
+    { photo: 'https://upload.wikimedia.org/wikipedia/commons/7/7f/Emma_Watson_2013.jpg', answer: '엠마 왓슨' },
   ];
 
   // 국내 티커 (시가총액 상위 유명 기업, 종목코드 6자리)
@@ -877,47 +891,7 @@
     { photo: 'images/cast08.jpg',  answer: '정주용' },
   ];
 
-  const FOREIGN_M = [
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/3/35/Jackie_Chan.jpg', answer: '성룡' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/2/2d/LeoPTABFI191125-28_%28cropped%29.jpg', answer: '레오나르도 디카프리오' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/RobertDowneyJr-byPhilipRomano7_%28cropped%29.jpg', answer: '로버트 다우니 주니어' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/d/d3/Jason_Statham_2018.jpg', answer: '제이슨 스타뎀' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/3/39/TomHanksPrincEdw031223_%2811_of_41%29_%28cropped%29.jpg', answer: '톰 행크스' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/5/55/TechCrunch_Disrupt_San_Francisco_2019_-_Day_1_%2848834070763%29_%28cropped%29.jpg', answer: '윌 스미스' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/7/7e/Dwayne_Johnson-1764_%284x5_cropped_with_moderate_headroom%29.jpg', answer: '드웨인 존슨' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/9/99/Elvis_Presley_promoting_Jailhouse_Rock.jpg', answer: '엘비스 프레슬리' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/b/b4/Keanu_Reeves_at_TIFF_2025_02_%28Cropped%29.jpg', answer: '키아누 리브스' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Chris_Evans_at_the_2025_Toronto_International_Film_Festival_%28cropped%29.jpg', answer: '크리스 에반스' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/2/23/Tom_Cruise_at_53rd_Saturn_Awards_2026-01.jpg', answer: '톰 크루즈' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/9/90/Brad_Pitt-69858.jpg', answer: '브래드 피트' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/3/32/Jack_Black_KCA_2025.png', answer: '잭 블랙' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/2/21/Johnny_Depp_2020.jpg', answer: '조니 뎁' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/c/c8/Alain_Delon_1961.jpg', answer: '알랭 들롱' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/b/b9/Michael_Jackson_1983_%283x4_cropped%29_%28contrast%29.jpg', answer: '마이클 잭슨' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/0/02/Hugh_Jackman_by_Gage_Skidmore_3.jpg', answer: '휴 잭맨' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/1/1e/Bruce_Lee_as_Chen_Zhen_%284x5_cropped%29.jpg', answer: '브루스 리 (이소룡)' },
-  ];
 
-  const FOREIGN_F = [
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/7/78/MadonnaO2171023_%2897_of_133%29_%2853269593787%29_%28cropped%29.jpg', answer: '마돈나' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/1/12/Angelina_Jolie-643531_%28cropped%29.jpg', answer: '안젤리나 졸리' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/0/0e/Lady_Gaga_at_Joe_Biden%27s_inauguration_%28cropped_5%29.jpg', answer: '레이디 가가' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Taylor_Swift_at_the_2023_MTV_Video_Music_Awards_%283%29.png', answer: '테일러 스위프트' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/5/53/KateWinslet_%28cropped%29.jpg', answer: '케이트 윈슬렛' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/b/b7/Beyonc%C3%A9_-_Tottenham_Hotspur_Stadium_-_1st_June_2023_%2810_of_118%29_%2852946364598%29_%28best_crop%29.jpg', answer: '비욘세' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/7/74/AudreyKHepburn.jpg', answer: '오드리 헵번' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/7/74/Sandra_Bullock_at_The_Egyptian_Theatre_2024.jpg', answer: '산드라 블록' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/c/cc/Nicole_Kidman-66059_%28cropped%29.jpg', answer: '니콜 키드먼' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/d/d3/Julia_Roberts_2025.jpg', answer: '줄리아 로버츠' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/2/23/Emma_Stone_at_the_2025_Venice_Film_Festival-6313_%28cropped%29.jpg', answer: '엠마 스톤' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/f/fe/Jennifer_Lawrence_in_2018.png', answer: '제니퍼 로렌스' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/4/4e/Monroecirca1953.jpg', answer: '마릴린 먼로' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/a/ad/Scarlett_Johansson-8588.jpg', answer: '스칼렛 요한슨' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Ariana_Grande_promoting_Wicked_%282024%29.jpg', answer: '아리아나 그란데' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/e/e2/Olivia_Hussey_ca._1970s_%28cropped%29.png', answer: '올리비아 핫세' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/7/7f/Emma_Watson_2013.jpg', answer: '엠마 왓슨' },
-    { photo: 'https://upload.wikimedia.org/wikipedia/commons/d/da/Anne_Hathaway-_Press_conference_for_the_film_%22The_Devil_Wears_Prada_2%22_-_55194764955_%28cropped%29.jpg', answer: '앤 해서웨이' },
-  ];
 
   const SPORTS = [
     { photo: 'images/sf_lewis.jpg', answer: '칼 루이스 (육상)' },
@@ -1261,20 +1235,18 @@
   const QUIZZES = {
     ceo:      { title: 'CEO',             question: '이 분이 이끄는 기업은? 🤔', items: CEO_QUIZ,
                 emoji: '👔', sub: '사진 속 CEO의 기업을 맞혀보세요', grad: 'linear-gradient(135deg,#f857a6,#ff5858)' },
-    female:   { title: '국내 여자 스타', question: '이 사람은 누구일까요? 🤔',  items: FEMALE,
-                emoji: '👩‍🎤', sub: '사진 속 인물의 이름은?', grad: 'linear-gradient(135deg,#43cea2,#185a9d)' },
-    male:     { title: '국내 남자 스타', question: '이 사람은 누구일까요? 🤔',  items: MALE,
-                emoji: '🧑‍🎤', sub: '사진 속 인물의 이름은?', grad: 'linear-gradient(135deg,#fa709a,#fee140)' },
+    krStar:   { title: '국내 연예인', question: '이 사람은 누구일까요? 🤔',  items: KR_STARS,
+                emoji: '🌟', sub: '사진 속 인물의 이름은?', grad: 'linear-gradient(135deg,#fa709a,#fee140)' },
+
     krTicker: { title: '종목 코드',       question: '이 종목코드의 기업은? 📈', items: KR_TICKER, mode: 'ticker',
                 emoji: '📈', sub: '종목코드로 기업 맞히기', grad: 'linear-gradient(135deg,#4facfe,#00f2fe)' },
     usTicker: { title: '티커',            question: '이 티커의 기업은? 📈',     items: US_TICKER, mode: 'ticker',
                 emoji: '🌎', sub: '티커로 기업 맞히기', grad: 'linear-gradient(135deg,#a06bff,#6a3093)' },
     cast:     { title: 'HS 출연자',       question: '이 출연자는 누구일까요? 🤔', items: CAST,
                 emoji: '🎬', sub: '사진 속 출연자의 이름은?', grad: 'linear-gradient(135deg,#ff9966,#ff5e62)' },
-    foreignM: { title: '해외 남자 스타',   question: '이 사람은 누구일까요? 🎬', items: FOREIGN_M,
-                emoji: '🎩', sub: '사진 속 해외 스타는?', grad: 'linear-gradient(135deg,#11998e,#38ef7d)' },
-    foreignF: { title: '해외 여자 스타',   question: '이 사람은 누구일까요? 🎬', items: FOREIGN_F,
-                emoji: '💃', sub: '사진 속 해외 스타는?', grad: 'linear-gradient(135deg,#ee0979,#ff6a00)' },
+    intlStar: { title: '해외 연예인',   question: '이 사람은 누구일까요? 🎬', items: INTL_STARS,
+                emoji: '🌍', sub: '사진 속 해외 스타는?', grad: 'linear-gradient(135deg,#11998e,#38ef7d)' },
+
     sports:   { title: '운동선수',       question: '이 선수는 누구일까요? 🏅', items: SPORTS,
                 emoji: '🏅', sub: '사진 속 선수는?', grad: 'linear-gradient(135deg,#f7971e,#ffd200)' },
     role:     { title: '등장인물',      question: '이 배역의 이름은? 🎭', items: ROLE,
@@ -1392,7 +1364,7 @@
 
   function showAdmin() {
     let html = '';
-    for (const key of ['ceo', 'female', 'male', 'krTicker', 'usTicker', 'cast', 'foreignM', 'foreignF', 'sports', 'role', 'quote', 'charL', 'landmark', 'econ', 'song', 'y2k', 'logoKospi1', 'logoKospi2', 'logoSp500']) {
+    for (const key of ['ceo', 'krStar', 'krTicker', 'usTicker', 'cast', 'intlStar', 'sports', 'role', 'quote', 'charL', 'landmark', 'econ', 'song', 'y2k', 'logoKospi1', 'logoKospi2', 'logoSp500']) {
       const q = QUIZZES[key];
       const rows = q.items.map((it, i) => {
         let ans;
