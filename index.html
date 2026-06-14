@@ -1498,9 +1498,7 @@
     if (presDone) return;
     if (presIntro) presIntro = false;                  // 표지 → 첫 문제 시작
     else if (!presRevealed) presRevealed = true;       // 1단계: 관객에게 정답 공개
-    else {                                              // 2단계: 점수 반영 후 다음 문제
-      if (pickedTeam === 'growth') growthScore++;
-      else if (pickedTeam === 'value') valueScore++;
+    else {                                              // 2단계: 다음 문제 (점수는 ✓정답 시 이미 반영됨)
       pickedTeam = null;
       if (idx >= cur.items.length - 1) { presDone = true; playFanfare(); }
       else { idx++; presRevealed = false; }
@@ -1526,15 +1524,23 @@
 
   function pickTeam(team) {
     if (presIntro || presDone) return;
-    pickedTeam = (pickedTeam === team) ? null : team;
-    renderPresenter();
+    if (pickedTeam === team) {                                          // 같은 팀 다시 클릭 → 취소(-1)
+      if (team === 'growth') growthScore = Math.max(0, growthScore - 1);
+      else valueScore = Math.max(0, valueScore - 1);
+      pickedTeam = null;
+    } else {
+      if (pickedTeam === 'growth') growthScore = Math.max(0, growthScore - 1);  // 다른 팀이 선택돼 있었으면 되돌림
+      else if (pickedTeam === 'value') valueScore = Math.max(0, valueScore - 1);
+      if (team === 'growth') growthScore++; else valueScore++;          // 선택한 팀 +1 즉시 반영
+      pickedTeam = team;
+    }
+    updateHomeScore();
+    renderPresenter(); broadcast();                                     // 관객 화면 즉시 갱신
   }
 
   // 중간에 결과 발표 (현재 점수로 우승 팀 확정)
   function finishQuiz() {
     if (!presMode || presDone) return;
-    if (pickedTeam === 'growth') growthScore++;
-    else if (pickedTeam === 'value') valueScore++;
     pickedTeam = null;
     presDone = true;
     playFanfare();
