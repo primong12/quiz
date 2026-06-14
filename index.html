@@ -241,6 +241,25 @@
   .answer-sheet td.ans { font-weight: 800; color: #e8467c; }
   .answer-sheet.soon { color: #b6aecb; font-weight: 600; font-size: 14px; }
   #adminBody { max-width: 820px; margin: 0 auto; }
+  .admin-pick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .admin-pick {
+    border: none; cursor: pointer; color: #fff; border-radius: 18px; padding: 16px 12px;
+    min-height: 96px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.18); transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .admin-pick:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 14px 28px rgba(0,0,0,.28); }
+  .admin-pick:active { transform: translateY(-1px) scale(.99); }
+  .admin-pick .emoji { font-size: 36px; line-height: 1; }
+  .admin-pick .t { font-size: 18px; font-weight: 800; }
+  .admin-pick .c { font-size: 13px; font-weight: 700; opacity: .9; background: rgba(0,0,0,.22); padding: 2px 10px; border-radius: 99px; }
+  .admin-pick.soon { background: #d9d2e8 !important; color: #6b6280; cursor: default; opacity: .8; }
+  .admin-back {
+    border: none; cursor: pointer; background: #ece6f7; color: #6a5d8a; font-weight: 800; font-size: 15px;
+    padding: 10px 18px; border-radius: 99px; margin-bottom: 16px;
+  }
+  .admin-back:hover { background: #ddd3f0; }
+  @media (max-width: 1080px) { .admin-pick-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 720px)  { .admin-pick-grid { grid-template-columns: repeat(2, 1fr); } }
 
   /* ===== 발표 표지(준비) 화면 ===== */
   .cover-card { width: 100%; max-width: 900px; min-height: 460px; margin: 0 auto;
@@ -1137,6 +1156,7 @@
   const SONG_Y2K = [
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/6a/25/10/6a2510dc-d8b2-11cc-8616-41ac44ddf33b/mzaf_6715468866373289994.plus.aac.p.m4a", company: "검은 고양이 네로", ceo: "터보" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/69/ae/94/69ae948a-a986-5fdd-4bc8-c645e9c2e67c/mzaf_15179820352132273152.plus.aac.p.m4a", company: "성인식", ceo: "박지윤" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/be/50/fb/be50fb56-3f7b-8d28-780e-72a51f462297/mzaf_13932827511355052947.plus.aac.p.m4a", company: "순정", ceo: "코요태" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/0b/b3/f2/0bb3f25d-6830-0cf0-6e55-4ca003227e0a/mzaf_6722396325576980982.plus.aac.p.m4a", company: "Tell Me Tell Me", ceo: "샵" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/95/55/70/9555707d-733e-e79c-8316-4b2f798f702f/mzaf_8256146321191964484.plus.aac.p.m4a", company: "No.1", ceo: "보아" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/33/bd/92/33bd9227-55e8-776e-9bf1-d5b49e0495e3/mzaf_2579457300533113674.plus.aac.p.m4a", company: "좋은 사람", ceo: "토이" },
@@ -1153,7 +1173,6 @@
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/c9/af/ab/c9afabff-d82d-da4e-5d26-676b8a91c9bc/mzaf_10766297628448038922.plus.aac.p.m4a", company: "날개 잃은 천사", ceo: "룰라" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/da/7c/e9/da7ce9ad-9ca3-2d94-6919-4e437c2df6d1/mzaf_3629705757468826121.plus.aac.p.m4a", company: "내 남자친구에게", ceo: "핑클" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/82/53/d5/8253d5aa-43ce-5103-1eb7-b81b39a1d73e/mzaf_18061176206684687594.plus.aac.p.m4a", company: "그녀와의 이별", ceo: "김현정" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/be/50/fb/be50fb56-3f7b-8d28-780e-72a51f462297/mzaf_13932827511355052947.plus.aac.p.m4a", company: "순정", ceo: "코요태" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/02/36/f5/0236f54a-f30c-c6ec-f89c-0db1ed86c321/mzaf_14121833226193995076.plus.aac.p.m4a", company: "해변의 여인", ceo: "쿨" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/79/0c/bf/790cbf35-ff62-6843-7deb-6e612a09d458/mzaf_15686156230106978567.plus.aac.p.m4a", company: "버스 안에서", ceo: "자자" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/35/9a/bd/359abd7e-75fb-a112-a338-3b0865d1882b/mzaf_813279759223266637.plus.aac.p.m4a", company: "꿍따리 샤바라", ceo: "클론" },
@@ -1379,29 +1398,47 @@
   // 준비 중인 다른 퀴즈 목록 (정답지 화면에 함께 표시)
   const UPCOMING = [];
 
+  const ADMIN_KEYS = ['ceo', 'krStar', 'krTicker', 'usTicker', 'cast', 'intlStar', 'sports', 'role', 'quote', 'charL', 'landmark', 'econ', 'song', 'y2k', 'logoIntl', 'logoKr'];
+
+  // 관리자 1단계: 퀴즈 선택 화면
   function showAdmin() {
-    let html = '';
-    for (const key of ['ceo', 'krStar', 'krTicker', 'usTicker', 'cast', 'intlStar', 'sports', 'role', 'quote', 'charL', 'landmark', 'econ', 'song', 'y2k', 'logoIntl', 'logoKr']) {
+    let html = '<div class="admin-pick-grid">';
+    for (const key of ADMIN_KEYS) {
       const q = QUIZZES[key];
-      const rows = q.items.map((it, i) => {
-        let ans;
-        if (it.company !== undefined) ans = it.company + (it.ceo ? ' <span style="color:#aaa;font-weight:600">· ' + it.ceo + '</span>' : '');
-        else if (it.q)  ans = '<span style="color:#888;font-weight:700">' + it.q + '</span> → ' + it.answer;
-        else            ans = it.answer;
-        return '<tr><td class="no">' + (i + 1) + '</td><td class="ans">' + ans + '</td></tr>';
-      }).join('');
       html +=
-        '<div class="answer-sheet">' +
-          '<h3>' + q.title + ' <span class="count">· 총 ' + q.items.length + '문제</span></h3>' +
-          '<table><tbody>' + rows + '</tbody></table>' +
-        '</div>';
+        '<button class="admin-pick" style="background:' + q.grad + '" onclick="showAdminQuiz(\'' + key + '\')">' +
+          '<span class="emoji">' + q.emoji + '</span>' +
+          '<span class="t">' + q.title + '</span>' +
+          '<span class="c">' + q.items.length + '문제</span>' +
+        '</button>';
     }
     html += UPCOMING.map(name =>
-      '<div class="answer-sheet soon">🔒 ' + name + ' · 준비 중</div>'
+      '<button class="admin-pick soon" disabled>🔒 ' + name + '<span class="c">준비 중</span></button>'
     ).join('');
+    html += '</div>';
 
     document.getElementById('adminBody').innerHTML = html;
     show('admin');
+  }
+
+  // 관리자 2단계: 선택한 퀴즈의 정답지만 표시
+  function showAdminQuiz(key) {
+    const q = QUIZZES[key];
+    const rows = q.items.map((it, i) => {
+      let ans;
+      if (it.company !== undefined) ans = it.company + (it.ceo ? ' <span style="color:#aaa;font-weight:600">· ' + it.ceo + '</span>' : '');
+      else if (it.q)  ans = '<span style="color:#888;font-weight:700">' + it.q + '</span> → ' + it.answer;
+      else            ans = it.answer;
+      return '<tr><td class="no">' + (i + 1) + '</td><td class="ans">' + ans + '</td></tr>';
+    }).join('');
+
+    document.getElementById('adminBody').innerHTML =
+      '<button class="admin-back" onclick="showAdmin()">← 퀴즈 목록</button>' +
+      '<div class="answer-sheet">' +
+        '<h3>' + q.emoji + ' ' + q.title + ' <span class="count">· 총 ' + q.items.length + '문제</span></h3>' +
+        '<table><tbody>' + rows + '</tbody></table>' +
+      '</div>';
+    window.scrollTo(0, 0);
   }
 
   function renderQuestion() {
