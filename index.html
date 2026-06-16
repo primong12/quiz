@@ -150,10 +150,10 @@
   .bar > div { height: 100%; width: 0; background: linear-gradient(90deg,#ffe259,#ffa751); border-radius: 99px; transition: width .4s ease; }
 
   .quiz-card {
-    background: #fff; border-radius: 28px; padding: 28px; max-width: min(96vw, 1080px); margin: 0 auto;
-    box-shadow: 0 18px 40px rgba(0,0,0,.25); text-align: center;
+    background: transparent; border-radius: 28px; padding: 28px; max-width: min(96vw, 1080px); margin: 0 auto;
+    box-shadow: none; text-align: center;
   }
-  .quiz-card h2 { font-size: 26px; font-weight: 800; margin-bottom: 24px; color: #3a2d5c; }
+  .quiz-card h2 { font-size: 26px; font-weight: 800; margin-bottom: 24px; color: #f6ecd0; text-shadow: 0 2px 10px rgba(0,0,0,.4); }
   .photo-box {
     height: min(62vh, 660px); aspect-ratio: 4/3; width: auto; max-width: 100%; margin: 0 auto 14px;
     border-radius: 18px; overflow: hidden; background: #1a1d2b;
@@ -161,9 +161,9 @@
     box-shadow: inset 0 0 0 4px rgba(0,0,0,.04);
   }
   .photo-box img { width: 100%; height: 100%; object-fit: contain; }
-  .photo-box.logo-mode { background: #fff; }
+  .photo-box.logo-mode { background: transparent; box-shadow: none; }
   .photo-box.logo-mode img { padding: 5%; box-sizing: border-box; }
-  .aud-photo-box.logo-mode { background: #fff; }
+  .aud-photo-box.logo-mode { background: transparent; box-shadow: none; }
   .aud-photo-box.logo-mode img { padding: 4%; box-sizing: border-box; }
   .pres-mediabox.logo-mode { background: #fff; border-radius: 14px; }
   .pres-mediabox.logo-mode img { padding: 4%; box-sizing: border-box; }
@@ -185,7 +185,7 @@
   @keyframes lpspin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
   /* 티커 표시 (사진 대신 종목코드/티커를 크게) */
   .photo-box.ticker-mode { aspect-ratio: auto; height: auto; min-height: 160px;
-    background: linear-gradient(135deg,#1e2746,#2d3a6b); box-shadow: none; }
+    background: transparent; box-shadow: none; }
   .photo-box.ticker-mode { min-height: 230px; }
   .photo-box.audio-mode { aspect-ratio: auto; height: auto; min-height: 240px; background: transparent; box-shadow: none; }
   .aud-photo-box.audio-on { aspect-ratio: auto; min-height: 0; background: transparent; box-shadow: none; }
@@ -196,17 +196,16 @@
   }
   /* 경제·투자 용어(설명형): 남색 박스 제거 + 작은 글씨 + 최대 3줄 */
   .photo-box.ticker-mode.desc, .aud-photo-box.ticker.desc {
-    background: #eef1f8; box-shadow: none; min-height: 0;
+    background: transparent; box-shadow: none; min-height: 0;
   }
   .ticker-display.desc, #audTicker.desc, .pres-ticker.desc {
     font-family: 'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
-    color: #232a45; letter-spacing: 0; text-shadow: none; font-weight: 800;
-    line-height: 1.45; white-space: normal; word-break: keep-all;
-    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3;
-    overflow: hidden; padding: 20px 26px; max-width: 92%;
+    color: #ffe259; letter-spacing: 0; text-shadow: 0 3px 14px rgba(0,0,0,.45); font-weight: 800;
+    line-height: 1.35; word-break: keep-all;
+    overflow: hidden; padding: 16px 22px; max-width: 96%;
   }
   .ticker-display.desc { font-size: clamp(30px, 6.75vw, 50px); }
-  .pres-ticker.desc { font-size: 45px; letter-spacing: 0; }
+  .pres-ticker.desc { font-size: 45px; letter-spacing: 0; color: #232a45; text-shadow: none; }
   #audTicker.desc { font-size: clamp(60px, 10.5vw, 117px); }
 
   /* 정답 영역 */
@@ -409,7 +408,7 @@
     background: #1a1d2b; border-radius: 24px; overflow: hidden;
     display: flex; align-items: center; justify-content: center; box-shadow: 0 20px 44px rgba(0,0,0,.32); }
   .aud-photo-box.ticker { aspect-ratio: auto; height: auto; min-height: 260px;
-    background: linear-gradient(135deg,#1e2746,#2d3a6b); }
+    background: transparent; box-shadow: none; }
   .aud-photo-box img { width: 100%; height: 100%; object-fit: contain; }
   #audTicker { font-family: 'SF Mono','Consolas',monospace; font-weight: 800;
     font-size: 150px; color: #ffe259; letter-spacing: 6px; text-shadow: 0 4px 18px rgba(0,0,0,.4); }
@@ -1715,7 +1714,20 @@
   const TICKER_MAXFS = { tickerDisplay: 72, presTicker: 64, audTicker: 150 };
   function fitTicker(el) {
     if (!el || el.style.display === 'none') return;
-    if (el.classList.contains('desc')) { el.style.whiteSpace = ''; el.style.fontSize = ''; return; } // 설명형은 여러 줄 허용
+    if (el.classList.contains('desc')) { // 설명형: 한 줄 우선, 너무 길면 줄바꿈 허용
+      el.style.whiteSpace = 'nowrap';
+      const maxD = el.id === 'audTicker' ? Math.max(40, Math.round(window.innerHeight * 0.12))
+                 : (el.id === 'presTicker' ? 45 : 50);
+      const minD = el.id === 'audTicker' ? 36 : 18;
+      let fd = maxD; el.style.fontSize = fd + 'px';
+      const pd = el.parentElement || el; const td = pd.clientWidth * 0.94;
+      if (td) {
+        let g2 = 0;
+        while (el.scrollWidth > td && fd > minD && g2 < 300) { fd -= 2; el.style.fontSize = fd + 'px'; g2++; }
+        if (el.scrollWidth > td) el.style.whiteSpace = 'normal'; // 최소 크기로도 안 들어오면 줄바꿈
+      }
+      return;
+    }
     el.style.whiteSpace = 'nowrap';
     const max = el.id === 'audTicker' ? Math.max(60, Math.round(window.innerHeight * 0.34)) : (TICKER_MAXFS[el.id] || 72);
     let fs = max; el.style.fontSize = fs + 'px';
