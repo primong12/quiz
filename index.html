@@ -702,7 +702,7 @@
   <!-- 관객 화면 (빔프로젝터 모니터, 새 창) -->
   <section id="audience" class="screen">
     <div class="aud-layout">
-      <div class="team-side growth"><div class="ts-name">GROWTH</div><div class="ts-score" id="audScoreG">0</div></div>
+      <div class="team-side growth" id="audTeamG"><div class="ts-name">GROWTH</div><div class="ts-score" id="audScoreG">0</div></div>
       <div class="aud-center">
         <div class="aud-progress" id="audProgress"></div>
     <div class="aud-photo-box" id="audPhotoBox">
@@ -717,7 +717,7 @@
     </div>
     <div id="audDoneMsg" class="aud-done" style="display:none">🎉 끝!</div>
       </div>
-      <div class="team-side value"><div class="ts-name">VALUE</div><div class="ts-score" id="audScoreV">0</div></div>
+      <div class="team-side value" id="audTeamV"><div class="ts-name">VALUE</div><div class="ts-score" id="audScoreV">0</div></div>
     </div>
   </section>
 
@@ -1696,7 +1696,7 @@
   }
 
   function broadcast() {
-    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone, g: growthScore, v: valueScore, hint: hintPos });
+    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone, g: growthScore, v: valueScore, hint: hintPos, picked: pickedTeam });
   }
 
   // 표지(준비) 화면 렌더 — 발표자·관객 공용
@@ -1811,6 +1811,8 @@
 
     document.getElementById('audScoreG').textContent = data.g || 0;
     document.getElementById('audScoreV').textContent = data.v || 0;
+    document.getElementById('audTeamG').classList.toggle('picked', data.picked === 'growth');
+    document.getElementById('audTeamV').classList.toggle('picked', data.picked === 'value');
 
     const q = QUIZZES[data.key];
     const reveal = document.getElementById('audReveal');
