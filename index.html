@@ -7,6 +7,7 @@
 <title>엘리트 클럽 퀴즈</title>
 <link rel="icon" type="image/png" href="images/elite-club-icon.png">
 <link rel="apple-touch-icon" href="images/elite-club-icon.png">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -15,13 +16,24 @@
   body {
     font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background-color: #141b30;
+    background-image:
+      radial-gradient(rgba(255,255,255,.05) 1px, transparent 1.4px),
+      radial-gradient(ellipse 52% 44% at 6% -6%, rgba(86,150,255,.32), transparent 72%),
+      radial-gradient(ellipse 50% 48% at 100% 106%, rgba(120,150,215,.28), transparent 72%),
+      radial-gradient(ellipse 70% 58% at 50% 48%, rgba(48,66,128,.32), transparent 78%),
+      linear-gradient(160deg, #0f1528 0%, #1b2647 55%, #2c3c72 100%);
+    background-size: 24px 24px, auto, auto, auto, auto;
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0;
+    background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat;
     background-attachment: fixed;
     color: #2d2d44;
     display: flex; justify-content: center; align-items: center;
     padding: 40px 32px;
   }
-  .wrap { width: 100%; max-width: 1160px; }
+  .wrap { width: 100%; max-width: 1160px; position: relative; z-index: 1; }
+  /* 배경 아르데코 라인 장식 */
+  .bg-deco { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
 
   /* ===== 화면 전환 ===== */
   .screen { display: none; }
@@ -37,9 +49,12 @@
              text-shadow: 0 4px 16px rgba(0,0,0,.25); }
   .hero p { font-size: 16px; opacity: .92; }
   .hero-row { display: flex; align-items: center; justify-content: center; gap: 22px; }
-  .hs-team { border-radius: 16px; padding: 10px 18px; color: #fff; text-align: center; box-shadow: 0 6px 16px rgba(0,0,0,.22); min-width: 100px; flex-shrink: 0; }
-  .hs-team.growth { background: linear-gradient(135deg,#11998e,#38ef7d); }
-  .hs-team.value { background: linear-gradient(135deg,#eb3349,#f45c43); }
+  .hs-team { border-radius: 16px; padding: 10px 20px; text-align: center; min-width: 100px; flex-shrink: 0;
+    background: linear-gradient(160deg,#1d2848,#131c34);
+    border: 2px solid #d4b06a;
+    box-shadow: 0 6px 16px rgba(0,0,0,.3), inset 0 0 14px rgba(212,176,106,.12); }
+  .hs-team.growth { color: #2fe27a; }
+  .hs-team.value { color: #ff5454; }
   .hs-team .hs-name { font-size: 15px; font-weight: 900; letter-spacing: 1px; }
   .hs-team .hs-num { font-size: 40px; font-weight: 900; line-height: 1; }
   .hs-adj { display: none; justify-content: center; gap: 6px; margin-top: 8px; }
@@ -62,41 +77,53 @@
   .slot-item { font-size: 44px; font-weight: 900; color: #3a2d5c; min-height: 64px; line-height: 1.3; }
   .slot-item.slot-hit { color: #ee0979; transform: scale(1.18); transition: transform .3s cubic-bezier(.2,1.4,.4,1); }
 
-  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 13px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
   .card {
-    border-radius: 22px; padding: 16px 18px; min-height: 108px;
+    --accent: #5b86e5;
+    border-radius: 18px; padding: clamp(8px, 1.4vw, 18px); min-height: clamp(66px, 9vw, 108px);
     color: #fff; cursor: pointer; position: relative; overflow: hidden;
-    display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 14px; text-align: center;
-    box-shadow: 0 10px 24px rgba(0,0,0,.18);
-    transition: transform .15s ease, box-shadow .15s ease;
+    display: flex; flex-direction: row; align-items: center; justify-content: center; gap: clamp(7px, 1.2vw, 14px); text-align: center;
+    background: linear-gradient(160deg, #303d66 0%, #222d4e 100%);
+    border: 1.5px solid rgba(255,255,255,.14);
+    border-top: 4px solid var(--accent);
+    box-shadow: 0 10px 26px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06);
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
   }
-  .card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 16px 32px rgba(0,0,0,.28); }
+  .card::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 0; height: 100%;
+    background: linear-gradient(160deg, var(--accent), transparent 62%);
+    opacity: .22; pointer-events: none;
+  }
+  .card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 18px 38px rgba(0,0,0,.5); border-color: var(--accent); }
+  .card:hover::before { opacity: .34; }
   .card:active { transform: translateY(-1px) scale(.99); }
-  .card .emoji { font-size: 50px; flex-shrink: 0; }
-  .card .title { font-size: 28px; font-weight: 800; line-height: 1.2; }
+  .card > * { position: relative; z-index: 1; }
+  .card .emoji { font-size: 50px; flex-shrink: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,.35)); }
+  .card .emoji i.ph { font-size: clamp(24px, 3.9vw, 46px); color: var(--accent); display: block; line-height: 1; }
+  .card .title { font-size: clamp(13px, 2.4vw, 28px); font-weight: 800; line-height: 1.2; }
   .card .sub { display: none; }
-  .c1 { background: linear-gradient(135deg,#f857a6,#ff5858); }
-  .c2 { background: linear-gradient(135deg,#43cea2,#185a9d); }
-  .c3 { background: linear-gradient(135deg,#fa709a,#fee140); }
-  .c4 { background: linear-gradient(135deg,#4facfe,#00f2fe); }
-  .c5 { background: linear-gradient(135deg,#a06bff,#6a3093); }
-  .c6 { background: linear-gradient(135deg,#ff9966,#ff5e62); }
-  .c7 { background: linear-gradient(135deg,#11998e,#38ef7d); }
-  .c8 { background: linear-gradient(135deg,#ee0979,#ff6a00); }
-  .c9 { background: linear-gradient(135deg,#f7971e,#ffd200); }
-  .c10 { background: linear-gradient(135deg,#2193b0,#6dd5ed); }
-  .c11 { background: linear-gradient(135deg,#654ea3,#eaafc8); }
-  .c12 { background: linear-gradient(135deg,#8e2de2,#4a00e0); }
-  .c13 { background: linear-gradient(135deg,#ff512f,#dd2476); }
-  .c16 { background: linear-gradient(135deg,#36d1dc,#5b86e5); }
-  .c17 { background: linear-gradient(135deg,#f7b733,#fc4a1a); }
-  .c18 { background: linear-gradient(135deg,#c471f5,#fa71cd); }
-  .c19 { background: linear-gradient(135deg,#fc466b,#3f5efb); }
-  .c20 { background: linear-gradient(135deg,#1a2980,#26d0ce); }
-  .c21 { background: linear-gradient(135deg,#0b8793,#360033); }
-  .c22 { background: linear-gradient(135deg,#373b44,#4286f4); }
-  .c14 { background: linear-gradient(135deg,#909497,#566573); }
-  .c15 { background: linear-gradient(135deg,#8d7b68,#544a3d); }
+  .c1  { --accent: #ff6b81; }
+  .c2  { --accent: #4ad8b0; }
+  .c3  { --accent: #ff8fb0; }
+  .c4  { --accent: #4facfe; }
+  .c5  { --accent: #a98bff; }
+  .c6  { --accent: #ff8a5c; }
+  .c7  { --accent: #3ee08a; }
+  .c8  { --accent: #ff8a3d; }
+  .c9  { --accent: #ffcc4d; }
+  .c10 { --accent: #6dd5ed; }
+  .c11 { --accent: #e6a8d0; }
+  .c12 { --accent: #a06bff; }
+  .c13 { --accent: #ff5c8a; }
+  .c16 { --accent: #5b9cff; }
+  .c17 { --accent: #ff7a45; }
+  .c18 { --accent: #f08ad8; }
+  .c19 { --accent: #6f86ff; }
+  .c20 { --accent: #3fd0c9; }
+  .c21 { --accent: #36b3a8; }
+  .c22 { --accent: #5b9bf0; }
+  .c14 { --accent: #aab2bd; }
+  .c15 { --accent: #c2a98a; }
   .card.soon { opacity: .72; filter: grayscale(.25); cursor: default; }
   .card.locked { cursor: not-allowed; }
   .card.visited { opacity: .42; filter: grayscale(.5); }
@@ -246,25 +273,24 @@
   .answer-sheet td.ans { font-weight: 800; color: #e8467c; }
   .answer-sheet.soon { color: #b6aecb; font-weight: 600; font-size: 14px; }
   #adminBody { max-width: 820px; margin: 0 auto; }
-  .admin-pick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .admin-pick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(6px, 1vw, 12px); }
   .admin-pick {
-    border: none; cursor: pointer; color: #fff; border-radius: 18px; padding: 16px 12px;
-    min-height: 96px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    border: none; cursor: pointer; color: #fff; border-radius: 18px; padding: clamp(8px, 1.5vw, 16px) clamp(6px, 1.1vw, 12px);
+    min-height: clamp(60px, 8vw, 96px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(3px, .6vw, 6px);
     box-shadow: 0 8px 20px rgba(0,0,0,.18); transition: transform .15s ease, box-shadow .15s ease;
   }
   .admin-pick:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 14px 28px rgba(0,0,0,.28); }
   .admin-pick:active { transform: translateY(-1px) scale(.99); }
-  .admin-pick .emoji { font-size: 36px; line-height: 1; }
-  .admin-pick .t { font-size: 18px; font-weight: 800; }
-  .admin-pick .c { font-size: 13px; font-weight: 700; opacity: .9; background: rgba(0,0,0,.22); padding: 2px 10px; border-radius: 99px; }
+  .admin-pick .emoji { font-size: clamp(18px, 2.9vw, 36px); line-height: 1; }
+  .admin-pick .t { font-size: clamp(11px, 1.55vw, 18px); font-weight: 800; }
+  .admin-pick .c { font-size: clamp(9px, 1.1vw, 13px); font-weight: 700; opacity: .9; background: rgba(0,0,0,.22); padding: 2px clamp(5px, .9vw, 10px); border-radius: 99px; }
   .admin-pick.soon { background: #d9d2e8 !important; color: #6b6280; cursor: default; opacity: .8; }
   .admin-back {
     border: none; cursor: pointer; background: #ece6f7; color: #6a5d8a; font-weight: 800; font-size: 15px;
     padding: 10px 18px; border-radius: 99px; margin-bottom: 16px;
   }
   .admin-back:hover { background: #ddd3f0; }
-  @media (max-width: 1080px) { .admin-pick-grid { grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 720px)  { .admin-pick-grid { grid-template-columns: repeat(2, 1fr); } }
+  /* 관리자 그리드도 항상 4열 유지(카드 내부가 비례 축소) */
 
   /* ===== 발표 표지(준비) 화면 ===== */
   .cover-card { width: 100%; max-width: 900px; min-height: 460px; margin: 0 auto;
@@ -393,6 +419,8 @@
   body.audience-mode #audience .aud-center { display: flex; flex-direction: column; justify-content: center; min-height: 0; gap: 1.2vmin; }
   body.audience-mode #audience .aud-photo-box { flex: 1 1 auto; min-height: 0; height: auto; width: 100%; max-width: none; aspect-ratio: auto; }
   body.audience-mode #audience .aud-progress { font-size: clamp(22px, 5vmin, 110px); margin: 0; }
+  /* 빔(관객) 메인 화면: 각 카드 좌상단 '몇 문항' 배지 숨김 */
+  body.audience-mode #home .count-badge { display: none; }
   body.audience-mode #audience .aud-answer-name { font-size: clamp(36px, 8.5vmin, 150px); }
   body.audience-mode #audience #audSub { font-size: clamp(16px, 3vmin, 44px); }
   body.audience-mode #audience .aud-done { font-size: clamp(40px, 9vmin, 150px); margin: 0; }
@@ -400,26 +428,87 @@
   body.audience-mode #audience .team-side .ts-name { font-size: clamp(16px, 3vmin, 44px); }
   body.audience-mode #audience .team-side .ts-score { font-size: clamp(40px, 9vmin, 150px); }
 
-  /* ===== 반응형: 화면 좁아지면 열 수 줄이기 ===== */
-  @media (max-width: 1080px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  /* 관객(빔) 모드 전용: 홈을 화면 전체에 꽉 채우고 4열×4행 그리드가 세로까지 채우게
+     (발표자 본인 화면 홈은 기본 화면과 동일하게 유지) */
+  body.audience-mode #home.active {
+    display: flex; flex-direction: column; box-sizing: border-box;
+    padding: 2vmin; overflow: hidden; height: 100vh;
+  }
+  body.audience-mode #home .hero-row { flex: 0 0 auto; margin-bottom: 1.6vmin; gap: clamp(16px, 3vmin, 48px); }
+  /* 빔(관객) 화면: 팀 점수 박스만 크게 */
+  body.audience-mode #home .hs-team {
+    padding: clamp(10px, 1.7vmin, 24px) clamp(16px, 2.6vmin, 40px);
+    min-width: clamp(120px, 15vmin, 260px);
+    border-width: clamp(2px, .35vmin, 4px); }
+  body.audience-mode #home .hs-team .hs-name { font-size: clamp(16px, 2.5vmin, 44px); letter-spacing: 2px; margin-bottom: .4vmin; }
+  body.audience-mode #home .hs-team .hs-num { font-size: clamp(42px, 8vmin, 130px); }
+  body.audience-mode #home .hero { margin: 0; }
+  body.audience-mode #home .hero .brand-logo {
+    width: clamp(38px, 6vmin, 72px); height: clamp(38px, 6vmin, 72px); border-radius: 14px; }
+  body.audience-mode #home .hero h1 { font-size: clamp(18px, 3.6vmin, 40px); margin: .4vmin 0; }
+  body.audience-mode #home .hero p { font-size: clamp(11px, 1.9vmin, 18px); margin: 0; }
+  body.audience-mode #home .hero .present-toggle { margin-top: .6vmin; }
+  body.audience-mode #home .grid {
+    flex: 1 1 auto; min-height: 0;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    grid-auto-rows: 1fr;
+    gap: clamp(10px, 2.2vmin, 30px);
+  }
+  body.audience-mode #home .card {
+    flex-direction: row;
+    min-height: 0;
+    padding: clamp(6px, 1.4vmin, 16px);
+    border-radius: clamp(10px, 1.8vmin, 18px);
+    border-top-width: clamp(2px, .5vmin, 4px);
+    gap: clamp(4px, 1vmin, 12px);
+  }
+  body.audience-mode #home .card .emoji i.ph {
+    font-size: clamp(24px, 8.5vmin, 120px); }
+  body.audience-mode #home .card .title {
+    font-size: clamp(13px, 3.8vmin, 54px); line-height: 1.1; white-space: nowrap; }
+
+  /* ===== 반응형: 좁아져도 4열 유지(카드 내부가 비례 축소) ===== */
   @media (max-width: 920px) {
-    .grid { grid-template-columns: repeat(2, 1fr); }
     .hero h1 { font-size: 44px; }
   }
   @media (max-width: 560px) {
     body { padding: 24px 16px; }
-    .grid { grid-template-columns: 1fr; }
     .hero .crown { font-size: 60px; }
     .hero .brand-logo { width: 96px; height: 96px; }
     .hero h1 { font-size: 36px; }
     .hero p { font-size: 16px; }
-    .card { min-height: 150px; padding: 26px 22px; }
     .ticker-display { font-size: 52px; }
     .company { font-size: 30px; }
   }
 </style>
 </head>
 <body>
+<svg class="bg-deco" viewBox="0 0 1440 1024" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <g id="deco-corner" fill="none" stroke="#d4b06a" stroke-width="1.3">
+      <path d="M70 340 L70 70 L340 70" stroke-opacity="0.28" stroke-width="1.7"/>
+      <path d="M70 70 L250 250" stroke-opacity="0.13"/>
+      <line x1="120" y1="70" x2="70" y2="120" stroke-opacity="0.12"/>
+      <line x1="185" y1="70" x2="70" y2="185" stroke-opacity="0.10"/>
+      <line x1="250" y1="70" x2="70" y2="250" stroke-opacity="0.08"/>
+      <path d="M98 98 L188 98 L98 188 Z" stroke-opacity="0.13"/>
+    </g>
+  </defs>
+  <g fill="none" stroke="#d4b06a" stroke-width="1.4">
+    <rect x="44" y="44" width="1352" height="936" stroke-opacity="0.17"/>
+    <rect x="58" y="58" width="1324" height="908" stroke-opacity="0.08"/>
+  </g>
+  <use href="#deco-corner"/>
+  <use href="#deco-corner" transform="translate(1440,0) scale(-1,1)"/>
+  <use href="#deco-corner" transform="translate(0,1024) scale(1,-1)"/>
+  <use href="#deco-corner" transform="translate(1440,1024) scale(-1,-1)"/>
+  <g fill="none" stroke="#d4b06a" transform="translate(720,512)">
+    <path d="M0 -155 L155 0 L0 155 L-155 0 Z" stroke-opacity="0.10" stroke-width="1.4"/>
+    <path d="M0 -105 L105 0 L0 105 L-105 0 Z" stroke-opacity="0.08" stroke-width="1.2"/>
+    <path d="M0 -55 L55 0 L0 55 L-55 0 Z" stroke-opacity="0.07" stroke-width="1.1"/>
+  </g>
+</svg>
 <div class="wrap">
 
   <!-- 메인 화면 -->
@@ -437,67 +526,67 @@
     </div>
     <div class="grid">
       <div class="card c1" onclick="startQuiz('ceo')">
-        <div class="emoji">👔</div>
+        <div class="emoji"><i class="ph ph-briefcase"></i></div>
         <div><div class="title">CEO</div><div class="sub">사진 속 CEO의 기업은?</div></div>
       </div>
       <div class="card c4" onclick="startQuiz('krTicker')">
-        <div class="emoji">📈</div>
+        <div class="emoji"><i class="ph ph-chart-line-up"></i></div>
         <div><div class="title">종목 코드</div><div class="sub">종목코드로 기업 맞히기</div></div>
       </div>
       <div class="card c5" onclick="startQuiz('usTicker')">
-        <div class="emoji">🌎</div>
+        <div class="emoji"><i class="ph ph-currency-dollar"></i></div>
         <div><div class="title">티커</div><div class="sub">티커로 기업 맞히기</div></div>
       </div>
       <div class="card c6" onclick="startQuiz('cast')">
-        <div class="emoji">🎬</div>
+        <div class="emoji"><i class="ph ph-film-slate"></i></div>
         <div><div class="title">HS 출연자</div><div class="sub">사진 속 출연자는?</div></div>
       </div>
       <div class="card c12" onclick="startQuiz('role')">
-        <div class="emoji">🎭</div>
+        <div class="emoji"><i class="ph ph-mask-happy"></i></div>
         <div><div class="title">등장인물</div><div class="sub">사진 속 배역은?</div></div>
       </div>
       <div class="card c13" onclick="startQuiz('quote')">
-        <div class="emoji">💬</div>
+        <div class="emoji"><i class="ph ph-quotes"></i></div>
         <div><div class="title">명대사</div><div class="sub">사진 속 명대사는?</div></div>
       </div>
       <div class="card c18" onclick="startQuiz('song')">
-        <div class="emoji">🎵</div>
+        <div class="emoji"><i class="ph ph-music-notes"></i></div>
         <div><div class="title">7080</div><div class="sub">노래를 듣고 맞혀요</div></div>
       </div>
       <div class="card c19" onclick="startQuiz('y2k')">
-        <div class="emoji">🕹️</div>
+        <div class="emoji"><i class="ph ph-vinyl-record"></i></div>
         <div><div class="title">Y2K</div><div class="sub">노래를 듣고 맞혀요</div></div>
       </div>
       <div class="card c17" onclick="startQuiz('econ')">
-        <div class="emoji">📊</div>
+        <div class="emoji"><i class="ph ph-chart-pie-slice"></i></div>
         <div><div class="title">경제·투자 용어</div><div class="sub">설명에 맞는 용어는?</div></div>
       </div>
       <div class="card c16" onclick="startQuiz('chosung')">
-        <div class="emoji">🔤</div>
+        <div class="emoji"><i class="ph ph-text-aa"></i></div>
         <div><div class="title">기업 초성</div><div class="sub">초성으로 기업 맞히기</div></div>
       </div>
       <div class="card c9" onclick="startQuiz('sports')">
-        <div class="emoji">🏅</div>
+        <div class="emoji"><i class="ph ph-medal"></i></div>
         <div><div class="title">운동선수</div><div class="sub">사진 속 선수는?</div></div>
       </div>
       <div class="card c14" onclick="startQuiz('charL')">
-        <div class="emoji">🧸</div>
+        <div class="emoji"><i class="ph ph-smiley"></i></div>
         <div><div class="title">캐릭터</div><div class="sub">사진 속 캐릭터는?</div></div>
       </div>
       <div class="card c3" onclick="startQuiz('krStar')">
-        <div class="emoji">🌟</div>
+        <div class="emoji"><i class="ph ph-star"></i></div>
         <div><div class="title">국내 연예인</div><div class="sub">사진 속 인물은?</div></div>
       </div>
       <div class="card c7" onclick="startQuiz('intlStar')">
-        <div class="emoji">🌍</div>
+        <div class="emoji"><i class="ph ph-star-four"></i></div>
         <div><div class="title">해외 연예인</div><div class="sub">사진 속 인물은?</div></div>
       </div>
       <div class="card c20" onclick="startQuiz('logoIntl')">
-        <div class="emoji">🌐</div>
+        <div class="emoji"><i class="ph ph-globe-hemisphere-west"></i></div>
         <div><div class="title">해외 로고</div><div class="sub">로고로 기업 맞히기</div></div>
       </div>
       <div class="card c21" onclick="startQuiz('logoKr')">
-        <div class="emoji">🏢</div>
+        <div class="emoji"><i class="ph ph-buildings"></i></div>
         <div><div class="title">국내 로고</div><div class="sub">로고로 기업 맞히기</div></div>
       </div>
     </div>
