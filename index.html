@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
 <title>엘리트 클럽 퀴즈</title>
+<link rel="icon" type="image/png" href="images/elite-club-icon.png">
+<link rel="apple-touch-icon" href="images/elite-club-icon.png">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -29,6 +31,8 @@
   /* ===== 메인 ===== */
   .hero { text-align: center; color: #fff; margin: 0 0 18px; }
   .hero .crown { font-size: 52px; filter: drop-shadow(0 4px 8px rgba(0,0,0,.25)); }
+  .hero .brand-logo { width: 116px; height: 116px; border-radius: 22px; object-fit: cover;
+    box-shadow: 0 8px 22px rgba(0,0,0,.32); border: 2px solid rgba(255,255,255,.35); }
   .hero h1 { font-size: 40px; font-weight: 800; margin: 6px 0 6px; letter-spacing: -1.5px;
              text-shadow: 0 4px 16px rgba(0,0,0,.25); }
   .hero p { font-size: 16px; opacity: .92; }
@@ -360,6 +364,7 @@
   body.audience-mode #home .card { pointer-events: none; }
   body.audience-mode .hero { margin: 0 0 12px; }
   body.audience-mode .hero .crown { font-size: 40px; }
+  body.audience-mode .hero .brand-logo { width: 88px; height: 88px; border-radius: 18px; }
   body.audience-mode .hero h1 { font-size: 34px; }
   body.audience-mode .present-toggle, body.audience-mode .admin-link { display: none; }
   body.audience-mode .random-btn { pointer-events: none; opacity: .85; }
@@ -405,6 +410,7 @@
     body { padding: 24px 16px; }
     .grid { grid-template-columns: 1fr; }
     .hero .crown { font-size: 60px; }
+    .hero .brand-logo { width: 96px; height: 96px; }
     .hero h1 { font-size: 36px; }
     .hero p { font-size: 16px; }
     .card { min-height: 150px; padding: 26px 22px; }
@@ -421,7 +427,7 @@
     <div class="hero-row">
       <div class="hs-team growth"><div class="hs-name">GROWTH</div><div class="hs-num" id="homeScoreG">0</div><div class="hs-adj"><button onclick="addScore('growth',1)">＋</button><button onclick="addScore('growth',-1)">－</button></div></div>
       <div class="hero">
-        <div class="crown">🏆</div>
+        <img class="brand-logo" src="images/elite-club-logo.png" alt="The Elite Club">
         <h1>엘리트 클럽 퀴즈</h1>
         <p>도전할 퀴즈를 골라보세요!</p>
         <div><button class="random-btn" onclick="randomStart()">🎰 랜덤 시작</button></div>
