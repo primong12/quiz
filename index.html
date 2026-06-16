@@ -309,23 +309,26 @@
 
   /* 팀 점수판 */
   .scoreboard { display: flex; align-items: stretch; justify-content: center; gap: 18px; margin-bottom: 14px; }
-  .scoreboard .team { flex: 1; max-width: 260px; border-radius: 18px; padding: 14px 16px; text-align: center; color: #fff; box-shadow: 0 8px 20px rgba(0,0,0,.2); }
-  .scoreboard .team.growth { background: linear-gradient(135deg,#11998e,#38ef7d); }
-  .scoreboard .team.value { background: linear-gradient(135deg,#eb3349,#f45c43); }
+  .scoreboard .team { flex: 1; max-width: 260px; border-radius: 18px; padding: 14px 16px; text-align: center;
+    background: linear-gradient(160deg,#1d2848,#131c34); border: 2px solid #d4b06a;
+    box-shadow: 0 8px 20px rgba(0,0,0,.28), inset 0 0 14px rgba(212,176,106,.12); }
+  .scoreboard .team.growth { color: #2fe27a; }
+  .scoreboard .team.value { color: #ff5454; }
   .scoreboard .team-name { font-size: 22px; font-weight: 900; letter-spacing: 2px; }
-  .scoreboard .team-score { font-size: 46px; font-weight: 900; line-height: 1.1; }
+  .scoreboard .team-score { font-size: 58px; font-weight: 900; line-height: 1.1; }
   .scoreboard .team-check { margin-top: 6px; background: rgba(255,255,255,.25); border: 2px solid rgba(255,255,255,.9); color: #fff; border-radius: 10px; padding: 7px 14px; font-weight: 800; cursor: pointer; font-size: 15px; }
   .scoreboard .team-check:hover { background: rgba(255,255,255,.4); }
   .scoreboard .team.picked { outline: 5px solid #ffd200; outline-offset: 2px; transform: scale(1.04); }
   .scoreboard .vs { align-self: center; font-size: 24px; font-weight: 900; color: #fff; opacity: .85; text-shadow: 0 2px 6px rgba(0,0,0,.3); }
   /* 좌우 팀 패널 */
-  .team-side { width: 160px; flex-shrink: 0; border-radius: 20px; padding: 18px 12px; color: #fff;
+  .team-side { width: 160px; flex-shrink: 0; border-radius: 20px; padding: 18px 12px;
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
-    box-shadow: 0 8px 20px rgba(0,0,0,.2); }
-  .team-side.growth { background: linear-gradient(160deg,#11998e,#38ef7d); }
-  .team-side.value { background: linear-gradient(160deg,#eb3349,#f45c43); }
+    background: linear-gradient(160deg,#1d2848,#131c34); border: 2px solid #d4b06a;
+    box-shadow: 0 8px 20px rgba(0,0,0,.28), inset 0 0 16px rgba(212,176,106,.12); }
+  .team-side.growth { color: #2fe27a; }
+  .team-side.value { color: #ff5454; }
   .team-side .ts-name { font-size: 26px; font-weight: 900; letter-spacing: 2px; }
-  .team-side .ts-score { font-size: 68px; font-weight: 900; line-height: 1; }
+  .team-side .ts-score { font-size: 80px; font-weight: 900; line-height: 1; }
   .team-side .ts-adj { display: flex; gap: 6px; margin: 6px 0; }
   .team-side .ts-adj button { width: 40px; height: 30px; border: none; border-radius: 8px; background: rgba(255,255,255,.3); color: #fff; font-weight: 900; font-size: 14px; cursor: pointer; }
   .team-side .ts-adj button:hover { background: rgba(255,255,255,.5); }
@@ -425,8 +428,8 @@
   body.audience-mode #audience #audSub { font-size: clamp(16px, 3vmin, 44px); }
   body.audience-mode #audience .aud-done { font-size: clamp(40px, 9vmin, 150px); margin: 0; }
   body.audience-mode #audience .team-side { width: clamp(110px, 13vw, 300px); justify-content: center; }
-  body.audience-mode #audience .team-side .ts-name { font-size: clamp(16px, 3vmin, 44px); }
-  body.audience-mode #audience .team-side .ts-score { font-size: clamp(40px, 9vmin, 150px); }
+  body.audience-mode #audience .team-side .ts-name { font-size: clamp(18px, 3.4vmin, 50px); }
+  body.audience-mode #audience .team-side .ts-score { font-size: clamp(48px, 10.5vmin, 180px); }
 
   /* 관객(빔) 모드 전용: 홈을 화면 전체에 꽉 채우고 4열×4행 그리드가 세로까지 채우게
      (발표자 본인 화면 홈은 기본 화면과 동일하게 유지) */
