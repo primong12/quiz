@@ -68,6 +68,10 @@
     box-shadow: 0 10px 28px rgba(238,9,121,.45); margin: 18px 0 6px; transition: transform .15s ease;
     animation: rbpulse 1.8s ease-in-out infinite; }
   .random-btn:hover { transform: scale(1.06); }
+  .final-btn { display: inline-block; background: linear-gradient(135deg,#ffe27a,#ffb43d); color: #3a2a00;
+    border: none; border-radius: 99px; padding: 13px 38px; font-size: 19px; font-weight: 900; cursor: pointer;
+    box-shadow: 0 8px 22px rgba(255,170,40,.42); margin: 4px 0 2px; transition: transform .15s ease; }
+  .final-btn:hover { transform: scale(1.05); }
   @keyframes rbpulse { 0%,100% { box-shadow: 0 10px 28px rgba(238,9,121,.45);} 50% { box-shadow: 0 10px 38px rgba(238,9,121,.75);} }
   .slot-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.65); display: none;
     align-items: center; justify-content: center; z-index: 200; }
@@ -451,7 +455,7 @@
   body.audience-mode .hero .crown { font-size: 40px; }
   body.audience-mode .hero .brand-logo { width: 88px; height: 88px; border-radius: 18px; }
   body.audience-mode .hero h1 { font-size: 34px; }
-  body.audience-mode .present-toggle, body.audience-mode .admin-link { display: none; }
+  body.audience-mode .present-toggle, body.audience-mode .admin-link, body.audience-mode .final-btn { display: none; }
   body.audience-mode .random-btn { pointer-events: none; opacity: .85; }
   #audience { text-align: center; color: #fff; width: 100%; }
   .aud-progress { font-size: 88px; font-weight: 900; margin-bottom: 12px; text-shadow: 0 2px 8px rgba(0,0,0,.3); }
@@ -579,6 +583,7 @@
         <h1>엘리트 클럽 퀴즈</h1>
         <p>도전할 퀴즈를 골라보세요!</p>
         <div><button class="random-btn" onclick="randomStart()">🎰 랜덤 시작</button></div>
+        <div><button class="final-btn" onclick="announceResult()">🏆 팀 결과 발표</button></div>
         <label class="present-toggle"><input type="checkbox" id="presentChk" onchange="togglePresent(this.checked)"> 🎤 발표 모드 (빔프로젝터·듀얼모니터)</label>
       </div>
       <div class="hs-team value"><div class="hs-name">VALUE</div><div class="hs-num" id="homeScoreV">0</div><div class="hs-adj"><button onclick="addScore('value',1)">＋</button><button onclick="addScore('value',-1)">－</button></div></div>
@@ -718,7 +723,6 @@
   <section id="presenter" class="screen">
     <div class="pres-top">
       <button onclick="exitPresent()">← 종료</button>
-      <button onclick="announceResult()" style="background:#ffd200;color:#7a5c00;font-weight:900">🏆 팀 결과 발표</button>
       <button onclick="giveHint()" style="background:#ff9f1c;color:#5a3a00">💡 힌트 (h)</button>
       <span id="presProgress">1 / 1</span>
       <span class="pres-hint">Enter: 정답공개/다음 · 1=VALUE 2=GROWTH 정답체크 · h: 힌트 · ←: 이전 · Esc: 종료</span>
@@ -760,9 +764,6 @@
         <div class="ts-adj"><button onclick="addScore('value',1)">＋1</button><button onclick="addScore('value',-1)">－1</button></div>
         <button class="team-check" onclick="pickTeam('value')">✓ 정답<br>(1)</button>
       </div>
-    </div>
-    <div class="pres-result-bar">
-      <button class="result-btn" onclick="announceResult()">🏆 팀 결과 발표</button>
     </div>
   </section>
 
@@ -1795,10 +1796,9 @@
     document.getElementById('winnerOverlay').classList.add('show');
   }
   function announceResult() {
-    if (!presMode) return;
     showWinner(growthScore, valueScore);
     playVictoryBGM();
-    if (BC) BC.postMessage({ type: 'winner', g: growthScore, v: valueScore });
+    if (BC && presMode) BC.postMessage({ type: 'winner', g: growthScore, v: valueScore });
   }
   function closeWinner() {
     document.getElementById('winnerOverlay').classList.remove('show');
@@ -2028,6 +2028,11 @@
 
   // 키보드: 발표자 화면에서만 동작
   document.addEventListener('keydown', function (e) {
+    // 결과 발표 화면이 떠 있으면 어느 모드든 Enter/Space/Esc로 닫기
+    if (document.getElementById('winnerOverlay').classList.contains('show')) {
+      if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeWinner(); }
+      return;
+    }
     if (!presMode) {
       var quizOn = document.getElementById('quiz').classList.contains('active');
       if (quizOn && cur && cur.mode === 'audio' && e.key === ' ') { e.preventDefault(); toggleSong(); return; }
@@ -2038,11 +2043,6 @@
         if (document.getElementById('reveal').classList.contains('show')) nextQuestion();
         else showAnswer();
       }
-      return;
-    }
-    // 결과 발표 화면이 떠 있으면 Enter/Space/Esc로 닫기 (다른 키 무시)
-    if (document.getElementById('winnerOverlay').classList.contains('show')) {
-      if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeWinner(); }
       return;
     }
     if (cur && cur.mode === 'audio' && !presIntro && !presDone && e.key === ' ') { e.preventDefault(); toggleSong(); return; }
