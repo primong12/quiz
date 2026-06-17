@@ -167,6 +167,9 @@
   .aud-photo-box.logo-mode img { padding: 4%; box-sizing: border-box; }
   .pres-mediabox.logo-mode { background: #fff; border-radius: 14px; }
   .pres-mediabox.logo-mode img { padding: 4%; box-sizing: border-box; }
+  /* 배경이 비치는(투명) 로고는 흰 받침을 깔아 잘 보이게 — 런타임 자동 판별 */
+  .photo-box.logo-mode.logo-white { background: #fff; border-radius: 18px; box-shadow: 0 8px 22px rgba(0,0,0,.28); }
+  .aud-photo-box.logo-mode.logo-white { background: #fff; border-radius: 24px; box-shadow: 0 16px 36px rgba(0,0,0,.32); }
   .photo-box.logo-mode img, .aud-photo-box.logo-mode img, .pres-mediabox.logo-mode img { transition: transform .35s ease; }
   .pres-mediabox.logo-mode { overflow: hidden; }
   .loading { color: #aaa; font-size: 14px; }
@@ -1538,6 +1541,7 @@
       ticker.style.display = 'none'; photo.style.display = 'none';
       loading.style.display = 'block'; loading.textContent = '사진 불러오는 중…';
       photo.src = it.photo;
+      applyLogoBacking(photo, photoBox);
     }
 
     document.getElementById('reveal').classList.remove('show');
@@ -1742,6 +1746,29 @@
     ['tickerDisplay', 'presTicker', 'audTicker'].forEach(function (id) { fitTicker(document.getElementById(id)); });
   });
 
+  // 로고 배경 자동 판별: 모서리가 투명한(배경 비치는) 로고면 흰 받침을 깔아 잘 보이게
+  function applyLogoBacking(img, box) {
+    box.classList.remove('logo-white');
+    if (!box.classList.contains('logo-mode')) return;
+    var src = img.getAttribute('src') || '';
+    if (/\.svg(\?|$)/i.test(src)) { box.classList.add('logo-white'); return; } // SVG는 거의 항상 투명 배경
+    var check = function () {
+      try {
+        var w = img.naturalWidth, h = img.naturalHeight;
+        if (!w || !h) { box.classList.add('logo-white'); return; }
+        var cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+        var ctx = cv.getContext('2d'); ctx.drawImage(img, 0, 0);
+        var pts = [[1, 1], [w - 2, 1], [1, h - 2], [w - 2, h - 2]], transp = 0;
+        for (var i = 0; i < pts.length; i++) {
+          if (ctx.getImageData(pts[i][0], pts[i][1], 1, 1).data[3] < 24) transp++;
+        }
+        if (transp >= 3) box.classList.add('logo-white'); // 모서리 대부분 투명 → 배경 비침
+      } catch (e) { /* 캔버스 접근 실패 시 그대로 둠 */ }
+    };
+    if (img.complete && img.naturalWidth) check();
+    else img.addEventListener('load', check, { once: true });
+  }
+
   // 사진/티커 채우기 (발표자·관객 공용)
   function fillMedia(box, img, ticker, it, mode, audioDisp, doPlay) {
     if (mode === 'audio') {
@@ -1851,6 +1878,7 @@
     fitTicker(document.getElementById('audTicker'));
     box.classList.toggle('desc', !!q.desc);
     box.classList.toggle('logo-mode', !!q.logoQuiz);
+    applyLogoBacking(document.getElementById('audPhoto'), box);
     document.getElementById('audProgress').textContent = (data.idx + 1) + ' / ' + q.items.length;
 
     if (data.revealed) {
