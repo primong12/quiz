@@ -68,12 +68,6 @@
     box-shadow: 0 10px 28px rgba(238,9,121,.45); margin: 18px 0 6px; transition: transform .15s ease;
     animation: rbpulse 1.8s ease-in-out infinite; }
   .random-btn:hover { transform: scale(1.06); }
-  .final-bar { text-align: center; margin: 4px 0 20px; }
-  .final-btn { display: inline-block; background: linear-gradient(135deg,#ffe27a,#ffb43d); color: #3a2a00;
-    border: 2px solid #fff3cf; border-radius: 99px; padding: 16px 46px; font-size: 22px; font-weight: 900;
-    letter-spacing: .5px; cursor: pointer; box-shadow: 0 10px 28px rgba(255,170,40,.5);
-    transition: transform .15s ease, filter .15s ease; }
-  .final-btn:hover { transform: scale(1.05); filter: brightness(1.04); }
   @keyframes rbpulse { 0%,100% { box-shadow: 0 10px 28px rgba(238,9,121,.45);} 50% { box-shadow: 0 10px 38px rgba(238,9,121,.75);} }
   .slot-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.65); display: none;
     align-items: center; justify-content: center; z-index: 200; }
@@ -457,7 +451,7 @@
   body.audience-mode .hero .crown { font-size: 40px; }
   body.audience-mode .hero .brand-logo { width: 88px; height: 88px; border-radius: 18px; }
   body.audience-mode .hero h1 { font-size: 34px; }
-  body.audience-mode .present-toggle, body.audience-mode .admin-link, body.audience-mode .final-bar { display: none; }
+  body.audience-mode .present-toggle, body.audience-mode .admin-link { display: none; }
   body.audience-mode .random-btn { pointer-events: none; opacity: .85; }
   #audience { text-align: center; color: #fff; width: 100%; }
   .aud-progress { font-size: 88px; font-weight: 900; margin-bottom: 12px; text-shadow: 0 2px 8px rgba(0,0,0,.3); }
@@ -589,7 +583,6 @@
       </div>
       <div class="hs-team value"><div class="hs-name">VALUE</div><div class="hs-num" id="homeScoreV">0</div><div class="hs-adj"><button onclick="addScore('value',1)">＋</button><button onclick="addScore('value',-1)">－</button></div></div>
     </div>
-    <div class="final-bar"><button class="final-btn" onclick="announceResult()">🏆 팀 결과 발표 (최종 우승 팀)</button></div>
     <div class="grid">
       <div class="card c1" onclick="startQuiz('ceo')">
         <div class="emoji"><i class="ph ph-briefcase"></i></div>
@@ -656,7 +649,7 @@
         <div><div class="title">국내 로고</div><div class="sub">로고로 기업 맞히기</div></div>
       </div>
     </div>
-    <div class="admin-link"><button onclick="showAdmin()">🔧 관리자</button></div>
+    <div class="admin-link"><button onclick="announceResult()">🏆 팀 결과 발표</button> <button onclick="showAdmin()">🔧 관리자</button></div>
   </section>
 
   <!-- 랜덤 슬롯 -->
@@ -668,14 +661,14 @@
   </div>
 
   <!-- 결과 발표(우승) 전체 화면 -->
-  <div class="winner-overlay" id="winnerOverlay">
+  <div class="winner-overlay" id="winnerOverlay" onclick="closeWinner()">
     <div class="winner-confetti" id="winnerConfetti"></div>
     <div class="winner-card">
       <div class="winner-trophy" id="winnerTrophy">🏆</div>
       <div class="winner-sub" id="winnerSub">WINNER</div>
       <div class="winner-team" id="winnerTeam">GROWTH</div>
       <div class="winner-score" id="winnerScore">GROWTH 0 : 0 VALUE</div>
-      <button class="winner-close" onclick="closeWinner()">닫기 ✕</button>
+      <button class="winner-close" id="winnerClose" onclick="closeWinner()">닫기 ✕</button>
     </div>
   </div>
 
@@ -734,7 +727,7 @@
       <div class="team-side growth" id="presTeamG">
         <div class="ts-name">GROWTH</div>
         <div class="ts-score" id="presScoreG">0</div>
-        <div class="ts-adj"><button onclick="addScore('growth',1)">＋1</button><button onclick="addScore('growth',-1)">－1</button></div>
+        <div class="ts-adj"><button onclick="addGameScore('growth',1)">＋1</button><button onclick="addGameScore('growth',-1)">－1</button></div>
         <button class="team-check" onclick="pickTeam('growth')">✓ 정답<br>(2)</button>
       </div>
       <div class="pres-center">
@@ -764,7 +757,7 @@
       <div class="team-side value" id="presTeamV">
         <div class="ts-name">VALUE</div>
         <div class="ts-score" id="presScoreV">0</div>
-        <div class="ts-adj"><button onclick="addScore('value',1)">＋1</button><button onclick="addScore('value',-1)">－1</button></div>
+        <div class="ts-adj"><button onclick="addGameScore('value',1)">＋1</button><button onclick="addGameScore('value',-1)">－1</button></div>
         <button class="team-check" onclick="pickTeam('value')">✓ 정답<br>(1)</button>
       </div>
     </div>
@@ -1654,7 +1647,8 @@
   // ===== 발표자 모드 (듀얼 스크린) =====
   const BC = ('BroadcastChannel' in window) ? new BroadcastChannel('elite-quiz') : null;
   let presMode = false, presKey = 'ceo', presIntro = true, presRevealed = false, presDone = false, audienceWin = null;
-  let growthScore = 0, valueScore = 0, pickedTeam = null;
+  let growthScore = 0, valueScore = 0, pickedTeam = null;  // growthScore/valueScore = 메인(이긴 게임 수)
+  let pgGrowth = 0, pgValue = 0, winnerMode = null;        // pgGrowth/pgValue = 현재 게임만의 점수
   let hintPos = [];   // 현재 문제에서 힌트로 공개된 글자 위치(랜덤 순서)
 
   // 초성 문제에 힌트 적용: 공개된 위치는 실제 글자로, 나머지는 초성으로 표시
@@ -1683,7 +1677,7 @@
   function startPresent(key) {
     presKey = key; cur = QUIZZES[key]; idx = 0;
     presIntro = true; presRevealed = false; presDone = false; presMode = true;
-    growthScore = 0; valueScore = 0; pickedTeam = null; hintPos = [];
+    pgGrowth = 0; pgValue = 0; pickedTeam = null; hintPos = [];   // 게임 점수만 0부터(메인 누적은 유지)
     if (!audienceWin || audienceWin.closed) openAudience();
     renderPresenter();   // 표지(준비) 화면부터
     broadcast();
@@ -1696,7 +1690,7 @@
     else if (!presRevealed) presRevealed = true;       // 1단계: 관객에게 정답 공개
     else {                                              // 2단계: 다음 문제 (점수는 ✓정답 시 이미 반영됨)
       pickedTeam = null;
-      if (idx >= cur.items.length - 1) { presDone = true; playFanfare(); }
+      if (idx >= cur.items.length - 1) { finishQuiz(); return; }   // 마지막 문제 후 → 게임 결과 발표
       else { idx++; presRevealed = false; }
     }
     renderPresenter(); broadcast();
@@ -1721,26 +1715,32 @@
   function pickTeam(team) {
     if (presIntro || presDone) return;
     if (pickedTeam === team) {                                          // 같은 팀 다시 클릭 → 취소(-1)
-      if (team === 'growth') growthScore = Math.max(0, growthScore - 1);
-      else valueScore = Math.max(0, valueScore - 1);
+      if (team === 'growth') pgGrowth = Math.max(0, pgGrowth - 1);
+      else pgValue = Math.max(0, pgValue - 1);
       pickedTeam = null;
     } else {
-      if (pickedTeam === 'growth') growthScore = Math.max(0, growthScore - 1);  // 다른 팀이 선택돼 있었으면 되돌림
-      else if (pickedTeam === 'value') valueScore = Math.max(0, valueScore - 1);
-      if (team === 'growth') growthScore++; else valueScore++;          // 선택한 팀 +1 즉시 반영
+      if (pickedTeam === 'growth') pgGrowth = Math.max(0, pgGrowth - 1);  // 다른 팀이 선택돼 있었으면 되돌림
+      else if (pickedTeam === 'value') pgValue = Math.max(0, pgValue - 1);
+      if (team === 'growth') pgGrowth++; else pgValue++;                // 이번 문제 점수 +1 (게임 점수)
       pickedTeam = team;
     }
-    updateHomeScore();
     renderPresenter(); broadcast();                                     // 관객 화면 즉시 갱신
   }
-
-  // 중간에 결과 발표 (현재 점수로 우승 팀 확정)
-  function finishQuiz() {
-    if (!presMode || presDone) return;
-    pickedTeam = null;
-    presDone = true;
-    playFanfare();
+  // 발표자 게임 점수 ＋1/－1 (게임 점수만 조정)
+  function addGameScore(team, d) {
+    if (team === 'growth') pgGrowth = Math.max(0, pgGrowth + d);
+    else pgValue = Math.max(0, pgValue + d);
     renderPresenter(); broadcast();
+  }
+
+  // 게임 결과 발표 (이 게임의 ✓정답 점수로 승팀 확정 → 닫으면 메인 +1 후 메인으로)
+  function finishQuiz() {
+    if (!presMode) return;
+    pickedTeam = null;
+    winnerMode = 'game';
+    showWinner(pgGrowth, pgValue);
+    playVictoryBGM();
+    if (BC) BC.postMessage({ type: 'winner', g: pgGrowth, v: pgValue });
   }
 
   // 승리 팡파레 (Web Audio로 합성 — 파일 불필요)
@@ -1795,19 +1795,36 @@
     document.getElementById('winnerSub').textContent = r.sub;
     document.getElementById('winnerTrophy').textContent = r.icon;
     document.getElementById('winnerScore').textContent = 'GROWTH ' + g + ' : ' + v + ' VALUE';
+    document.getElementById('winnerClose').textContent = (winnerMode === 'game') ? '메인으로 ▶ (Enter)' : '닫기 ✕ (Enter)';
     spawnConfetti();
     document.getElementById('winnerOverlay').classList.add('show');
   }
+  // 메인 화면: 최종 우승(이긴 게임 수 기준) 발표
   function announceResult() {
+    winnerMode = 'final';
     showWinner(growthScore, valueScore);
     playVictoryBGM();
-    if (BC && presMode) BC.postMessage({ type: 'winner', g: growthScore, v: valueScore });
+    if (BC && presSessionOn) BC.postMessage({ type: 'winner', g: growthScore, v: valueScore });
   }
-  function closeWinner() {
+  function hideWinnerOverlay() {
     document.getElementById('winnerOverlay').classList.remove('show');
     document.getElementById('winnerConfetti').innerHTML = '';
     stopVictoryBGM();
-    if (BC && presMode) BC.postMessage({ type: 'winnerClose' });
+  }
+  function closeWinner() {
+    const ov = document.getElementById('winnerOverlay');
+    if (!ov.classList.contains('show')) return;
+    hideWinnerOverlay();
+    if (document.body.classList.contains('audience-mode')) return;   // 빔 창은 표시만 (조작 X)
+    const mode = winnerMode; winnerMode = null;
+    if (mode === 'game') {
+      if (pgGrowth > pgValue) growthScore++;            // 이 게임 승팀 → 메인 +1
+      else if (pgValue > pgGrowth) valueScore++;        // (무승부면 +0)
+      if (BC && presSessionOn) BC.postMessage({ type: 'winnerClose' });
+      exitPresent();                                    // 메인으로 나가기(+점수 반영·빔 홈 동기화)
+    } else {
+      if (BC && presSessionOn) BC.postMessage({ type: 'winnerClose' });
+    }
   }
   // 화려한 승리 팡파레 (Web Audio 합성)
   function playVictoryBGM() {
@@ -1849,7 +1866,7 @@
   }
 
   function broadcast() {
-    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone, g: growthScore, v: valueScore, hint: hintPos, picked: pickedTeam });
+    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone, g: pgGrowth, v: pgValue, hint: hintPos, picked: pickedTeam });
   }
 
   // 표지(준비) 화면 렌더 — 발표자·관객 공용
@@ -1927,8 +1944,8 @@
     const logoBox = document.getElementById('presLogoBox');
     const st = document.getElementById('presRevealState');
 
-    document.getElementById('presScoreG').textContent = growthScore;
-    document.getElementById('presScoreV').textContent = valueScore;
+    document.getElementById('presScoreG').textContent = pgGrowth;
+    document.getElementById('presScoreV').textContent = pgValue;
     document.getElementById('presTeamG').classList.toggle('picked', pickedTeam === 'growth');
     document.getElementById('presTeamV').classList.toggle('picked', pickedTeam === 'value');
 
@@ -2067,7 +2084,7 @@
         BC.onmessage = function (e) {
           const d = e.data; if (!d) return;
           if (d.type === 'exit') { window.close(); return; }
-          if (d.type === 'home') { if (d.visited) { visited = new Set(d.visited); } if (d.g !== undefined) growthScore = d.g; if (d.v !== undefined) valueScore = d.v; show('home'); markVisited(); updateHomeScore(); return; }
+          if (d.type === 'home') { hideWinnerOverlay(); if (d.visited) { visited = new Set(d.visited); } if (d.g !== undefined) growthScore = d.g; if (d.v !== undefined) valueScore = d.v; show('home'); markVisited(); updateHomeScore(); return; }
           if (d.type === 'slot') { showSlotMirror(d); return; }
           if (d.type === 'songtime') { applySongTime(d.cur, d.dur); return; }
           if (d.type === 'winner') { showWinner(d.g || 0, d.v || 0); playVictoryBGM(); return; }
