@@ -718,17 +718,17 @@
   <section id="presenter" class="screen">
     <div class="pres-top">
       <button onclick="exitPresent()">← 종료</button>
-      <button onclick="finishQuiz()" style="background:#ffd200;color:#7a5c00">🏁 결과 발표</button>
+      <button onclick="announceResult()" style="background:#ffd200;color:#7a5c00;font-weight:900">🏆 팀 결과 발표</button>
       <button onclick="giveHint()" style="background:#ff9f1c;color:#5a3a00">💡 힌트 (h)</button>
       <span id="presProgress">1 / 1</span>
-      <span class="pres-hint">Enter: 정답공개/다음 · 1=GROWTH 2=VALUE 정답체크 · h: 힌트 · ←: 이전 · Esc: 종료</span>
+      <span class="pres-hint">Enter: 정답공개/다음 · 1=VALUE 2=GROWTH 정답체크 · h: 힌트 · ←: 이전 · Esc: 종료</span>
     </div>
     <div class="pres-body">
       <div class="team-side growth" id="presTeamG">
         <div class="ts-name">GROWTH</div>
         <div class="ts-score" id="presScoreG">0</div>
         <div class="ts-adj"><button onclick="addScore('growth',1)">＋1</button><button onclick="addScore('growth',-1)">－1</button></div>
-        <button class="team-check" onclick="pickTeam('growth')">✓ 정답<br>(1)</button>
+        <button class="team-check" onclick="pickTeam('growth')">✓ 정답<br>(2)</button>
       </div>
       <div class="pres-center">
     <div class="pres-main">
@@ -758,7 +758,7 @@
         <div class="ts-name">VALUE</div>
         <div class="ts-score" id="presScoreV">0</div>
         <div class="ts-adj"><button onclick="addScore('value',1)">＋1</button><button onclick="addScore('value',-1)">－1</button></div>
-        <button class="team-check" onclick="pickTeam('value')">✓ 정답<br>(2)</button>
+        <button class="team-check" onclick="pickTeam('value')">✓ 정답<br>(1)</button>
       </div>
     </div>
     <div class="pres-result-bar">
@@ -2048,8 +2048,8 @@
     if (cur && cur.mode === 'audio' && !presIntro && !presDone && e.key === ' ') { e.preventDefault(); toggleSong(); return; }
     if (e.key === 'Enter' || e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); presAdvance(); }
     else if (e.key === 'ArrowLeft') { e.preventDefault(); presBack(); }
-    else if (e.key === '1') { e.preventDefault(); pickTeam('growth'); }
-    else if (e.key === '2') { e.preventDefault(); pickTeam('value'); }
+    else if (e.key === '1') { e.preventDefault(); pickTeam('value'); }
+    else if (e.key === '2') { e.preventDefault(); pickTeam('growth'); }
     else if (e.key === 'h' || e.key === 'H' || e.key === 'ㅗ') { e.preventDefault(); giveHint(); }
     else if (e.key === 'Escape') { exitPresent(); }
   });
