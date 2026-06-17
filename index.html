@@ -1284,7 +1284,7 @@
     { photo: 'images/web_d141d1f22277.jpg', answer: '사우디 아람코' },
     { photo: 'images/web_1863ca891bf9.png', answer: '오라클' },
     { photo: 'images/web_b50c3209d92f.png', answer: '보잉' },
-    { photo: 'images/web_7f12f7de9360.png', answer: '로켓 랩' },
+    { photo: 'images/web_7f12f7de9360.png', answer: '로켓 랩', whiteBg: true },
     { photo: 'images/web_1f2005b70da4.png', answer: '토요타' },
     { photo: 'images/web_c9700cbb6c82.gif', answer: '한일월드컵' },
     { photo: 'images/web_22a248aa2ae1.png', answer: '코어위브' },
@@ -1299,7 +1299,7 @@
     { photo: 'images/web_e2b83bd4516c.png', answer: 'MLB' },
     { photo: 'images/web_393bc71691d9.png', answer: '리복' },
     { photo: 'images/web_7572727a9131.png', answer: '앱러빈' },
-    { photo: 'images/web_9eaeda32e327.svg', answer: '일라이릴리' },
+    { photo: 'images/web_9eaeda32e327.svg', answer: '일라이릴리', whiteBg: true },
     { photo: 'images/web_96d38b980db8.png', answer: '아이온큐' },
     { photo: 'images/web_8c2819c8ac6a.png', answer: '닌텐도' },
     { photo: 'images/web_9aebe64b54ad.png', answer: '알리바바' },
@@ -1541,7 +1541,7 @@
       ticker.style.display = 'none'; photo.style.display = 'none';
       loading.style.display = 'block'; loading.textContent = '사진 불러오는 중…';
       photo.src = it.photo;
-      applyLogoBacking(photo, photoBox);
+      applyLogoBacking(it, photoBox);
     }
 
     document.getElementById('reveal').classList.remove('show');
@@ -1746,27 +1746,9 @@
     ['tickerDisplay', 'presTicker', 'audTicker'].forEach(function (id) { fitTicker(document.getElementById(id)); });
   });
 
-  // 로고 배경 자동 판별: 모서리가 투명한(배경 비치는) 로고면 흰 받침을 깔아 잘 보이게
-  function applyLogoBacking(img, box) {
-    box.classList.remove('logo-white');
-    if (!box.classList.contains('logo-mode')) return;
-    var src = img.getAttribute('src') || '';
-    if (/\.svg(\?|$)/i.test(src)) { box.classList.add('logo-white'); return; } // SVG는 거의 항상 투명 배경
-    var check = function () {
-      try {
-        var w = img.naturalWidth, h = img.naturalHeight;
-        if (!w || !h) { box.classList.add('logo-white'); return; }
-        var cv = document.createElement('canvas'); cv.width = w; cv.height = h;
-        var ctx = cv.getContext('2d'); ctx.drawImage(img, 0, 0);
-        var pts = [[1, 1], [w - 2, 1], [1, h - 2], [w - 2, h - 2]], transp = 0;
-        for (var i = 0; i < pts.length; i++) {
-          if (ctx.getImageData(pts[i][0], pts[i][1], 1, 1).data[3] < 24) transp++;
-        }
-        if (transp >= 3) box.classList.add('logo-white'); // 모서리 대부분 투명 → 배경 비침
-      } catch (e) { /* 캔버스 접근 실패 시 그대로 둠 */ }
-    };
-    if (img.complete && img.naturalWidth) check();
-    else img.addEventListener('load', check, { once: true });
+  // 지정한 로고(whiteBg)만 뒤에 흰 받침을 깔아 잘 보이게
+  function applyLogoBacking(it, box) {
+    box.classList.toggle('logo-white', !!(it && it.whiteBg) && box.classList.contains('logo-mode'));
   }
 
   // 사진/티커 채우기 (발표자·관객 공용)
@@ -1878,7 +1860,7 @@
     fitTicker(document.getElementById('audTicker'));
     box.classList.toggle('desc', !!q.desc);
     box.classList.toggle('logo-mode', !!q.logoQuiz);
-    applyLogoBacking(document.getElementById('audPhoto'), box);
+    applyLogoBacking(it, box);
     document.getElementById('audProgress').textContent = (data.idx + 1) + ' / ' + q.items.length;
 
     if (data.revealed) {
