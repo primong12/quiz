@@ -466,6 +466,14 @@
   .aud-reveal { margin-top: 16px; display: none; }
   .aud-reveal.show { display: block; animation: pop .4s cubic-bezier(.2,1.4,.4,1); }
   .aud-reveal .logo-box { width: 250px; height: 160px; }
+  .aud-hint { margin-top: 18px; font-size: clamp(30px, 5vw, 64px); font-weight: 900; color: #ffe9b0;
+    letter-spacing: .08em; text-shadow: 0 2px 12px rgba(0,0,0,.45); }
+  .aud-combo { position: fixed; top: 22px; left: 50%; transform: translateX(-50%); z-index: 60;
+    padding: 12px 30px; border-radius: 999px; font-size: clamp(22px, 3vw, 44px); font-weight: 900; color: #fff;
+    background: linear-gradient(135deg, #ff5e62, #ff9966); box-shadow: 0 10px 28px rgba(0,0,0,.4);
+    animation: pop .4s cubic-bezier(.2,1.4,.4,1); }
+  .aud-combo.growth { background: linear-gradient(135deg, #11998e, #38ef7d); }
+  .aud-combo.value { background: linear-gradient(135deg, #fc466b, #3f5efb); }
   .aud-answer-name { font-size: 58px; font-weight: 900; color: #fff; text-shadow: 0 4px 18px rgba(0,0,0,.4); }
   #audSub { font-size: 24px; opacity: .9; margin-top: 8px; }
   @media (max-width: 760px) { .pres-main { grid-template-columns: 1fr; } #audTicker { font-size: 64px; } }
@@ -720,8 +728,9 @@
       <button onclick="exitPresent()">← 종료</button>
       <button onclick="finishQuiz()" style="background:#ffd200;color:#7a5c00">🏁 결과 발표</button>
       <button onclick="giveHint()" style="background:#ff9f1c;color:#5a3a00">💡 힌트 (h)</button>
+      <button id="muteBtn" onclick="toggleMute()" style="background:#5b9dff;color:#06234d">🔊 소리</button>
       <span id="presProgress">1 / 1</span>
-      <span class="pres-hint">Enter: 정답공개/다음 · 1=VALUE 2=GROWTH 정답체크 · h: 힌트 · ←: 이전 · Esc: 종료</span>
+      <span class="pres-hint">Enter: 정답공개/다음 · 1=VALUE 2=GROWTH 정답체크 · h: 힌트 · m: 음소거 · ←: 이전 · Esc: 종료</span>
     </div>
     <div class="pres-body">
       <div class="team-side growth" id="presTeamG">
@@ -774,11 +783,13 @@
       <div id="audTicker" style="display:none"></div>
       <div id="audAudioDisp" class="audio-display" style="display:none"><div class="lp"><div class="lp-label"></div></div><div class="audio-bar" style="margin-top:30px"><div class="audio-bar-fill"></div></div><span class="audio-time" style="color:#fff">0:00 / 0:30</span></div>
     </div>
+    <div id="audHint" class="aud-hint" style="display:none"></div>
     <div class="aud-reveal" id="audReveal">
       <div class="logo-box" id="audLogoBox"><img id="audLogo" alt=""></div>
       <div class="aud-answer-name" id="audName"></div>
       <div id="audSub"></div>
     </div>
+    <div id="audCombo" class="aud-combo" style="display:none"></div>
     <div id="audDoneMsg" class="aud-done" style="display:none">🎉 끝!</div>
       </div>
       <div class="team-side value" id="audTeamV"><div class="ts-name">VALUE</div><div class="ts-score" id="audScoreV">0</div></div>
@@ -1724,6 +1735,8 @@
   let growthScore = 0, valueScore = 0, pickedTeam = null;  // growthScore/valueScore = 메인(이긴 게임 수)
   let pgGrowth = 0, pgValue = 0, winnerMode = null;        // pgGrowth/pgValue = 현재 게임만의 점수
   let hintPos = [];   // 현재 문제에서 힌트로 공개된 글자 위치(랜덤 순서)
+  let muted = false;  // 효과음 음소거 토글
+  let awarded = {};   // 이 게임에서 문제별 정답 인정 팀 { idx: 'growth'|'value' } (콤보 계산용)
 
   // 초성 문제에 힌트 적용: 공개된 위치는 실제 글자로, 나머지는 초성으로 표시
   function tickerText(it, positions) {
@@ -1733,13 +1746,26 @@
     for (let i = 0; i < q.length; i++) out += (positions.indexOf(i) >= 0 ? (a[i] || q[i]) : q[i]);
     return out;
   }
-  // 힌트: 아직 안 나온 위치 중 하나를 랜덤으로 골라 한 글자 공개 (발표자 h키/💡버튼)
+  // 문제의 정답 문자열 (기업 문제는 회사명, 그 외는 answer)
+  function answerText(q, it) { return (it && it.company !== undefined) ? it.company : (it ? (it.answer || '') : ''); }
+  // 마스킹된 힌트: 공개된 위치는 글자, 나머지는 ○ (예: "○ 효 ○")
+  function maskedHint(str, positions) {
+    positions = positions || [];
+    const parts = [];
+    for (let i = 0; i < str.length; i++) parts.push(str[i] === ' ' ? ' ' : (positions.indexOf(i) >= 0 ? str[i] : '○'));
+    return parts.join(' ');
+  }
+  // 콤보: 현재 문제까지 같은 팀이 연속으로 정답 인정받은 수
+  function comboCount(team, upto) { let c = 0; for (let i = upto; i >= 0; i--) { if (awarded[i] === team) c++; else break; } return c; }
+  // 힌트: 아직 안 나온 위치 중 하나를 랜덤으로 골라 한 글자 공개 (발표자 h키/💡버튼) — 모든 게임 지원
   function giveHint() {
     const q = QUIZZES[presKey];
-    if (!presMode || presIntro || presDone || presRevealed || !q.initials) return;
+    if (!presMode || presIntro || presDone || presRevealed) return;
     const it = q.items[idx];
+    const target = q.initials ? it.q : answerText(q, it);   // 초성 게임은 문제(초성)에, 그 외는 정답에 힌트
+    if (!target) return;
     const cand = [];
-    for (let i = 0; i < it.q.length; i++) { if (it.q[i] !== ' ' && hintPos.indexOf(i) < 0) cand.push(i); }
+    for (let i = 0; i < target.length; i++) { if (target[i] !== ' ' && hintPos.indexOf(i) < 0) cand.push(i); }
     if (!cand.length) return;
     hintPos.push(cand[Math.floor(Math.random() * cand.length)]);
     renderPresenter(); broadcast();
@@ -1751,7 +1777,7 @@
   function startPresent(key) {
     presKey = key; cur = QUIZZES[key]; idx = 0;
     presIntro = true; presRevealed = false; presDone = false; presMode = true;
-    pgGrowth = 0; pgValue = 0; pickedTeam = null; hintPos = [];   // 게임 점수만 0부터(메인 누적은 유지)
+    pgGrowth = 0; pgValue = 0; pickedTeam = null; hintPos = []; awarded = {};   // 게임 점수만 0부터(메인 누적은 유지)
     if (!audienceWin || audienceWin.closed) openAudience();
     renderPresenter();   // 표지(준비) 화면부터
     broadcast();
@@ -1791,12 +1817,13 @@
     if (pickedTeam === team) {                                          // 같은 팀 다시 클릭 → 취소(-1)
       if (team === 'growth') pgGrowth = Math.max(0, pgGrowth - 1);
       else pgValue = Math.max(0, pgValue - 1);
-      pickedTeam = null;
+      pickedTeam = null; delete awarded[idx];
     } else {
       if (pickedTeam === 'growth') pgGrowth = Math.max(0, pgGrowth - 1);  // 다른 팀이 선택돼 있었으면 되돌림
       else if (pickedTeam === 'value') pgValue = Math.max(0, pgValue - 1);
       if (team === 'growth') pgGrowth++; else pgValue++;                // 이번 문제 점수 +1 (게임 점수)
-      pickedTeam = team;
+      pickedTeam = team; awarded[idx] = team;
+      playCorrect(comboCount(team, idx));                              // 정답 효과음(콤보면 음↑)
     }
     renderPresenter(); broadcast();                                     // 관객 화면 즉시 갱신
   }
@@ -1817,8 +1844,38 @@
     if (BC) BC.postMessage({ type: 'winner', g: pgGrowth, v: pgValue });
   }
 
+  // 효과음 음소거 토글 (발표자 화면 버튼 / m키)
+  function toggleMute() {
+    muted = !muted;
+    const b = document.getElementById('muteBtn');
+    if (b) b.textContent = muted ? '🔇 음소거' : '🔊 소리';
+  }
+  // 정답 효과음 (Web Audio 합성 — 파일·인터넷 불필요). 콤보가 쌓일수록 음이 올라감
+  function playCorrect(combo) {
+    if (muted) return;
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const ctx = audioCtx, now = ctx.currentTime;
+      const step = Math.min(Math.max((combo || 1) - 1, 0), 7);   // 콤보 1→0반음, 최대 7반음
+      const base = 659.25 * Math.pow(2, step / 12);              // E5 기준 반음 상승
+      const beep = (freq, t, dur, vol, type) => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = type || 'triangle'; o.frequency.value = freq;
+        g.gain.setValueAtTime(0.0001, now + t);
+        g.gain.exponentialRampToValueAtTime(vol, now + t + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, now + t + dur);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(now + t); o.stop(now + t + dur + 0.05);
+      };
+      beep(base, 0, 0.13, 0.3);                 // 딩
+      beep(base * 1.5, 0.1, 0.2, 0.3);          // 동(완전5도 위)
+      if ((combo || 1) >= 3) beep(base * 2, 0.24, 0.22, 0.22, 'sine');  // 연속 정답 반짝음
+    } catch (e) {}
+  }
   // 승리 팡파레 (Web Audio로 합성 — 파일 불필요)
   function playFanfare() {
+    if (muted) return;
     try {
       audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -1904,6 +1961,7 @@
   // 화려한 승리 팡파레 (Web Audio 합성)
   function playVictoryBGM() {
     stopVictoryBGM();
+    if (muted) return;
     try {
       audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -1941,7 +1999,8 @@
   }
 
   function broadcast() {
-    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone, g: pgGrowth, v: pgValue, hint: hintPos, picked: pickedTeam });
+    const cb = pickedTeam ? comboCount(pickedTeam, idx) : 0;
+    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone, g: pgGrowth, v: pgValue, hint: hintPos, picked: pickedTeam, combo: cb, comboTeam: pickedTeam });
   }
 
   // 표지(준비) 화면 렌더 — 발표자·관객 공용
@@ -2057,8 +2116,14 @@
       document.getElementById('presAnswerSub').textContent = (q.mode === 'ticker' ? it.q : '');
     }
 
+    const cb = pickedTeam ? comboCount(pickedTeam, idx) : 0;
     if (presRevealed) { st.textContent = '● 관객 화면에 정답 공개됨'; st.className = 'reveal-shown'; }
-    else { st.textContent = (q.initials && hintPos.length ? '💡 힌트 ' + hintPos.length + '개 공개 · ' : '') + '○ 관객 화면엔 아직 숨김 — Enter로 공개'; st.className = 'reveal-hidden'; }
+    else {
+      let pre = '';
+      if (hintPos.length) pre = (q.initials ? '💡 힌트 ' + hintPos.length + '개 공개' : '💡 ' + maskedHint(answerText(q, it), hintPos)) + ' · ';
+      if (cb >= 2) pre = '🔥 ' + (pickedTeam === 'growth' ? 'GROWTH' : 'VALUE') + ' 콤보 ' + cb + ' · ' + pre;
+      st.textContent = pre + '○ 관객 화면엔 아직 숨김 — Enter로 공개'; st.className = 'reveal-hidden';
+    }
 
     const nx = q.items[idx + 1];
     document.getElementById('presNext').textContent = nx ? (nx.company !== undefined ? nx.company : nx.answer) : '— (마지막 문제)';
@@ -2088,6 +2153,8 @@
       document.getElementById('audProgress').textContent = '';
       document.getElementById('audDoneMsg').textContent = win;
       document.getElementById('audDoneMsg').style.display = 'block';
+      var _h = document.getElementById('audHint'); if (_h) _h.style.display = 'none';
+      var _c = document.getElementById('audCombo'); if (_c) _c.style.display = 'none';
       return;
     }
     document.getElementById('audDoneMsg').style.display = 'none';
@@ -2102,6 +2169,24 @@
     box.classList.toggle('logo-mode', !!q.logoQuiz);
     applyLogoBacking(it, box);
     document.getElementById('audProgress').textContent = (data.idx + 1) + ' / ' + q.items.length;
+
+    // 힌트(마스킹된 정답) — 초성 게임은 문제 자체에 표시되므로 제외
+    const hintEl = document.getElementById('audHint');
+    if (hintEl) {
+      if (!data.revealed && (data.hint || []).length && !q.initials) {
+        hintEl.textContent = '💡 ' + maskedHint(answerText(q, it), data.hint);
+        hintEl.style.display = 'block';
+      } else { hintEl.style.display = 'none'; }
+    }
+    // 콤보 배지
+    const comboEl = document.getElementById('audCombo');
+    if (comboEl) {
+      if ((data.combo || 0) >= 2 && !data.revealed) {
+        comboEl.textContent = '🔥 ' + (data.comboTeam === 'growth' ? 'GROWTH' : 'VALUE') + ' 콤보 ' + data.combo + '!';
+        comboEl.className = 'aud-combo ' + (data.comboTeam || '');
+        comboEl.style.display = 'block';
+      } else { comboEl.style.display = 'none'; }
+    }
 
     if (data.revealed) {
       const logoBox = document.getElementById('audLogoBox');
@@ -2146,6 +2231,7 @@
     else if (e.key === '1') { e.preventDefault(); pickTeam('value'); }
     else if (e.key === '2') { e.preventDefault(); pickTeam('growth'); }
     else if (e.key === 'h' || e.key === 'H' || e.key === 'ㅗ') { e.preventDefault(); giveHint(); }
+    else if (e.key === 'm' || e.key === 'M' || e.key === 'ㅡ') { e.preventDefault(); toggleMute(); }
     else if (e.key === 'Escape') { exitPresent(); }
   });
 
