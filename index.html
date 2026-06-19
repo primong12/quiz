@@ -1746,8 +1746,11 @@
     for (let i = 0; i < q.length; i++) out += (positions.indexOf(i) >= 0 ? (a[i] || q[i]) : q[i]);
     return out;
   }
-  // 문제의 정답 문자열 (기업 문제는 회사명, 그 외는 answer)
-  function answerText(q, it) { return (it && it.company !== undefined) ? it.company : (it ? (it.answer || '') : ''); }
+  // 힌트용 정답 문자열 (기업 문제는 회사명, 그 외는 answer) — 괄호 안 부가설명은 힌트에서 제외
+  function answerText(q, it) {
+    const s = (it && it.company !== undefined) ? it.company : (it ? (it.answer || '') : '');
+    return s.replace(/\s*\(.*$/, '').trim();   // "테슬라 (Tesla)" → "테슬라"
+  }
   // 마스킹된 힌트: 공개된 위치는 글자, 나머지는 ○ (예: "○ 효 ○")
   function maskedHint(str, positions) {
     positions = positions || [];
