@@ -1752,10 +1752,11 @@
     return s.replace(/\s*\(.*$/, '').trim();   // "테슬라 (Tesla)" → "테슬라"
   }
   // 마스킹된 힌트: 공개된 위치는 글자, 나머지는 ○ (예: "○ 효 ○")
+  // 단어 사이는 합쳐지지 않는 넓은 간격(em space)으로 띄움 — "미하엘 슈마허" → "○ ○ ○　　○ ○ ○"
   function maskedHint(str, positions) {
     positions = positions || [];
     const parts = [];
-    for (let i = 0; i < str.length; i++) parts.push(str[i] === ' ' ? ' ' : (positions.indexOf(i) >= 0 ? str[i] : '○'));
+    for (let i = 0; i < str.length; i++) parts.push(str[i] === ' ' ? '  ' : (positions.indexOf(i) >= 0 ? str[i] : '○'));
     return parts.join(' ');
   }
   // 콤보: 현재 문제까지 같은 팀이 연속으로 정답 인정받은 수
