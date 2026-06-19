@@ -455,7 +455,7 @@
   body.audience-mode .random-btn { pointer-events: none; opacity: .85; }
   #audience { text-align: center; color: #fff; width: 100%; }
   .aud-progress { font-size: 88px; font-weight: 900; margin-bottom: 12px; text-shadow: 0 2px 8px rgba(0,0,0,.3); }
-  .aud-photo-box { height: min(76vh, 900px); aspect-ratio: 4/3; width: auto; max-width: 100%; margin: 0 auto;
+  .aud-photo-box { position: relative; height: min(76vh, 900px); aspect-ratio: 4/3; width: auto; max-width: 100%; margin: 0 auto;
     background: #1a1d2b; border-radius: 24px; overflow: hidden;
     display: flex; align-items: center; justify-content: center; box-shadow: 0 20px 44px rgba(0,0,0,.32); }
   .aud-photo-box.ticker { aspect-ratio: auto; height: auto; min-height: 260px;
@@ -466,14 +466,19 @@
   .aud-reveal { margin-top: 16px; display: none; }
   .aud-reveal.show { display: block; animation: pop .4s cubic-bezier(.2,1.4,.4,1); }
   .aud-reveal .logo-box { width: 250px; height: 160px; }
-  .aud-hint { margin-top: 18px; font-size: clamp(30px, 5vw, 64px); font-weight: 900; color: #ffe9b0;
-    letter-spacing: .08em; text-shadow: 0 2px 12px rgba(0,0,0,.45); }
+  .aud-hint { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5;
+    padding: 18px 12px; font-size: clamp(30px, 5vw, 64px); font-weight: 900; color: #ffe9b0;
+    letter-spacing: .08em; text-shadow: 0 2px 12px rgba(0,0,0,.6);
+    background: linear-gradient(to top, rgba(0,0,0,.72), rgba(0,0,0,0)); }
   .aud-combo { position: fixed; top: 22px; left: 50%; transform: translateX(-50%); z-index: 60;
     padding: 12px 30px; border-radius: 999px; font-size: clamp(22px, 3vw, 44px); font-weight: 900; color: #fff;
     background: linear-gradient(135deg, #ff5e62, #ff9966); box-shadow: 0 10px 28px rgba(0,0,0,.4);
     animation: pop .4s cubic-bezier(.2,1.4,.4,1); }
   .aud-combo.growth { background: linear-gradient(135deg, #11998e, #38ef7d); }
   .aud-combo.value { background: linear-gradient(135deg, #fc466b, #3f5efb); }
+  .pres-hintline { margin-top: 10px; padding: 8px 14px; border-radius: 12px; display: inline-block;
+    background: #fff3cf; color: #7a5600; font-weight: 900; font-size: 26px; letter-spacing: .06em;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15); }
   .aud-answer-name { font-size: 58px; font-weight: 900; color: #fff; text-shadow: 0 4px 18px rgba(0,0,0,.4); }
   #audSub { font-size: 24px; opacity: .9; margin-top: 8px; }
   @media (max-width: 760px) { .pres-main { grid-template-columns: 1fr; } #audTicker { font-size: 64px; } }
@@ -749,6 +754,7 @@
           <div id="presAudioDisp" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스: 정지·재생</span><div class="audio-bar"><div class="audio-bar-fill"></div></div><span class="audio-time">0:00 / 0:30</span></div>
         </div>
         <div id="presQ"></div>
+        <div id="presHintLine" class="pres-hintline" style="display:none"></div>
       </div>
       <div class="pres-answer">
         <div class="pres-label">정답</div>
@@ -782,8 +788,8 @@
       <img id="audPhoto" alt="">
       <div id="audTicker" style="display:none"></div>
       <div id="audAudioDisp" class="audio-display" style="display:none"><div class="lp"><div class="lp-label"></div></div><div class="audio-bar" style="margin-top:30px"><div class="audio-bar-fill"></div></div><span class="audio-time" style="color:#fff">0:00 / 0:30</span></div>
+      <div id="audHint" class="aud-hint" style="display:none"></div>
     </div>
-    <div id="audHint" class="aud-hint" style="display:none"></div>
     <div class="aud-reveal" id="audReveal">
       <div class="logo-box" id="audLogoBox"><img id="audLogo" alt=""></div>
       <div class="aud-answer-name" id="audName"></div>
@@ -2127,6 +2133,15 @@
       if (hintPos.length) pre = (q.initials ? '💡 힌트 ' + hintPos.length + '개 공개' : '💡 ' + maskedHint(answerText(q, it), hintPos)) + ' · ';
       if (cb >= 2) pre = '🔥 ' + (pickedTeam === 'growth' ? 'GROWTH' : 'VALUE') + ' 콤보 ' + cb + ' · ' + pre;
       st.textContent = pre + '○ 관객 화면엔 아직 숨김 — Enter로 공개'; st.className = 'reveal-hidden';
+    }
+
+    // 발표자 화면 큰 힌트 줄 (h/💡 누르면 바로 보이도록)
+    const hl = document.getElementById('presHintLine');
+    if (hl) {
+      if (!presRevealed && hintPos.length) {
+        hl.textContent = q.initials ? '💡 힌트 ' + hintPos.length + '글자 (위 문제에 공개됨)' : '💡 ' + maskedHint(answerText(q, it), hintPos);
+        hl.style.display = 'inline-block';
+      } else { hl.style.display = 'none'; }
     }
 
     const nx = q.items[idx + 1];
