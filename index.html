@@ -296,6 +296,28 @@
   .admin-back:hover { background: #ddd3f0; }
   /* 관리자 그리드도 항상 4열 유지(카드 내부가 비례 축소) */
 
+  /* ===== 버전 (MT 1.0 / 1주년 1.1) ===== */
+  .admin-verbar { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+  .admin-ver { border: 2px solid #cfc4ea; background: #fff; color: #6a5d8a; font-weight: 900; font-size: 16px;
+    padding: 10px 22px; border-radius: 99px; cursor: pointer; transition: all .15s ease; }
+  .admin-ver small { font-weight: 700; opacity: .7; margin-left: 4px; }
+  .admin-ver:hover { background: #f1ecfb; }
+  .admin-ver.on { background: linear-gradient(135deg,#7b5cff,#9d7bff); color: #fff; border-color: transparent; box-shadow: 0 6px 16px rgba(123,92,255,.4); }
+  .admin-vernote { font-size: 14px; color: #8a7fae; font-weight: 700; margin-left: 4px; }
+  .admin-pick.hidden-game { opacity: .82; outline: 2px dashed rgba(255,255,255,.7); outline-offset: -5px; }
+
+  /* 버전 배지 (홈·발표자에서 현재 버전 표시) */
+  .ver-badge { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: .5px;
+    background: rgba(123,92,255,.9); color: #fff; padding: 4px 12px; border-radius: 99px; }
+  #home { position: relative; }
+  .home-ver { position: absolute; top: 14px; right: 16px; z-index: 5; }
+  .pres-ver { margin-left: auto; }
+
+  /* 1주년(1.1): 팀(GROWTH/VALUE) 점수 관련 UI 전부 숨김 */
+  body.v11 .hs-team,
+  body.v11 .team-side,
+  body.v11 .admin-link button[onclick^="announceResult"] { display: none !important; }
+
   /* ===== 발표 표지(준비) 화면 ===== */
   .cover-card { width: 100%; max-width: 900px; min-height: 460px; margin: 0 auto;
     border-radius: 36px; color: #fff; display: flex; flex-direction: column;
@@ -585,6 +607,7 @@
 
   <!-- 메인 화면 -->
   <section id="home" class="screen active">
+    <div class="home-ver"><span class="ver-badge">MT · v1.0</span></div>
     <div class="hero-row">
       <div class="hs-team growth"><div class="hs-name">GROWTH</div><div class="hs-num" id="homeScoreG">0</div><div class="hs-adj"><button onclick="addScore('growth',1)">＋</button><button onclick="addScore('growth',-1)">－</button></div></div>
       <div class="hero">
@@ -629,9 +652,9 @@
         <div class="emoji"><i class="ph ph-vinyl-record"></i></div>
         <div><div class="title">Y2K</div><div class="sub">노래를 듣고 맞혀요</div></div>
       </div>
-      <div class="card c17" onclick="startQuiz('econ')">
-        <div class="emoji"><i class="ph ph-chart-pie-slice"></i></div>
-        <div><div class="title">경제·투자 용어</div><div class="sub">설명에 맞는 용어는?</div></div>
+      <div class="card c17" onclick="startQuiz('latest')">
+        <div class="emoji"><i class="ph ph-music-notes-plus"></i></div>
+        <div><div class="title">최신가요</div><div class="sub">노래를 듣고 맞혀요</div></div>
       </div>
       <div class="card c16" onclick="startQuiz('chosung')">
         <div class="emoji"><i class="ph ph-text-aa"></i></div>
@@ -736,6 +759,7 @@
       <button id="muteBtn" onclick="toggleMute()" style="background:#5b9dff;color:#06234d">🔊 소리</button>
       <span id="presProgress">1 / 1</span>
       <span class="pres-hint">Enter: 정답공개/다음 · 1=VALUE 2=GROWTH 정답체크 · h: 힌트 · m: 음소거 · ←: 이전 · Esc: 종료</span>
+      <span class="ver-badge pres-ver">MT · v1.0</span>
     </div>
     <div class="pres-body">
       <div class="team-side growth" id="presTeamG">
@@ -1352,6 +1376,34 @@
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/e5/a7/44/e5a744f0-5e4c-45b7-a500-9ef79c59343c/mzaf_17210876166294494869.plus.aac.p.m4a", company: "서른 즈음에", ceo: "김광석" },
   ];
 
+  // 최신가요 (2023~2025 히트, 아이튠즈 미리듣기)
+  const LATEST_SONGS = [
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/95/79/f5/9579f50e-ac47-1e43-acab-d422cbe17a21/mzaf_12002777810095615569.plus.aac.p.m4a", company: "APT.", ceo: "로제 & 브루노 마스" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/0c/76/4d/0c764db0-1223-bda7-5ade-8fb1a6d3bb68/mzaf_6178280437461332450.plus.aac.p.m4a", company: "모래 알갱이", ceo: "임영웅" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/3d/57/20/3d5720b3-f6b4-a2fd-8d8f-96515cda91a3/mzaf_17422220011601403216.plus.aac.p.m4a", company: "I AM", ceo: "아이브 (IVE)" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/85/72/66/8572665a-d35f-ce5d-43c5-9ae4b69b4b46/mzaf_2317272666428796662.plus.aac.p.m4a", company: "Ditto", ceo: "뉴진스 (NewJeans)" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/cb/a5/34/cba5340f-feac-7e85-0d62-c687a5da7524/mzaf_5508662312740645025.plus.aac.p.m4a", company: "Supernova", ceo: "에스파 (aespa)" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/79/19/be/7919be5a-969d-0e3b-df54-71592942d13f/mzaf_767193238431796792.plus.aac.p.m4a", company: "한 페이지가 될 수 있게", ceo: "데이식스 (DAY6)" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/ca/f2/aa/caf2aa58-40ef-8460-cf65-0f97848da839/mzaf_11004362433324424334.plus.aac.p.m4a", company: "고민중독", ceo: "QWER" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/da/5d/da/da5ddaea-f08f-d5a7-2178-7a8e5489704b/mzaf_5693961966471527130.plus.aac.p.m4a", company: "나는 반딧불", ceo: "황가람" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/d0/61/fe/d061fef8-d964-d5d3-fe5c-147202fccd32/mzaf_5090530859078181756.plus.aac.p.m4a", company: "퀸카 (Queencard)", ceo: "(여자)아이들" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/19/f6/98/19f6985f-4633-0de9-6529-22e9c84e31be/mzaf_2983769807683393748.plus.aac.p.m4a", company: "EASY", ceo: "르세라핌 (LE SSERAFIM)" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/b1/f5/5c/b1f55c57-76ee-524f-35b3-ba046034ac9e/mzaf_17010912782387954876.plus.aac.p.m4a", company: "밤양갱", ceo: "비비 (BIBI)" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/ac/8d/97/ac8d9717-2bbf-b1bf-b2e9-476feea6a480/mzaf_11615065500455071115.plus.aac.p.m4a", company: "첫 만남은 계획대로 되지 않아", ceo: "투어스 (TWS)" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/41/10/ee/4110ee0c-7e0b-b0c7-e6b3-1d5288dc377f/mzaf_1679421330560011573.plus.aac.p.m4a", company: "사랑인가 봐", ceo: "멜로망스" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/9c/b5/3a/9cb53a36-d58f-d9a8-b23c-5bc1d28ef431/mzaf_17732560313905705620.plus.aac.p.m4a", company: "신호등", ceo: "이무진" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/18/a8/bb/18a8bb14-c776-1e64-06f8-636e624c86d3/mzaf_10852494709540318183.plus.aac.p.m4a", company: "사건의 지평선", ceo: "윤하" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/75/42/8e/75428efd-bf7c-922a-253a-dcc9f812eddc/mzaf_9614853286254962096.plus.aac.p.m4a", company: "Love Lee", ceo: "악뮤 (AKMU)" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/fe/df/b0/fedfb0cb-d93a-fb60-2a3d-719e1f74968d/mzaf_3325318025147233907.plus.aac.p.m4a", company: "꽃 (FLOWER)", ceo: "지수 (JISOO)" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/76/9c/dd/769cdd57-1dc9-aff1-8af2-de134b7e0498/mzaf_9327909714451142276.plus.aac.p.m4a", company: "손오공", ceo: "세븐틴 (SEVENTEEN)" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e5/dd/c1/e5ddc11a-cca1-86eb-bc36-5cae9869dded/mzaf_2438982977131590749.plus.aac.p.m4a", company: "Seven", ceo: "정국" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/da/e8/75/dae8752f-a3e5-4e6d-7027-7b5b43c413f7/mzaf_11459182446397175961.plus.aac.p.m4a", company: "Love 119", ceo: "라이즈 (RIIZE)" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b2/38/6f/b2386f32-3eed-a099-044a-2944430c1b5d/mzaf_8465968415111905068.plus.aac.p.m4a", company: "홀씨", ceo: "아이유 (IU)" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/55/0b/9a/550b9ad4-17f9-c17b-979c-68ada0ab2811/mzaf_3573603930208239944.plus.aac.p.m4a", company: "WAY 4 LUV", ceo: "플레이브 (PLAVE)" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/67/0c/69/670c697b-b943-1148-95ba-5733b70e3042/mzaf_14041457009119207683.plus.aac.p.m4a", company: "Welcome to the Show", ceo: "데이식스 (DAY6)" },
+    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/d0/b6/c8/d0b6c853-b1c3-b4c4-ba2b-8b0baa1e51b7/mzaf_16774218591059411033.plus.aac.p.m4a", company: "좋은 밤 좋은 꿈", ceo: "너드커넥션" },
+  ];
+
   const SONG_Y2K = [
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/6a/25/10/6a2510dc-d8b2-11cc-8616-41ac44ddf33b/mzaf_6715468866373289994.plus.aac.p.m4a", company: "검은 고양이 네로", ceo: "터보" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/69/ae/94/69ae948a-a986-5fdd-4bc8-c645e9c2e67c/mzaf_15179820352132273152.plus.aac.p.m4a", company: "성인식", ceo: "박지윤" },
@@ -1513,8 +1565,10 @@
                 emoji: '🧸', sub: '사진 속 캐릭터는?', grad: 'linear-gradient(135deg,#909497,#566573)' },
     chosung:  { title: '기업 초성',       question: '이 초성의 기업은? 🔤', items: CHOSUNG, mode: 'ticker', initials: true,
                 emoji: '🔤', sub: '초성으로 기업 맞히기', grad: 'linear-gradient(135deg,#36d1dc,#5b86e5)' },
-    econ:     { title: '경제·투자 용어',  question: '설명에 맞는 용어는? 📊', items: ECON, mode: 'ticker', desc: true,
+    econ:     { title: '경제·투자 용어',  question: '설명에 맞는 용어는? 📊', items: ECON, mode: 'ticker', desc: true, hidden: true,
                 emoji: '📊', sub: '용어의 뜻은?', grad: 'linear-gradient(135deg,#f7b733,#fc4a1a)' },
+    latest:   { title: '최신가요',        question: '이 노래의 제목은? 🎵', items: LATEST_SONGS, mode: 'audio',
+                emoji: '🎶', sub: '노래를 듣고 맞혀요', grad: 'linear-gradient(135deg,#ff5f6d,#ffc371)' },
     y2k:      { title: 'Y2K',             question: '이 노래의 제목은? 🎵', items: SONG_Y2K, mode: 'audio',
                 emoji: '🕹️', sub: '노래를 듣고 맞혀요', grad: 'linear-gradient(135deg,#fc466b,#3f5efb)' },
     memory:   { title: '7080',            question: '이 노래의 제목은? 🎵', items: MEMORY, mode: 'audio',
@@ -1553,7 +1607,7 @@
     if (on) { openAudience(); }
     else { presMode = false; if (audienceWin && !audienceWin.closed) audienceWin.close(); audienceWin = null; }
   }
-  function broadcastHome() { if (BC) BC.postMessage({ type: 'home', visited: Array.from(visited), g: growthScore, v: valueScore }); }
+  function broadcastHome() { if (BC) BC.postMessage({ type: 'home', visited: Array.from(visited), g: growthScore, v: valueScore, ver: appVersion }); }
 
   function updateHomeScore() {
     var g = document.getElementById('homeScoreG'), v = document.getElementById('homeScoreV');
@@ -1561,6 +1615,7 @@
     if (v) v.textContent = valueScore;
   }
   function addScore(team, d) {
+    if (appVersion === '1.1') return;                 // 1주년: 팀 점수 없음
     if (team === 'growth') growthScore = Math.max(0, growthScore + d);
     else valueScore = Math.max(0, valueScore + d);
     updateHomeScore();
@@ -1620,15 +1675,22 @@
 
   const ADMIN_KEYS = ['ceo', 'krTicker', 'usTicker', 'cast', 'role', 'quote', 'memory', 'y2k', 'econ', 'chosung', 'sugarman', 'charL', 'krStar', 'sports', 'logoIntl', 'logoKr'];
 
-  // 관리자 1단계: 퀴즈 선택 화면
+  // 관리자 1단계: 버전 선택 + 퀴즈 선택 화면 (숨김 게임 포함 전체 표시)
   function showAdmin() {
-    let html = '<div class="admin-pick-grid">';
-    for (const key of ADMIN_KEYS) {
+    // 좌상단 버전 바: MT(1.0) / 1주년(1.1)
+    let html = '<div class="admin-verbar">'
+      + '<button class="admin-ver' + (appVersion === '1.0' ? ' on' : '') + '" onclick="setVersion(\'1.0\')">MT<small>v1.0</small></button>'
+      + '<button class="admin-ver' + (appVersion === '1.1' ? ' on' : '') + '" onclick="setVersion(\'1.1\')">1주년<small>v1.1</small></button>'
+      + '<span class="admin-vernote">' + (appVersion === '1.1' ? '팀 점수 없는 버전' : '팀전(GROWTH·VALUE) 버전') + '</span>'
+      + '</div>';
+
+    html += '<div class="admin-pick-grid">';
+    for (const key of Object.keys(QUIZZES)) {
       const q = QUIZZES[key];
       html +=
-        '<button class="admin-pick" style="background:' + q.grad + '" onclick="showAdminQuiz(\'' + key + '\')">' +
+        '<button class="admin-pick' + (q.hidden ? ' hidden-game' : '') + '" style="background:' + q.grad + '" onclick="showAdminQuiz(\'' + key + '\')">' +
           '<span class="emoji">' + q.emoji + '</span>' +
-          '<span class="t">' + q.title + '</span>' +
+          '<span class="t">' + q.title + (q.hidden ? ' 🙈' : '') + '</span>' +
           '<span class="c">' + q.items.length + '문제</span>' +
         '</button>';
     }
@@ -1744,6 +1806,24 @@
   let muted = false;  // 효과음 음소거 토글
   let awarded = {};   // 이 게임에서 문제별 정답 인정 팀 { idx: 'growth'|'value' } (콤보 계산용)
 
+  // ===== 버전 =====  '1.0'=MT(팀전) / '1.1'=1주년(팀 점수 없음). 게임 내용은 두 버전 공통.
+  let appVersion = (function () { try { return localStorage.getItem('eliteQuizVersion') === '1.1' ? '1.1' : '1.0'; } catch (e) { return '1.0'; } })();
+  function applyVersion() {
+    document.body.classList.toggle('v11', appVersion === '1.1');
+    var lbl = appVersion === '1.1' ? '1주년 · v1.1' : 'MT · v1.0';
+    document.querySelectorAll('.ver-badge').forEach(function (el) { el.textContent = lbl; });
+  }
+  function setVersion(v) {
+    appVersion = (v === '1.1') ? '1.1' : '1.0';
+    try { localStorage.setItem('eliteQuizVersion', appVersion); } catch (e) {}
+    if (appVersion === '1.1') pickedTeam = null;          // 팀 선택 상태 해제
+    applyVersion();
+    if (presMode && !presDone) broadcast(); else broadcastHome();   // 관객 화면도 버전 동기화
+    if (document.getElementById('admin').classList.contains('active')) showAdmin();  // 버튼 강조 갱신
+    if (presMode) renderPresenter();
+    updateHomeScore();
+  }
+
   // 초성 문제에 힌트 적용: 공개된 위치는 실제 글자로, 나머지는 초성으로 표시
   function tickerText(it, positions) {
     if (!positions || !positions.length || it.answer === undefined) return it.q;
@@ -1823,6 +1903,7 @@
   }
 
   function pickTeam(team) {
+    if (appVersion === '1.1') return;                 // 1주년: 팀 점수 없음
     if (presIntro || presDone) return;
     if (pickedTeam === team) {                                          // 같은 팀 다시 클릭 → 취소(-1)
       if (team === 'growth') pgGrowth = Math.max(0, pgGrowth - 1);
@@ -1839,6 +1920,7 @@
   }
   // 발표자 게임 점수 ＋1/－1 (게임 점수만 조정)
   function addGameScore(team, d) {
+    if (appVersion === '1.1') return;                 // 1주년: 팀 점수 없음
     if (team === 'growth') pgGrowth = Math.max(0, pgGrowth + d);
     else pgValue = Math.max(0, pgValue + d);
     renderPresenter(); broadcast();
@@ -1848,6 +1930,11 @@
   function finishQuiz() {
     if (!presMode) return;
     pickedTeam = null;
+    if (appVersion === '1.1') {          // 1주년: 팀 우승 팝업 없이 종료 화면만
+      presDone = true;
+      renderPresenter(); broadcast();
+      return;
+    }
     winnerMode = 'game';
     showWinner(pgGrowth, pgValue);
     playVictoryBGM();
@@ -1942,6 +2029,7 @@
   }
   // 메인 화면: 최종 우승(이긴 게임 수 기준) 발표
   function announceResult() {
+    if (appVersion === '1.1') return;                 // 1주년: 팀 결과 없음
     winnerMode = 'final';
     showWinner(growthScore, valueScore);
     playVictoryBGM();
@@ -2010,7 +2098,7 @@
 
   function broadcast() {
     const cb = pickedTeam ? comboCount(pickedTeam, idx) : 0;
-    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone, g: pgGrowth, v: pgValue, hint: hintPos, picked: pickedTeam, combo: cb, comboTeam: pickedTeam });
+    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone, g: pgGrowth, v: pgValue, hint: hintPos, picked: pickedTeam, combo: cb, comboTeam: pickedTeam, ver: appVersion });
   }
 
   // 표지(준비) 화면 렌더 — 발표자·관객 공용
@@ -2110,8 +2198,8 @@
       document.getElementById('presProgress').textContent = '완료!';
       document.getElementById('presQ').textContent = '';
       logoBox.style.display = 'none';
-      document.getElementById('presAnswer').textContent = win;
-      document.getElementById('presAnswerSub').textContent = 'GROWTH ' + growthScore + ' : ' + valueScore + ' VALUE';
+      document.getElementById('presAnswer').textContent = appVersion === '1.1' ? '🎉 수고하셨습니다!' : win;
+      document.getElementById('presAnswerSub').textContent = appVersion === '1.1' ? '' : ('GROWTH ' + growthScore + ' : ' + valueScore + ' VALUE');
       st.textContent = ''; st.className = '';
       document.getElementById('presNext').textContent = '← 이전 또는 종료 버튼으로 나가기';
       return;
@@ -2182,7 +2270,7 @@
       box.style.display = 'none';
       reveal.classList.remove('show');
       document.getElementById('audProgress').textContent = '';
-      document.getElementById('audDoneMsg').textContent = win;
+      document.getElementById('audDoneMsg').textContent = (data.ver === '1.1') ? '🎉 수고하셨습니다!' : win;
       document.getElementById('audDoneMsg').style.display = 'block';
       var _h = document.getElementById('audHint'); if (_h) _h.style.display = 'none';
       var _c = document.getElementById('audCombo'); if (_c) _c.style.display = 'none';
@@ -2275,6 +2363,7 @@
       if (BC) {
         BC.onmessage = function (e) {
           const d = e.data; if (!d) return;
+          if (d.ver) { appVersion = d.ver; applyVersion(); }   // 발표자 버전에 맞춰 동기화
           if (d.type === 'exit') { window.close(); return; }
           if (d.type === 'home') { hideWinnerOverlay(); if (d.visited) { visited = new Set(d.visited); } if (d.g !== undefined) growthScore = d.g; if (d.v !== undefined) valueScore = d.v; show('home'); markVisited(); updateHomeScore(); return; }
           if (d.type === 'slot') { showSlotMirror(d); return; }
@@ -2307,6 +2396,7 @@
   });
   markVisited();
   updateHomeScore();
+  applyVersion();   // 저장된 버전(팀전/1주년)을 화면에 반영
   function applySongTime(cur, dur) {
     var p = Math.min(100, cur / dur * 100);
     var fmt = function (s) { var m = Math.floor(s / 60), ss = Math.floor(s % 60); return m + ':' + (ss < 10 ? '0' : '') + ss; };
