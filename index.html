@@ -310,7 +310,9 @@
   .ver-badge { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: .5px;
     background: rgba(123,92,255,.9); color: #fff; padding: 4px 12px; border-radius: 99px; }
   #home { position: relative; }
-  .home-ver { position: absolute; top: 14px; right: 16px; z-index: 5; }
+  .home-ver { position: absolute; top: 14px; left: 16px; z-index: 5; display: flex; gap: 8px; }
+  .home-ver .admin-ver { font-size: 14px; padding: 8px 16px; }
+  body.audience-mode .home-ver { display: none; }
   .pres-ver { margin-left: auto; }
 
   /* 1주년(1.1): 팀(GROWTH/VALUE) 점수 관련 UI 전부 숨김 */
@@ -608,7 +610,10 @@
 
   <!-- 메인 화면 -->
   <section id="home" class="screen active">
-    <div class="home-ver"><span class="ver-badge">MT · v1.0</span></div>
+    <div class="home-ver">
+      <button class="admin-ver ver-btn" data-ver="1.0" onclick="setVersion('1.0')">MT<small>v1.0</small></button>
+      <button class="admin-ver ver-btn" data-ver="1.1" onclick="setVersion('1.1')">1주년<small>v1.1</small></button>
+    </div>
     <div class="hero-row">
       <div class="hs-team growth"><div class="hs-name">GROWTH</div><div class="hs-num" id="homeScoreG">0</div><div class="hs-adj"><button onclick="addScore('growth',1)">＋</button><button onclick="addScore('growth',-1)">－</button></div></div>
       <div class="hero">
@@ -1813,6 +1818,7 @@
     document.body.classList.toggle('v11', appVersion === '1.1');
     var lbl = appVersion === '1.1' ? '1주년 · v1.1' : 'MT · v1.0';
     document.querySelectorAll('.ver-badge').forEach(function (el) { el.textContent = lbl; });
+    document.querySelectorAll('.ver-btn').forEach(function (b) { b.classList.toggle('on', b.dataset.ver === appVersion); });
   }
   function setVersion(v) {
     appVersion = (v === '1.1') ? '1.1' : '1.0';
