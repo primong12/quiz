@@ -276,7 +276,7 @@
   .answer-sheet td.ceo { color: #555; width: 38%; }
   .answer-sheet td.ans { font-weight: 800; color: #e8467c; }
   .answer-sheet.soon { color: #b6aecb; font-weight: 600; font-size: 14px; }
-  #adminBody { max-width: 820px; margin: 0 auto; }
+  #adminBody { margin: 0 auto; }   /* 메인 화면과 같은 폭(.wrap 1160px)으로 카드 표시 */
   .admin-pick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(6px, 1vw, 12px); }
   .admin-pick {
     border: none; cursor: pointer; color: #fff; border-radius: 18px; padding: clamp(8px, 1.5vw, 16px) clamp(6px, 1.1vw, 12px);
@@ -320,6 +320,11 @@
   body.v11 .team-side,
   body.v11 .team-keyhint,
   body.v11 .admin-link button[onclick^="announceResult"] { display: none !important; }
+
+  /* 관리자: 숨긴 게임 구분선 + 숨김 카드 */
+  .admin-hidden-sep { grid-column: 1 / -1; margin: 16px 4px 0; padding-top: 14px;
+    border-top: 1px dashed rgba(255,255,255,.18); color: #cdbff5; font-weight: 800; font-size: 16px; opacity: .92; }
+  #adminGrid .card.hidden-game { --accent: #9a8cc4; opacity: .9; }
 
   /* ===== 발표 표지(준비) 화면 ===== */
   .cover-card { width: 100%; max-width: 900px; min-height: 460px; margin: 0 auto;
@@ -836,7 +841,7 @@
   <section id="admin" class="screen">
     <div class="topbar">
       <button class="back-btn" onclick="goHome()">← 나가기</button>
-      <div class="progress-text" style="flex:1">🔧 관리자 · 정답지</div>
+      <div class="progress-text" style="flex:1">🔧 관리자 · 전체 게임 (숨김 포함)</div>
     </div>
     <div id="adminBody"></div>
   </section>
@@ -1681,31 +1686,44 @@
 
   const ADMIN_KEYS = ['ceo', 'krTicker', 'usTicker', 'cast', 'role', 'quote', 'memory', 'y2k', 'econ', 'chosung', 'sugarman', 'charL', 'krStar', 'sports', 'logoIntl', 'logoKr'];
 
-  // 관리자 1단계: 버전 선택 + 퀴즈 선택 화면 (숨김 게임 포함 전체 표시)
+  // 숨김 게임용 아이콘(메인 카드와 같은 phosphor 아이콘 스타일)
+  const HIDDEN_ICONS = { intlStar: 'ph-popcorn', econ: 'ph-chart-pie-slice' };
+
+  // 관리자 1단계: 버전 선택 + 메인 화면과 똑같은 게임 목록(숨김 게임은 맨 아래)
   function showAdmin() {
     // 좌상단 버전 바: MT(1.0) / 1주년(1.1)
-    let html = '<div class="admin-verbar">'
+    var verbar = '<div class="admin-verbar">'
       + '<button class="admin-ver' + (appVersion === '1.0' ? ' on' : '') + '" onclick="setVersion(\'1.0\')">MT<small>v1.0</small></button>'
       + '<button class="admin-ver' + (appVersion === '1.1' ? ' on' : '') + '" onclick="setVersion(\'1.1\')">1주년<small>v1.1</small></button>'
       + '<span class="admin-vernote">' + (appVersion === '1.1' ? '팀 점수 없는 버전' : '팀전(GROWTH·VALUE) 버전') + '</span>'
       + '</div>';
+    document.getElementById('adminBody').innerHTML = verbar + '<div class="grid" id="adminGrid"></div>';
+    var grid = document.getElementById('adminGrid');
 
-    html += '<div class="admin-pick-grid">';
-    for (const key of Object.keys(QUIZZES)) {
-      const q = QUIZZES[key];
-      html +=
-        '<button class="admin-pick' + (q.hidden ? ' hidden-game' : '') + '" style="background:' + q.grad + '" onclick="showAdminQuiz(\'' + key + '\')">' +
-          '<span class="emoji">' + q.emoji + '</span>' +
-          '<span class="t">' + q.title + (q.hidden ? ' 🙈' : '') + '</span>' +
-          '<span class="c">' + q.items.length + '문제</span>' +
-        '</button>';
+    // 1) 메인 화면 카드를 그대로 복제 → 모양·순서·색 100% 동일 (클릭하면 메인처럼 게임 시작)
+    document.querySelectorAll('#home .grid .card').forEach(function (c) {
+      grid.appendChild(c.cloneNode(true));
+    });
+
+    // 2) 숨긴 게임은 맨 아래로 (구분선 + 같은 카드 모양)
+    var hiddenKeys = Object.keys(QUIZZES).filter(function (k) { return QUIZZES[k].hidden; });
+    if (hiddenKeys.length) {
+      var sep = document.createElement('div');
+      sep.className = 'admin-hidden-sep';
+      sep.textContent = '🙈 숨긴 게임 — 메인 화면엔 안 보이고 여기서만 진행';
+      grid.appendChild(sep);
+      hiddenKeys.forEach(function (k) {
+        var q = QUIZZES[k];
+        var card = document.createElement('div');
+        card.className = 'card hidden-game';
+        card.setAttribute('onclick', "startQuiz('" + k + "')");
+        card.innerHTML =
+          '<div class="emoji"><i class="ph ' + (HIDDEN_ICONS[k] || 'ph-question') + '"></i></div>' +
+          '<div><div class="title">' + q.title + '</div><div class="sub">' + (q.sub || '') + '</div></div>' +
+          '<div class="count-badge">' + q.items.length + '문제</div>';
+        grid.appendChild(card);
+      });
     }
-    html += UPCOMING.map(name =>
-      '<button class="admin-pick soon" disabled>🔒 ' + name + '<span class="c">준비 중</span></button>'
-    ).join('');
-    html += '</div>';
-
-    document.getElementById('adminBody').innerHTML = html;
     show('admin');
   }
 
