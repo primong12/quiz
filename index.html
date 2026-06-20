@@ -2072,8 +2072,20 @@
       if (audioDisp) audioDisp.style.display = 'none';
     } else {
       box.classList.remove('ticker'); box.classList.remove('audio-on'); ticker.style.display = 'none';
-      img.style.display = 'block'; img.src = it.photo;
       if (audioDisp) audioDisp.style.display = 'none';
+      img.style.display = 'block';
+      // 새 사진을 다 받기 전까지 '이전 사진'이 남지 않도록 처리 (발표자·관객 공용)
+      // getAttribute로 비교(상대경로 'images/..' 끼리 비교) — img.src는 절대경로라 항상 다름
+      var want = it.photo;
+      if (img.getAttribute('src') !== want) {
+        img.style.visibility = 'hidden';                                   // 이전 사진 즉시 감춤
+        img.onload = function () { if (img.getAttribute('src') === want) img.style.visibility = 'visible'; };
+        img.onerror = function () { img.style.visibility = 'visible'; };   // 못 불러와도 빈칸 유지 안 함
+        img.setAttribute('src', want);
+        if (img.complete && img.naturalWidth) img.style.visibility = 'visible';  // 이미 캐시된 사진이면 바로 표시
+      } else {
+        img.style.visibility = 'visible';                                  // 같은 문제 재렌더(정답/힌트 등)면 그대로
+      }
     }
   }
   function toggleSong() {
