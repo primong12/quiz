@@ -316,6 +316,7 @@
   /* 1주년(1.1): 팀(GROWTH/VALUE) 점수 관련 UI 전부 숨김 */
   body.v11 .hs-team,
   body.v11 .team-side,
+  body.v11 .team-keyhint,
   body.v11 .admin-link button[onclick^="announceResult"] { display: none !important; }
 
   /* ===== 발표 표지(준비) 화면 ===== */
@@ -758,7 +759,7 @@
       <button onclick="giveHint()" style="background:#ff9f1c;color:#5a3a00">💡 힌트 (h)</button>
       <button id="muteBtn" onclick="toggleMute()" style="background:#5b9dff;color:#06234d">🔊 소리</button>
       <span id="presProgress">1 / 1</span>
-      <span class="pres-hint">Enter: 정답공개/다음 · 1=VALUE 2=GROWTH 정답체크 · h: 힌트 · m: 음소거 · ←: 이전 · Esc: 종료</span>
+      <span class="pres-hint">Enter: 정답공개/다음<span class="team-keyhint"> · 1=VALUE 2=GROWTH 정답체크</span> · h: 힌트 · m: 음소거 · ←: 이전 · Esc: 종료</span>
       <span class="ver-badge pres-ver">MT · v1.0</span>
     </div>
     <div class="pres-body">
