@@ -161,6 +161,10 @@
     box-shadow: inset 0 0 0 4px rgba(0,0,0,.04);
   }
   .photo-box img { width: 100%; height: 100%; object-fit: contain; }
+  .photo-box canvas { width: 100%; height: 100%; object-fit: contain; border-radius: inherit; }
+  .aud-photo-box canvas { width: 100%; height: 100%; object-fit: contain; }
+  .pres-mediabox canvas { max-height: min(72vh, 760px); max-width: 100%; border-radius: 14px; object-fit: contain; }
+  #presenter .pres-mediabox canvas { max-height: 100%; }
   .photo-box.logo-mode { background: transparent; box-shadow: none; }
   .photo-box.logo-mode img { padding: 5%; box-sizing: border-box; }
   .aud-photo-box.logo-mode { background: transparent; box-shadow: none; }
@@ -690,6 +694,10 @@
         <div class="emoji"><i class="ph ph-buildings"></i></div>
         <div><div class="title">국내 로고</div><div class="sub">로고로 기업 맞히기</div></div>
       </div>
+      <div class="card c1" onclick="startQuiz('ceoMosaic')">
+        <div class="emoji"><i class="ph ph-squares-four"></i></div>
+        <div><div class="title">CEO 모자이크</div><div class="sub">점점 선명해지는 CEO 맞히기</div></div>
+      </div>
     </div>
     <div class="admin-link"><button onclick="showAdmin()">🔧 관리자</button> <button onclick="announceResult()">🏆 팀 결과 발표</button></div>
   </section>
@@ -728,6 +736,7 @@
         <img id="ceoPhoto" alt="CEO 사진" style="display:none"
              onload="this.style.display='block'; document.getElementById('photoLoading').style.display='none';"
              onerror="document.getElementById('photoLoading').textContent='사진을 불러오지 못했어요 (인터넷 확인)';">
+        <canvas id="ceoCanvas" style="display:none"></canvas>
         <div id="tickerDisplay" class="ticker-display" style="display:none"></div>
         <div id="audioDisplay" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스: 정지·재생</span><div class="audio-bar"><div class="audio-bar-fill"></div></div><span class="audio-time">0:00 / 0:30</span></div>
       </div>
@@ -740,6 +749,7 @@
         </div>
       </div>
       <div class="actions">
+        <button class="btn" id="clearerBtn" style="display:none;background:linear-gradient(135deg,#654ea3,#eaafc8);color:#fff" onclick="selfClearer()">🔍 더 선명하게</button>
         <button class="btn btn-answer" id="answerBtn" onclick="showAnswer()">정답 보기 👀</button>
         <button class="btn btn-next" id="nextBtn" onclick="nextQuestion()">다음 ▶</button>
       </div>
@@ -780,6 +790,7 @@
         <div class="pres-label">현재 문제 (관객 화면)</div>
         <div class="pres-mediabox" id="presPhotoBox">
           <img id="presPhoto" alt="">
+          <canvas id="presCanvas" style="display:none"></canvas>
           <div id="presTicker" class="pres-ticker" style="display:none"></div>
           <div id="presAudioDisp" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스: 정지·재생</span><div class="audio-bar"><div class="audio-bar-fill"></div></div><span class="audio-time">0:00 / 0:30</span></div>
         </div>
@@ -816,6 +827,7 @@
         <div class="aud-progress" id="audProgress"></div>
     <div class="aud-photo-box" id="audPhotoBox">
       <img id="audPhoto" alt="">
+      <canvas id="audCanvas" style="display:none"></canvas>
       <div id="audTicker" style="display:none"></div>
       <div id="audAudioDisp" class="audio-display" style="display:none"><div class="lp"><div class="lp-label"></div></div><div class="audio-bar" style="margin-top:30px"><div class="audio-bar-fill"></div></div><span class="audio-time" style="color:#fff">0:00 / 0:30</span></div>
       <div id="audHint" class="aud-hint" style="display:none"></div>
@@ -1585,10 +1597,14 @@
                 emoji: '🌐', sub: '로고로 기업 맞히기', grad: 'linear-gradient(135deg,#373b44,#4286f4)' },
     logoKr:   { title: '국내 로고', question: '이 로고의 기업은? 🏢', items: LOGO_KR, logoQuiz: true,
                 emoji: '🏢', sub: '로고로 기업 맞히기', grad: 'linear-gradient(135deg,#1a2980,#26d0ce)' },
+    ceoMosaic:{ title: 'CEO 모자이크', question: '이 분이 이끄는 기업은? 🧩', items: CEO_QUIZ, mode: 'mosaic',
+                emoji: '🧩', sub: '모자이크가 벗겨질수록 선명해져요', grad: 'linear-gradient(135deg,#654ea3,#eaafc8)' },
   };
 
   let cur = QUIZZES.ceo;
   let idx = 0;
+  let mosaicStep = 0;                    // 모자이크 게임 현재 선명도 단계(0=가장 뭉갬)
+  const MOSAIC_BLOCKS = [8, 15, 26];     // 단계별 가로 블록 수 — 넘길수록 촘촘해짐, 마지막 다음엔 원본
 
   function show(screenId) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1599,7 +1615,7 @@
   function startQuiz(key) {
     visited.add(key);
     if (presSessionOn) { startPresent(key); return; }
-    cur = QUIZZES[key]; idx = 0; show('quiz'); renderQuestion();
+    cur = QUIZZES[key]; idx = 0; mosaicStep = 0; show('quiz'); renderQuestion();
   }
   function goHome() { var a=document.getElementById('songAudio'); if(a)a.pause(); show('home'); markVisited(); updateHomeScore(); if (presSessionOn) broadcastHome(); }
 
@@ -1757,15 +1773,37 @@
     } else {
       audioDisp.style.display = 'none';
       photoBox.classList.remove('ticker-mode'); photoBox.classList.remove('audio-mode');
-      ticker.style.display = 'none'; photo.style.display = 'none';
-      loading.style.display = 'block'; loading.textContent = '사진 불러오는 중…';
-      photo.src = it.photo;
+      ticker.style.display = 'none';
+      var selfCanvas = document.getElementById('ceoCanvas');
+      if (cur.mode === 'mosaic') {
+        photo.style.display = 'none'; loading.style.display = 'none';
+        if (selfCanvas) { selfCanvas.style.display = 'block'; drawMosaic(selfCanvas, it.photo, mosaicStep); }
+      } else {
+        if (selfCanvas) selfCanvas.style.display = 'none';
+        photo.style.display = 'none';
+        loading.style.display = 'block'; loading.textContent = '사진 불러오는 중…';
+        photo.src = it.photo;
+      }
       applyLogoBacking(it, photoBox);
     }
 
     document.getElementById('reveal').classList.remove('show');
     document.getElementById('answerBtn').style.display = 'block';
     document.getElementById('nextBtn').classList.remove('show');
+    updateClearerBtn();
+  }
+  // 혼자풀기 모자이크: '더 선명하게' 버튼 표시/숨김
+  function updateClearerBtn() {
+    var b = document.getElementById('clearerBtn'); if (!b) return;
+    var revealed = document.getElementById('reveal').classList.contains('show');
+    b.style.display = (cur && cur.mode === 'mosaic' && !revealed && mosaicStep < MOSAIC_BLOCKS.length) ? 'block' : 'none';
+  }
+  function selfClearer() {
+    if (!cur || cur.mode !== 'mosaic') return;
+    if (mosaicStep < MOSAIC_BLOCKS.length) mosaicStep++;
+    var mc = document.getElementById('ceoCanvas');
+    if (mc) drawMosaic(mc, cur.items[idx].photo, mosaicStep);
+    updateClearerBtn();
   }
 
   function showAnswer() {
@@ -1788,13 +1826,20 @@
       subEl.style.display = 'none';
     }
 
+    if (cur.mode === 'mosaic') {
+      mosaicStep = MOSAIC_BLOCKS.length;               // 원본(선명)으로
+      var mc = document.getElementById('ceoCanvas');
+      if (mc) drawMosaic(mc, it.photo, mosaicStep);
+    }
+
     document.getElementById('reveal').classList.add('show');
     document.getElementById('answerBtn').style.display = 'none';
     document.getElementById('nextBtn').classList.add('show');
+    updateClearerBtn();
   }
 
   function nextQuestion() {
-    idx++;
+    idx++; mosaicStep = 0;
     if (idx >= cur.items.length) {
       document.getElementById('doneText').textContent =
         cur.title + ' ' + cur.items.length + '문제를 모두 풀었어요.';
@@ -1872,7 +1917,7 @@
   let visited = new Set();
 
   function startPresent(key) {
-    presKey = key; cur = QUIZZES[key]; idx = 0;
+    presKey = key; cur = QUIZZES[key]; idx = 0; mosaicStep = 0;
     presIntro = true; presRevealed = false; presDone = false; presMode = true;
     pgGrowth = 0; pgValue = 0; pickedTeam = null; hintPos = []; awarded = {};   // 게임 점수만 0부터(메인 누적은 유지)
     if (!audienceWin || audienceWin.closed) openAudience();
@@ -1883,20 +1928,24 @@
   function presAdvance() {
     if (presDone) return;
     hintPos = [];                                       // 단계 이동 시 힌트 초기화
-    if (presIntro) presIntro = false;                  // 표지 → 첫 문제 시작
-    else if (!presRevealed) presRevealed = true;       // 1단계: 관객에게 정답 공개
-    else {                                              // 2단계: 다음 문제 (점수는 ✓정답 시 이미 반영됨)
+    if (presIntro) { presIntro = false; mosaicStep = 0; }   // 표지 → 첫 문제 시작
+    else if (cur.mode === 'mosaic' && !presRevealed && mosaicStep < MOSAIC_BLOCKS.length - 1) {
+      mosaicStep++;                                     // 모자이크: 한 단계 더 선명하게
+    }
+    else if (!presRevealed) presRevealed = true;       // 관객에게 정답 공개
+    else {                                              // 다음 문제 (점수는 ✓정답 시 이미 반영됨)
       pickedTeam = null;
       if (idx >= cur.items.length - 1) { finishQuiz(); return; }   // 마지막 문제 후 → 게임 결과 발표
-      else { idx++; presRevealed = false; }
+      else { idx++; presRevealed = false; mosaicStep = 0; }
     }
     renderPresenter(); broadcast();
   }
   function presBack() {
     pickedTeam = null; hintPos = [];
     if (presDone) presDone = false;
-    else if (presRevealed) presRevealed = false;
-    else if (idx > 0) { idx--; presRevealed = false; }
+    else if (presRevealed) { presRevealed = false; if (cur.mode === 'mosaic') mosaicStep = MOSAIC_BLOCKS.length - 1; }
+    else if (cur.mode === 'mosaic' && mosaicStep > 0) { mosaicStep--; }   // 모자이크: 한 단계 덜 선명하게
+    else if (idx > 0) { idx--; presRevealed = false; if (cur.mode === 'mosaic') mosaicStep = MOSAIC_BLOCKS.length - 1; }
     else presIntro = true;                             // 첫 문제 → 표지로
     renderPresenter(); broadcast();
   }
@@ -2105,7 +2154,7 @@
 
   function broadcast() {
     const cb = pickedTeam ? comboCount(pickedTeam, idx) : 0;
-    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone, g: pgGrowth, v: pgValue, hint: hintPos, picked: pickedTeam, combo: cb, comboTeam: pickedTeam, ver: appVersion });
+    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone, g: pgGrowth, v: pgValue, hint: hintPos, picked: pickedTeam, combo: cb, comboTeam: pickedTeam, ver: appVersion, m: mosaicStep });
   }
 
   // 표지(준비) 화면 렌더 — 발표자·관객 공용
@@ -2155,8 +2204,39 @@
     box.classList.toggle('logo-white', !!(it && it.whiteBg) && box.classList.contains('logo-mode'));
   }
 
+  // ── 모자이크(픽셀) 렌더 ─────────────────────────────────────────
+  // 캔버스에 '직접' 그려서 표시(toDataURL 미사용) → file:// 로 열어도 안전
+  const _mosaicImgCache = {};   // 원본 경로 → 로딩된 Image
+  function drawMosaic(canvas, photoPath, level) {
+    const paint = function (im) {
+      const nw = im.naturalWidth, nh = im.naturalHeight;
+      if (!nw) return;
+      canvas.width = nw; canvas.height = nh;
+      const cx = canvas.getContext('2d');
+      cx.clearRect(0, 0, nw, nh);
+      if (level >= MOSAIC_BLOCKS.length) {           // 원본(선명)
+        canvas.style.imageRendering = 'auto';
+        cx.imageSmoothingEnabled = true;
+        cx.drawImage(im, 0, 0, nw, nh);
+      } else {                                        // 픽셀화
+        canvas.style.imageRendering = 'pixelated';
+        const bw = MOSAIC_BLOCKS[level], bh = Math.max(1, Math.round(bw * nh / nw));
+        const small = document.createElement('canvas'); small.width = bw; small.height = bh;
+        small.getContext('2d').drawImage(im, 0, 0, bw, bh);
+        cx.imageSmoothingEnabled = false;
+        cx.drawImage(small, 0, 0, bw, bh, 0, 0, nw, nh);
+      }
+    };
+    let im = _mosaicImgCache[photoPath];
+    if (im && im.complete && im.naturalWidth) { paint(im); return; }
+    if (!im) { im = new Image(); _mosaicImgCache[photoPath] = im; im.src = photoPath; }
+    im.addEventListener('load', function () { paint(im); }, { once: true });
+  }
+
   // 사진/티커 채우기 (발표자·관객 공용)
-  function fillMedia(box, img, ticker, it, mode, audioDisp, doPlay) {
+  function fillMedia(box, img, ticker, it, mode, audioDisp, doPlay, mosaicLevel) {
+    var mcanvas = box.querySelector('canvas');
+    if (mode !== 'mosaic' && mcanvas) mcanvas.style.display = 'none';
     if (mode === 'audio') {
       box.classList.add('audio-on'); box.classList.remove('ticker'); img.style.display = 'none'; ticker.style.display = 'none';
       if (audioDisp) audioDisp.style.display = 'block';
@@ -2165,6 +2245,11 @@
       box.classList.add('ticker'); box.classList.remove('audio-on'); img.style.display = 'none';
       ticker.style.display = 'block'; ticker.textContent = it.q;
       if (audioDisp) audioDisp.style.display = 'none';
+    } else if (mode === 'mosaic') {
+      box.classList.remove('ticker'); box.classList.remove('audio-on'); ticker.style.display = 'none';
+      if (audioDisp) audioDisp.style.display = 'none';
+      img.style.display = 'none';
+      if (mcanvas) { mcanvas.style.display = 'block'; drawMosaic(mcanvas, it.photo, mosaicLevel || 0); }
     } else {
       box.classList.remove('ticker'); box.classList.remove('audio-on'); ticker.style.display = 'none';
       if (audioDisp) audioDisp.style.display = 'none';
@@ -2214,8 +2299,9 @@
 
     const it = q.items[idx];
     document.getElementById('presProgress').textContent = (idx + 1) + ' / ' + q.items.length;
+    var _presMlvl = (q.mode === 'mosaic') ? (presRevealed ? 99 : mosaicStep) : 0;
     fillMedia(document.getElementById('presPhotoBox'), document.getElementById('presPhoto'),
-              document.getElementById('presTicker'), it, q.mode, document.getElementById('presAudioDisp'), true);
+              document.getElementById('presTicker'), it, q.mode, document.getElementById('presAudioDisp'), true, _presMlvl);
     document.getElementById('presTicker').classList.toggle('desc', !!q.desc);
     if (q.mode === 'ticker') document.getElementById('presTicker').textContent = tickerText(q.items[idx], q.initials ? hintPos : []);
     fitTicker(document.getElementById('presTicker'));
@@ -2235,6 +2321,12 @@
 
     const cb = pickedTeam ? comboCount(pickedTeam, idx) : 0;
     if (presRevealed) { st.textContent = '● 관객 화면에 정답 공개됨'; st.className = 'reveal-shown'; }
+    else if (q.mode === 'mosaic') {
+      st.textContent = (mosaicStep < MOSAIC_BLOCKS.length - 1)
+        ? '🧩 선명도 ' + (mosaicStep + 1) + '/' + MOSAIC_BLOCKS.length + ' — Enter로 더 선명하게'
+        : '🧩 최대 선명 — Enter로 정답 공개';
+      st.className = 'reveal-hidden';
+    }
     else {
       let pre = '';
       if (hintPos.length) pre = (q.initials ? '💡 힌트 ' + hintPos.length + '개 공개' : '💡 ' + maskedHint(answerText(q, it), hintPos)) + ' · ';
@@ -2287,7 +2379,8 @@
     box.style.display = 'flex';
 
     const it = q.items[data.idx];
-    fillMedia(box, document.getElementById('audPhoto'), document.getElementById('audTicker'), it, q.mode, document.getElementById('audAudioDisp'), false);
+    var _audMlvl = (q.mode === 'mosaic') ? (data.revealed ? 99 : (data.m || 0)) : 0;
+    fillMedia(box, document.getElementById('audPhoto'), document.getElementById('audTicker'), it, q.mode, document.getElementById('audAudioDisp'), false, _audMlvl);
     document.getElementById('audTicker').classList.toggle('desc', !!q.desc);
     if (q.mode === 'ticker') document.getElementById('audTicker').textContent = tickerText(it, q.initials ? (data.hint || []) : []);
     fitTicker(document.getElementById('audTicker'));
