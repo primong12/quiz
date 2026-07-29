@@ -690,7 +690,7 @@
       </div>
       <div class="card c7" onclick="startQuiz('connect')">
         <div class="emoji"><i class="ph ph-link"></i></div>
-        <div><div class="title">공통점 찾기</div><div class="sub">세 단서의 공통점은?</div></div>
+        <div><div class="title">공통점 찾기</div><div class="sub">단서 3개로 기업 맞히기</div></div>
       </div>
     </div>
     <div class="admin-link"><button onclick="showAdmin()">🔧 관리자</button> <button onclick="announceResult()">🏆 팀 결과 발표</button></div>
@@ -1565,18 +1565,38 @@
     { q: '🍔🍟', answer: '맥도날드 (McDonald\'s)' },
   ];
 
-  // 공통점 찾기(커넥션): 단서 3개를 하나씩 공개, 숨은 공통점 맞히기 (단서는 막연→명확 순)
+  // 공통점 찾기(커넥션): 단서 3개(제품→분야→CEO)를 하나씩 공개해 '기업'을 맞힘. CEO 퀴즈 정답 기업 30
   const CONNECT = [
-    { clues: ['오마하의 현인', '가치투자', '버크셔 해서웨이'], answer: '워런 버핏' },
-    { clues: ['전기차', '화성 로켓', 'X (옛 트위터)'], answer: '일론 머스크' },
-    { clues: ['금', '달러', '국채'], answer: '안전자산' },
-    { clues: ['다우', '나스닥', '코스피'], answer: '주가지수' },
-    { clues: ['초록 인어', '프라푸치노', '사이렌'], answer: '스타벅스' },
-    { clues: ['사과', '창문', '검색창'], answer: '빅테크 (애플·MS·구글)' },
-    { clues: ['반도체', '갤럭시', '이재용'], answer: '삼성전자' },
-    { clues: ['불(Bull)', '곰(Bear)', '월가'], answer: '주식시장' },
-    { clues: ['비트코인', '블록체인', '사토시'], answer: '가상화폐' },
-    { clues: ['배당', '시가총액', '주주총회'], answer: '주식' },
+    { clues: ['전기차', '기가팩토리', '일론 머스크'], answer: '테슬라 (Tesla)' },
+    { clues: ['GPU', 'AI 반도체', '젠슨 황'], answer: '엔비디아 (NVIDIA)' },
+    { clues: ['챗GPT', '생성형 AI', '샘 올트먼'], answer: '오픈AI (OpenAI)' },
+    { clues: ['페이스북', '인스타그램', '마크 저커버그'], answer: '메타 (Meta)' },
+    { clues: ['조립 PC', '미국 컴퓨터 회사', '마이클 델'], answer: '델 (Dell)' },
+    { clues: ['우리 모임', '투자 아카데미', 'HS아카데미'], answer: '모르면 나가주세요' },
+    { clues: ['중국 AI', '저비용 언어모델', '량원펑'], answer: '딥시크 (DeepSeek)' },
+    { clues: ['하이닉스', '배터리·정유', '최태원'], answer: 'SK (에스케이)' },
+    { clues: ['온라인 쇼핑', 'AWS 클라우드', '제프 베이조스'], answer: '아마존 (Amazon)' },
+    { clues: ['스마트 컨트랙트', '알트코인 대장', '비탈릭 부테린'], answer: '이더리움 (Ethereum)' },
+    { clues: ['클로드(Claude)', 'AI 안전', '다리오 아모데이'], answer: '엔트로픽 (Anthropic)' },
+    { clues: ['애저 클라우드', '오피스 365', '사티아 나델라'], answer: '마이크로소프트 (Microsoft)' },
+    { clues: ['BTS', 'K팝 기획사', '방시혁'], answer: '하이브 (HYBE)' },
+    { clues: ['오마하', '가치투자', '워런 버핏'], answer: '버크셔 해서웨이 (Berkshire Hathaway)' },
+    { clues: ['아이폰', '맥북', '스티브 잡스'], answer: '애플 (Apple)' },
+    { clues: ['갤럭시', '반도체', '이재용'], answer: '삼성전자 (Samsung)' },
+    { clues: ['아이오닉', '완성차', '정의선'], answer: '현대자동차 (Hyundai)' },
+    { clues: ['MS-DOS', '윈도우', '빌 게이츠'], answer: '마이크로소프트 (Microsoft)' },
+    { clues: ['라이젠 CPU', '엔비디아 경쟁사', '리사 수'], answer: 'AMD' },
+    { clues: ['왕회장', '소떼 방북', '정주영'], answer: '현대그룹 (Hyundai)' },
+    { clues: ['메디큐브', '뷰티 디바이스', '김병훈'], answer: '에이피알 (APR)' },
+    { clues: ['빅데이터 분석', '미국 정보기관 납품', '알렉스 카프'], answer: '팔란티어 (Palantir)' },
+    { clues: ['기업용 데이터베이스', 'DB 소프트웨어', '래리 엘리슨'], answer: '오라클 (Oracle)' },
+    { clues: ['비전펀드', '일본 투자회사', '손정의'], answer: '소프트뱅크 (SoftBank)' },
+    { clues: ['트윈스', '가전·배터리', '구광모'], answer: 'LG' },
+    { clues: ['검색엔진', '안드로이드', '순다르 피차이'], answer: '구글 (Google)' },
+    { clues: ['리니지', '게임 회사', '김택진'], answer: '엔씨소프트 (NCSOFT)' },
+    { clues: ['타오바오', '중국 이커머스', '마윈'], answer: '알리바바 (Alibaba)' },
+    { clues: ['금융 단말기', '前 뉴욕시장', '마이클 블룸버그'], answer: '블룸버그 (Bloomberg)' },
+    { clues: ['미국 최대 은행', '월가 대표 은행', '제이미 다이먼'], answer: 'JP모건 (JPMorgan)' },
   ];
 
   const QUIZZES = {
@@ -1622,8 +1642,8 @@
                 emoji: '🧩', sub: '모자이크가 벗겨질수록 선명해져요', grad: 'linear-gradient(135deg,#654ea3,#eaafc8)' },
     emojiCorp:{ title: '이모지 기업', question: '이모지가 가리키는 기업은? 🤔', items: EMOJI_CORP, mode: 'ticker', big: true,
                 emoji: '😀', sub: '이모지로 기업 맞히기', grad: 'linear-gradient(135deg,#f7971e,#ffd200)' },
-    connect:  { title: '공통점 찾기', question: '세 단서의 공통점은? 🔗', items: CONNECT, mode: 'connect',
-                emoji: '🔗', sub: '단서를 하나씩 보고 공통점 맞히기', grad: 'linear-gradient(135deg,#0ba360,#3cba92)' },
+    connect:  { title: '공통점 찾기', question: '세 단서가 가리키는 기업은? 🔗', items: CONNECT, mode: 'connect',
+                emoji: '🔗', sub: '단서 3개로 기업 맞히기', grad: 'linear-gradient(135deg,#0ba360,#3cba92)' },
   };
 
   let cur = QUIZZES.ceo;
