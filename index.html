@@ -1577,7 +1577,7 @@
   let cur = QUIZZES.ceo;
   let idx = 0;
   let mosaicStep = 0;                    // 모자이크 게임 현재 선명도 단계(0=가장 뭉갬)
-  const MOSAIC_BLOCKS = [8, 15, 26];     // 단계별 가로 블록 수 — 넘길수록 촘촘해짐, 마지막 다음엔 원본
+  const MOSAIC_BLOCKS = [8, 15, 26, 40, 60];   // 단계별 가로 블록 수(5단계) — 넘길수록 촘촘해짐, 마지막 다음엔 원본
 
   function show(screenId) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
