@@ -1590,7 +1590,7 @@
                 emoji: '🏢', sub: '로고로 기업 맞히기', grad: 'linear-gradient(135deg,#1a2980,#26d0ce)' },
     ceoMosaic:{ title: 'CEO 모자이크', question: '이 분이 이끄는 기업은? 🧩', items: CEO_QUIZ, mode: 'mosaic',
                 emoji: '🧩', sub: '모자이크가 벗겨질수록 선명해져요', grad: 'linear-gradient(135deg,#654ea3,#eaafc8)' },
-    emojiCorp:{ title: '이모지 기업', question: '이모지가 가리키는 기업은? 🤔', items: EMOJI_CORP, mode: 'ticker',
+    emojiCorp:{ title: '이모지 기업', question: '이모지가 가리키는 기업은? 🤔', items: EMOJI_CORP, mode: 'ticker', big: true,
                 emoji: '😀', sub: '이모지로 기업 맞히기', grad: 'linear-gradient(135deg,#f7971e,#ffd200)' },
   };
 
@@ -1754,6 +1754,7 @@
       audioDisp.style.display = 'none';
       photoBox.classList.add('ticker-mode'); photoBox.classList.remove('audio-mode');
       photoBox.classList.toggle('desc', !!cur.desc); ticker.classList.toggle('desc', !!cur.desc);
+      ticker.classList.toggle('emoji-big', !!cur.big);
       photo.style.display = 'none'; loading.style.display = 'none';
       ticker.style.display = 'block'; ticker.textContent = it.q; fitTicker(ticker);
     } else {
@@ -2157,7 +2158,8 @@
       return;
     }
     el.style.whiteSpace = 'nowrap';
-    const max = el.id === 'audTicker' ? Math.max(60, Math.round(window.innerHeight * 0.34)) : (TICKER_MAXFS[el.id] || 72);
+    let max = el.id === 'audTicker' ? Math.max(60, Math.round(window.innerHeight * 0.34)) : (TICKER_MAXFS[el.id] || 72);
+    if (el.classList.contains('emoji-big')) max = (el.id === 'audTicker') ? Math.round(window.innerHeight * 0.6) : max * 3;   // 이모지 게임: 3배 크게
     let fs = max; el.style.fontSize = fs + 'px';
     const parent = el.parentElement || el;
     const target = parent.clientWidth * 0.94;
@@ -2274,6 +2276,7 @@
     fillMedia(document.getElementById('presPhotoBox'), document.getElementById('presPhoto'),
               document.getElementById('presTicker'), it, q.mode, document.getElementById('presAudioDisp'), true, _presMlvl);
     document.getElementById('presTicker').classList.toggle('desc', !!q.desc);
+    document.getElementById('presTicker').classList.toggle('emoji-big', !!q.big);
     if (q.mode === 'ticker') document.getElementById('presTicker').textContent = tickerText(q.items[idx], q.initials ? hintPos : []);
     fitTicker(document.getElementById('presTicker'));
     document.getElementById('presPhotoBox').classList.toggle('logo-mode', !!q.logoQuiz);
@@ -2353,6 +2356,7 @@
     var _audMlvl = (q.mode === 'mosaic') ? (data.revealed ? 99 : (data.m || 0)) : 0;
     fillMedia(box, document.getElementById('audPhoto'), document.getElementById('audTicker'), it, q.mode, document.getElementById('audAudioDisp'), false, _audMlvl);
     document.getElementById('audTicker').classList.toggle('desc', !!q.desc);
+    document.getElementById('audTicker').classList.toggle('emoji-big', !!q.big);
     if (q.mode === 'ticker') document.getElementById('audTicker').textContent = tickerText(it, q.initials ? (data.hint || []) : []);
     fitTicker(document.getElementById('audTicker'));
     box.classList.toggle('desc', !!q.desc);
