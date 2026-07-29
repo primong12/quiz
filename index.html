@@ -616,9 +616,9 @@
       <div class="hs-team value"><div class="hs-name">VALUE</div><div class="hs-num" id="homeScoreV">0</div><div class="hs-adj"><button onclick="addScore('value',1)">＋</button><button onclick="addScore('value',-1)">－</button></div></div>
     </div>
     <div class="grid">
-      <div class="card c1" onclick="startQuiz('ceo')">
-        <div class="emoji"><i class="ph ph-briefcase"></i></div>
-        <div><div class="title">CEO</div><div class="sub">사진 속 CEO의 기업은?</div></div>
+      <div class="card c1" onclick="startQuiz('ceoMosaic')">
+        <div class="emoji"><i class="ph ph-squares-four"></i></div>
+        <div><div class="title">CEO</div><div class="sub">점점 선명해지는 CEO 맞히기</div></div>
       </div>
       <div class="card c4" onclick="startQuiz('krTicker')">
         <div class="emoji"><i class="ph ph-chart-line-up"></i></div>
@@ -679,10 +679,6 @@
       <div class="card c21" onclick="startQuiz('logoKr')">
         <div class="emoji"><i class="ph ph-buildings"></i></div>
         <div><div class="title">국내 로고</div><div class="sub">로고로 기업 맞히기</div></div>
-      </div>
-      <div class="card c1" onclick="startQuiz('ceoMosaic')">
-        <div class="emoji"><i class="ph ph-squares-four"></i></div>
-        <div><div class="title">CEO 모자이크</div><div class="sub">점점 선명해지는 CEO 맞히기</div></div>
       </div>
       <div class="card c17" onclick="startQuiz('emojiCorp')">
         <div class="emoji"><i class="ph ph-smiley"></i></div>
@@ -1583,7 +1579,7 @@
 
 
   const QUIZZES = {
-    ceo:      { title: 'CEO',             question: '이 분이 이끄는 기업은? 🤔', items: CEO_QUIZ,
+    ceo:      { title: 'CEO 기초',        question: '이 분이 이끄는 기업은? 🤔', items: CEO_QUIZ, hidden: true,
                 emoji: '👔', sub: '사진 속 CEO의 기업을 맞혀보세요', grad: 'linear-gradient(135deg,#f857a6,#ff5858)' },
     krStar:   { title: '국내 연예인', question: '이 사람은 누구일까요? 🤔',  items: KR_STARS,
                 emoji: '🌟', sub: '사진 속 인물의 이름은?', grad: 'linear-gradient(135deg,#fa709a,#fee140)' },
@@ -1621,7 +1617,7 @@
                 emoji: '🌐', sub: '로고로 기업 맞히기', grad: 'linear-gradient(135deg,#373b44,#4286f4)' },
     logoKr:   { title: '국내 로고', question: '이 로고의 기업은? 🏢', items: LOGO_KR, logoQuiz: true,
                 emoji: '🏢', sub: '로고로 기업 맞히기', grad: 'linear-gradient(135deg,#1a2980,#26d0ce)' },
-    ceoMosaic:{ title: 'CEO 모자이크', question: '이 분이 이끄는 기업은? 🧩', items: CEO_QUIZ, mode: 'mosaic',
+    ceoMosaic:{ title: 'CEO', question: '이 분이 이끄는 기업은? 🧩', items: CEO_QUIZ, mode: 'mosaic',
                 emoji: '🧩', sub: '모자이크가 벗겨질수록 선명해져요', grad: 'linear-gradient(135deg,#654ea3,#eaafc8)' },
     emojiCorp:{ title: '이모지 기업', question: '이모지가 가리키는 기업은? 🤔', items: EMOJI_CORP, mode: 'ticker', big: true,
                 emoji: '😀', sub: '이모지로 기업 맞히기', grad: 'linear-gradient(135deg,#f7971e,#ffd200)' },
