@@ -300,30 +300,8 @@
   .admin-back:hover { background: #ddd3f0; }
   /* 관리자 그리드도 항상 4열 유지(카드 내부가 비례 축소) */
 
-  /* ===== 버전 (MT 1.0 / 1주년 1.1) ===== */
-  .admin-verbar { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
-  .admin-ver { border: 2px solid #cfc4ea; background: #fff; color: #6a5d8a; font-weight: 900; font-size: 16px;
-    padding: 10px 22px; border-radius: 99px; cursor: pointer; transition: all .15s ease; }
-  .admin-ver small { font-weight: 700; opacity: .7; margin-left: 4px; }
-  .admin-ver:hover { background: #f1ecfb; }
-  .admin-ver.on { background: linear-gradient(135deg,#7b5cff,#9d7bff); color: #fff; border-color: transparent; box-shadow: 0 6px 16px rgba(123,92,255,.4); }
-  .admin-vernote { font-size: 14px; color: #8a7fae; font-weight: 700; margin-left: 4px; }
+  /* 관리자: 숨긴 게임 표시 */
   .admin-pick.hidden-game { opacity: .82; outline: 2px dashed rgba(255,255,255,.7); outline-offset: -5px; }
-
-  /* 버전 배지 (홈·발표자에서 현재 버전 표시) */
-  .ver-badge { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: .5px;
-    background: rgba(123,92,255,.9); color: #fff; padding: 4px 12px; border-radius: 99px; }
-  #home { position: relative; }
-  .home-ver { position: absolute; top: 14px; left: 16px; z-index: 5; display: flex; gap: 8px; }
-  .home-ver .admin-ver { font-size: 14px; padding: 8px 16px; }
-  body.audience-mode .home-ver { display: none; }
-  .pres-ver { margin-left: auto; }
-
-  /* 1주년(1.1): 팀(GROWTH/VALUE) 점수 관련 UI 전부 숨김 */
-  body.v11 .hs-team,
-  body.v11 .team-side,
-  body.v11 .team-keyhint,
-  body.v11 .admin-link button[onclick^="announceResult"] { display: none !important; }
 
   /* ===== 발표 표지(준비) 화면 ===== */
   .cover-card { width: 100%; max-width: 900px; min-height: 460px; margin: 0 auto;
@@ -614,10 +592,6 @@
 
   <!-- 메인 화면 -->
   <section id="home" class="screen active">
-    <div class="home-ver">
-      <button class="admin-ver ver-btn" data-ver="1.0" onclick="setVersion('1.0')">MT<small>v1.0</small></button>
-      <button class="admin-ver ver-btn" data-ver="1.1" onclick="setVersion('1.1')">1주년<small>v1.1</small></button>
-    </div>
     <div class="hero-row">
       <div class="hs-team growth"><div class="hs-name">GROWTH</div><div class="hs-num" id="homeScoreG">0</div><div class="hs-adj"><button onclick="addScore('growth',1)">＋</button><button onclick="addScore('growth',-1)">－</button></div></div>
       <div class="hero">
@@ -775,7 +749,6 @@
       <button id="muteBtn" onclick="toggleMute()" style="background:#5b9dff;color:#06234d">🔊 소리</button>
       <span id="presProgress">1 / 1</span>
       <span class="pres-hint">Enter: 정답공개/다음<span class="team-keyhint"> · 1=VALUE 2=GROWTH 정답체크</span> · h: 힌트 · m: 음소거 · ←: 이전 · Esc: 종료</span>
-      <span class="ver-badge pres-ver">MT · v1.0</span>
     </div>
     <div class="pres-body">
       <div class="team-side growth" id="presTeamG">
@@ -1699,14 +1672,7 @@
 
   // 관리자 1단계: 버전 선택 + 퀴즈 선택 화면 (숨김 게임 포함 전체 표시)
   function showAdmin() {
-    // 좌상단 버전 바: MT(1.0) / 1주년(1.1)
-    let html = '<div class="admin-verbar">'
-      + '<button class="admin-ver' + (appVersion === '1.0' ? ' on' : '') + '" onclick="setVersion(\'1.0\')">MT<small>v1.0</small></button>'
-      + '<button class="admin-ver' + (appVersion === '1.1' ? ' on' : '') + '" onclick="setVersion(\'1.1\')">1주년<small>v1.1</small></button>'
-      + '<span class="admin-vernote">' + (appVersion === '1.1' ? '팀 점수 없는 버전' : '팀전(GROWTH·VALUE) 버전') + '</span>'
-      + '</div>';
-
-    html += '<div class="admin-pick-grid">';
+    let html = '<div class="admin-pick-grid">';
     for (const key of Object.keys(QUIZZES)) {
       const q = QUIZZES[key];
       html +=
@@ -1857,24 +1823,9 @@
   let muted = false;  // 효과음 음소거 토글
   let awarded = {};   // 이 게임에서 문제별 정답 인정 팀 { idx: 'growth'|'value' } (콤보 계산용)
 
-  // ===== 버전 =====  '1.0'=MT(팀전) / '1.1'=1주년(팀 점수 없음). 게임 내용은 두 버전 공통.
-  let appVersion = (function () { try { return localStorage.getItem('eliteQuizVersion') === '1.1' ? '1.1' : '1.0'; } catch (e) { return '1.0'; } })();
-  function applyVersion() {
-    document.body.classList.toggle('v11', appVersion === '1.1');
-    var lbl = appVersion === '1.1' ? '1주년 · v1.1' : 'MT · v1.0';
-    document.querySelectorAll('.ver-badge').forEach(function (el) { el.textContent = lbl; });
-    document.querySelectorAll('.ver-btn').forEach(function (b) { b.classList.toggle('on', b.dataset.ver === appVersion); });
-  }
-  function setVersion(v) {
-    appVersion = (v === '1.1') ? '1.1' : '1.0';
-    try { localStorage.setItem('eliteQuizVersion', appVersion); } catch (e) {}
-    if (appVersion === '1.1') pickedTeam = null;          // 팀 선택 상태 해제
-    applyVersion();
-    if (presMode && !presDone) broadcast(); else broadcastHome();   // 관객 화면도 버전 동기화
-    if (document.getElementById('admin').classList.contains('active')) showAdmin();  // 버튼 강조 갱신
-    if (presMode) renderPresenter();
-    updateHomeScore();
-  }
+  // ===== 버전 =====  MT 팀전(GROWTH·VALUE) 단일 운영. (1주년 버전은 제거됨)
+  var appVersion = '1.0';
+  function applyVersion() { document.body.classList.remove('v11'); }
 
   // 초성 문제에 힌트 적용: 공개된 위치는 실제 글자로, 나머지는 초성으로 표시
   function tickerText(it, positions) {
