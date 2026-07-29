@@ -2386,6 +2386,13 @@
     if (!presMode) {
       var quizOn = document.getElementById('quiz').classList.contains('active');
       if (quizOn && cur && cur.mode === 'audio' && e.key === ' ') { e.preventDefault(); toggleSong(); return; }
+      // 모자이크: 스페이스로 한 단계씩 선명하게 (처음부터 마우스 없이 동작).
+      // 다 벗겨졌거나 정답 공개된 뒤엔 스페이스 무시 → 엔터로만 정답 공개/다음
+      if (quizOn && cur && cur.mode === 'mosaic' && e.key === ' ') {
+        e.preventDefault();
+        if (!document.getElementById('reveal').classList.contains('show') && mosaicStep < MOSAIC_BLOCKS.length) selfClearer();
+        return;
+      }
       // 일반 모드: 퀴즈 화면에서 Enter로 정답 보기 / 다음 문제
       if (e.key === 'Enter' && !e.isComposing && document.getElementById('quiz').classList.contains('active')) {
         e.preventDefault();
