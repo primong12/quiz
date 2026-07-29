@@ -672,6 +672,10 @@
         <div class="emoji"><i class="ph ph-squares-four"></i></div>
         <div><div class="title">CEO 모자이크</div><div class="sub">점점 선명해지는 CEO 맞히기</div></div>
       </div>
+      <div class="card c17" onclick="startQuiz('emojiCorp')">
+        <div class="emoji"><i class="ph ph-smiley"></i></div>
+        <div><div class="title">이모지 기업</div><div class="sub">이모지로 기업 맞히기</div></div>
+      </div>
     </div>
     <div class="admin-link"><button onclick="showAdmin()">🔧 관리자</button> <button onclick="announceResult()">🏆 팀 결과 발표</button></div>
   </section>
@@ -1531,6 +1535,20 @@
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/6b/36/0d/6b360d7b-8a89-b035-dfc6-70bb7da1a394/mzaf_5790008113688511380.plus.aac.p.m4a", company: "기도", ceo: "정일영" },
   ];
 
+  // 이모지로 기업 맞히기 (유명 기업 10)
+  const EMOJI_CORP = [
+    { q: '🍎📱', answer: '애플 (Apple)' },
+    { q: '⚡🚗', answer: '테슬라 (Tesla)' },
+    { q: '📦🛒', answer: '아마존 (Amazon)' },
+    { q: '🎬🍿🔴', answer: '넷플릭스 (Netflix)' },
+    { q: '☕💚', answer: '스타벅스 (Starbucks)' },
+    { q: '🔍🌈', answer: '구글 (Google)' },
+    { q: '👍💙', answer: '메타 (Meta·페이스북)' },
+    { q: '🪟💻', answer: '마이크로소프트 (Microsoft)' },
+    { q: '👟✔️', answer: '나이키 (Nike)' },
+    { q: '🍔🍟', answer: '맥도날드 (McDonald\'s)' },
+  ];
+
   const QUIZZES = {
     ceo:      { title: 'CEO',             question: '이 분이 이끄는 기업은? 🤔', items: CEO_QUIZ,
                 emoji: '👔', sub: '사진 속 CEO의 기업을 맞혀보세요', grad: 'linear-gradient(135deg,#f857a6,#ff5858)' },
@@ -1572,6 +1590,8 @@
                 emoji: '🏢', sub: '로고로 기업 맞히기', grad: 'linear-gradient(135deg,#1a2980,#26d0ce)' },
     ceoMosaic:{ title: 'CEO 모자이크', question: '이 분이 이끄는 기업은? 🧩', items: CEO_QUIZ, mode: 'mosaic',
                 emoji: '🧩', sub: '모자이크가 벗겨질수록 선명해져요', grad: 'linear-gradient(135deg,#654ea3,#eaafc8)' },
+    emojiCorp:{ title: '이모지 기업', question: '이모지가 가리키는 기업은? 🤔', items: EMOJI_CORP, mode: 'ticker',
+                emoji: '😀', sub: '이모지로 기업 맞히기', grad: 'linear-gradient(135deg,#f7971e,#ffd200)' },
   };
 
   let cur = QUIZZES.ceo;
