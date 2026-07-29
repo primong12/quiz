@@ -201,6 +201,18 @@
     font-size: 72px; letter-spacing: 3px; color: #ffe259;
     text-shadow: 0 4px 16px rgba(0,0,0,.4);
   }
+  /* 공통점 찾기(커넥션): 단서를 여러 줄로 하나씩 공개 */
+  .ticker-display.connect, .pres-ticker.connect, #audTicker.connect {
+    font-family: 'Apple SD Gothic Neo','Malgun Gothic',sans-serif; letter-spacing: 0;
+    white-space: normal; line-height: 1.5; display: flex; flex-direction: column; align-items: center; gap: .35em;
+  }
+  .connect .cl-on { color: #ffe259; }
+  .connect .cl-off { color: rgba(255,255,255,.28); }
+  .ticker-display.connect { font-size: 46px; }
+  .pres-ticker.connect { font-size: 40px; color: #232a45; text-shadow: none; }
+  .pres-ticker.connect .cl-off { color: rgba(35,42,69,.3); }
+  .pres-ticker.connect .cl-on { color: #232a45; }
+  #audTicker.connect { font-size: clamp(44px, 8vmin, 88px); }
   /* 경제·투자 용어(설명형): 남색 박스 제거 + 작은 글씨 + 최대 3줄 */
   .photo-box.ticker-mode.desc, .aud-photo-box.ticker.desc {
     background: transparent; box-shadow: none; min-height: 0;
@@ -675,6 +687,10 @@
       <div class="card c17" onclick="startQuiz('emojiCorp')">
         <div class="emoji"><i class="ph ph-smiley"></i></div>
         <div><div class="title">이모지 기업</div><div class="sub">이모지로 기업 맞히기</div></div>
+      </div>
+      <div class="card c7" onclick="startQuiz('connect')">
+        <div class="emoji"><i class="ph ph-link"></i></div>
+        <div><div class="title">공통점 찾기</div><div class="sub">세 단서의 공통점은?</div></div>
       </div>
     </div>
     <div class="admin-link"><button onclick="showAdmin()">🔧 관리자</button> <button onclick="announceResult()">🏆 팀 결과 발표</button></div>
@@ -1549,6 +1565,20 @@
     { q: '🍔🍟', answer: '맥도날드 (McDonald\'s)' },
   ];
 
+  // 공통점 찾기(커넥션): 단서 3개를 하나씩 공개, 숨은 공통점 맞히기 (단서는 막연→명확 순)
+  const CONNECT = [
+    { clues: ['오마하의 현인', '가치투자', '버크셔 해서웨이'], answer: '워런 버핏' },
+    { clues: ['전기차', '화성 로켓', 'X (옛 트위터)'], answer: '일론 머스크' },
+    { clues: ['금', '달러', '국채'], answer: '안전자산' },
+    { clues: ['다우', '나스닥', '코스피'], answer: '주가지수' },
+    { clues: ['초록 인어', '프라푸치노', '사이렌'], answer: '스타벅스' },
+    { clues: ['사과', '창문', '검색창'], answer: '빅테크 (애플·MS·구글)' },
+    { clues: ['반도체', '갤럭시', '이재용'], answer: '삼성전자' },
+    { clues: ['불(Bull)', '곰(Bear)', '월가'], answer: '주식시장' },
+    { clues: ['비트코인', '블록체인', '사토시'], answer: '가상화폐' },
+    { clues: ['배당', '시가총액', '주주총회'], answer: '주식' },
+  ];
+
   const QUIZZES = {
     ceo:      { title: 'CEO',             question: '이 분이 이끄는 기업은? 🤔', items: CEO_QUIZ,
                 emoji: '👔', sub: '사진 속 CEO의 기업을 맞혀보세요', grad: 'linear-gradient(135deg,#f857a6,#ff5858)' },
@@ -1592,11 +1622,13 @@
                 emoji: '🧩', sub: '모자이크가 벗겨질수록 선명해져요', grad: 'linear-gradient(135deg,#654ea3,#eaafc8)' },
     emojiCorp:{ title: '이모지 기업', question: '이모지가 가리키는 기업은? 🤔', items: EMOJI_CORP, mode: 'ticker', big: true,
                 emoji: '😀', sub: '이모지로 기업 맞히기', grad: 'linear-gradient(135deg,#f7971e,#ffd200)' },
+    connect:  { title: '공통점 찾기', question: '세 단서의 공통점은? 🔗', items: CONNECT, mode: 'connect',
+                emoji: '🔗', sub: '단서를 하나씩 보고 공통점 맞히기', grad: 'linear-gradient(135deg,#0ba360,#3cba92)' },
   };
 
   let cur = QUIZZES.ceo;
   let idx = 0;
-  let mosaicStep = 0;                    // 모자이크 게임 현재 선명도 단계(0=가장 뭉갬)
+  let revealStep = 0;                    // 모자이크 게임 현재 선명도 단계(0=가장 뭉갬)
   const MOSAIC_BLOCKS = [8, 15, 26, 40, 60];   // 단계별 가로 블록 수(5단계) — 넘길수록 촘촘해짐, 마지막 다음엔 원본
 
   function show(screenId) {
@@ -1608,7 +1640,7 @@
   function startQuiz(key) {
     visited.add(key);
     if (presSessionOn) { startPresent(key); return; }
-    cur = QUIZZES[key]; idx = 0; mosaicStep = 0; show('quiz'); renderQuestion();
+    cur = QUIZZES[key]; idx = 0; revealStep = 0; show('quiz'); renderQuestion();
   }
   function goHome() { var a=document.getElementById('songAudio'); if(a)a.pause(); show('home'); markVisited(); updateHomeScore(); if (presSessionOn) broadcastHome(); }
 
@@ -1750,13 +1782,15 @@
       photo.style.display = 'none'; loading.style.display = 'none'; ticker.style.display = 'none';
       audioDisp.style.display = 'block';
       var sa = document.getElementById('songAudio'); if (sa.dataset.cur !== it.preview) { sa.dataset.cur = it.preview; sa.src = it.preview; sa.play().catch(function () {}); }
-    } else if (cur.mode === 'ticker') {
+    } else if (cur.mode === 'ticker' || cur.mode === 'connect') {
       audioDisp.style.display = 'none';
       photoBox.classList.add('ticker-mode'); photoBox.classList.remove('audio-mode');
       photoBox.classList.toggle('desc', !!cur.desc); ticker.classList.toggle('desc', !!cur.desc);
       ticker.classList.toggle('emoji-big', !!cur.big);
-      photo.style.display = 'none'; loading.style.display = 'none';
-      ticker.style.display = 'block'; ticker.textContent = it.q; fitTicker(ticker);
+      var selfCanvasT = document.getElementById('ceoCanvas'); if (selfCanvasT) selfCanvasT.style.display = 'none';
+      photo.style.display = 'none'; loading.style.display = 'none'; ticker.style.display = 'block';
+      if (cur.mode === 'connect') { renderConnect(ticker, it, revealStep); }
+      else { ticker.classList.remove('connect'); ticker.textContent = it.q; fitTicker(ticker); }
     } else {
       audioDisp.style.display = 'none';
       photoBox.classList.remove('ticker-mode'); photoBox.classList.remove('audio-mode');
@@ -1764,7 +1798,7 @@
       var selfCanvas = document.getElementById('ceoCanvas');
       if (cur.mode === 'mosaic') {
         photo.style.display = 'none'; loading.style.display = 'none';
-        if (selfCanvas) { selfCanvas.style.display = 'block'; drawMosaic(selfCanvas, it.photo, mosaicStep); }
+        if (selfCanvas) { selfCanvas.style.display = 'block'; drawMosaic(selfCanvas, it.photo, revealStep); }
       } else {
         if (selfCanvas) selfCanvas.style.display = 'none';
         photo.style.display = 'none';
@@ -1779,17 +1813,24 @@
     document.getElementById('nextBtn').classList.remove('show');
     updateClearerBtn();
   }
-  // 혼자풀기 모자이크: '더 선명하게' 버튼 표시/숨김
+  // 혼자풀기 단계 공개 버튼(모자이크: 더 선명하게 / 커넥션: 다음 단서)
   function updateClearerBtn() {
     var b = document.getElementById('clearerBtn'); if (!b) return;
     var revealed = document.getElementById('reveal').classList.contains('show');
-    b.style.display = (cur && cur.mode === 'mosaic' && !revealed && mosaicStep < MOSAIC_BLOCKS.length) ? 'block' : 'none';
+    if (cur && cur.mode === 'mosaic' && !revealed && revealStep < MOSAIC_BLOCKS.length) { b.style.display = 'block'; b.textContent = '🔍 더 선명하게'; }
+    else if (cur && cur.mode === 'connect' && !revealed && revealStep < cur.items[idx].clues.length - 1) { b.style.display = 'block'; b.textContent = '다음 단서 ▶'; }
+    else b.style.display = 'none';
   }
   function selfClearer() {
-    if (!cur || cur.mode !== 'mosaic') return;
-    if (mosaicStep < MOSAIC_BLOCKS.length) mosaicStep++;
-    var mc = document.getElementById('ceoCanvas');
-    if (mc) drawMosaic(mc, cur.items[idx].photo, mosaicStep);
+    if (!cur) return;
+    if (cur.mode === 'mosaic') {
+      if (revealStep < MOSAIC_BLOCKS.length) revealStep++;
+      var mc = document.getElementById('ceoCanvas');
+      if (mc) drawMosaic(mc, cur.items[idx].photo, revealStep);
+    } else if (cur.mode === 'connect') {
+      if (revealStep < cur.items[idx].clues.length - 1) revealStep++;
+      renderConnect(document.getElementById('tickerDisplay'), cur.items[idx], revealStep);
+    }
     updateClearerBtn();
   }
 
@@ -1814,9 +1855,12 @@
     }
 
     if (cur.mode === 'mosaic') {
-      mosaicStep = MOSAIC_BLOCKS.length;               // 원본(선명)으로
+      revealStep = MOSAIC_BLOCKS.length;               // 원본(선명)으로
       var mc = document.getElementById('ceoCanvas');
-      if (mc) drawMosaic(mc, it.photo, mosaicStep);
+      if (mc) drawMosaic(mc, it.photo, revealStep);
+    } else if (cur.mode === 'connect') {
+      revealStep = it.clues.length - 1;                // 정답과 함께 단서 전부 공개
+      renderConnect(document.getElementById('tickerDisplay'), it, revealStep);
     }
 
     document.getElementById('reveal').classList.add('show');
@@ -1826,7 +1870,7 @@
   }
 
   function nextQuestion() {
-    idx++; mosaicStep = 0;
+    idx++; revealStep = 0;
     if (idx >= cur.items.length) {
       document.getElementById('doneText').textContent =
         cur.title + ' ' + cur.items.length + '문제를 모두 풀었어요.';
@@ -1889,7 +1933,7 @@
   let visited = new Set();
 
   function startPresent(key) {
-    presKey = key; cur = QUIZZES[key]; idx = 0; mosaicStep = 0;
+    presKey = key; cur = QUIZZES[key]; idx = 0; revealStep = 0;
     presIntro = true; presRevealed = false; presDone = false; presMode = true;
     pgGrowth = 0; pgValue = 0; pickedTeam = null; hintPos = []; awarded = {};   // 게임 점수만 0부터(메인 누적은 유지)
     if (!audienceWin || audienceWin.closed) openAudience();
@@ -1900,24 +1944,28 @@
   function presAdvance() {
     if (presDone) return;
     hintPos = [];                                       // 단계 이동 시 힌트 초기화
-    if (presIntro) { presIntro = false; mosaicStep = 0; }   // 표지 → 첫 문제 시작
-    else if (cur.mode === 'mosaic' && !presRevealed && mosaicStep < MOSAIC_BLOCKS.length - 1) {
-      mosaicStep++;                                     // 모자이크: 한 단계 더 선명하게
+    if (presIntro) { presIntro = false; revealStep = 0; }   // 표지 → 첫 문제 시작
+    else if (cur.mode === 'mosaic' && !presRevealed && revealStep < MOSAIC_BLOCKS.length - 1) {
+      revealStep++;                                     // 모자이크: 한 단계 더 선명하게
+    }
+    else if (cur.mode === 'connect' && !presRevealed && revealStep < cur.items[idx].clues.length - 1) {
+      revealStep++;                                     // 커넥션: 단서 하나 더 공개
     }
     else if (!presRevealed) presRevealed = true;       // 관객에게 정답 공개
     else {                                              // 다음 문제 (점수는 ✓정답 시 이미 반영됨)
       pickedTeam = null;
       if (idx >= cur.items.length - 1) { finishQuiz(); return; }   // 마지막 문제 후 → 게임 결과 발표
-      else { idx++; presRevealed = false; mosaicStep = 0; }
+      else { idx++; presRevealed = false; revealStep = 0; }
     }
     renderPresenter(); broadcast();
   }
   function presBack() {
     pickedTeam = null; hintPos = [];
     if (presDone) presDone = false;
-    else if (presRevealed) { presRevealed = false; if (cur.mode === 'mosaic') mosaicStep = MOSAIC_BLOCKS.length - 1; }
-    else if (cur.mode === 'mosaic' && mosaicStep > 0) { mosaicStep--; }   // 모자이크: 한 단계 덜 선명하게
-    else if (idx > 0) { idx--; presRevealed = false; if (cur.mode === 'mosaic') mosaicStep = MOSAIC_BLOCKS.length - 1; }
+    else if (presRevealed) { presRevealed = false; if (cur.mode === 'mosaic') revealStep = MOSAIC_BLOCKS.length - 1; else if (cur.mode === 'connect') revealStep = cur.items[idx].clues.length - 1; }
+    else if (cur.mode === 'mosaic' && revealStep > 0) { revealStep--; }   // 모자이크: 한 단계 덜 선명하게
+    else if (cur.mode === 'connect' && revealStep > 0) { revealStep--; }  // 커넥션: 단서 하나 덜 공개
+    else if (idx > 0) { idx--; presRevealed = false; if (cur.mode === 'mosaic') revealStep = MOSAIC_BLOCKS.length - 1; else if (cur.mode === 'connect') revealStep = cur.items[idx].clues.length - 1; }
     else presIntro = true;                             // 첫 문제 → 표지로
     renderPresenter(); broadcast();
   }
@@ -2126,7 +2174,7 @@
 
   function broadcast() {
     const cb = pickedTeam ? comboCount(pickedTeam, idx) : 0;
-    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone, g: pgGrowth, v: pgValue, hint: hintPos, picked: pickedTeam, combo: cb, comboTeam: pickedTeam, ver: appVersion, m: mosaicStep });
+    if (BC) BC.postMessage({ type: 'state', key: presKey, idx: idx, intro: presIntro, revealed: presRevealed, done: presDone, g: pgGrowth, v: pgValue, hint: hintPos, picked: pickedTeam, combo: cb, comboTeam: pickedTeam, ver: appVersion, m: revealStep });
   }
 
   // 표지(준비) 화면 렌더 — 발표자·관객 공용
@@ -2141,8 +2189,17 @@
 
   // 티커/초성: 줄바꿈 없이 한 줄 유지하고, 칸 폭에 맞게 글씨 크기를 자동 축소
   const TICKER_MAXFS = { tickerDisplay: 72, presTicker: 64, audTicker: 150 };
+  // 커넥션: 단서를 여러 줄로, revealStep까지 공개하고 나머지는 ❓
+  function renderConnect(el, it, step) {
+    if (!el) return;
+    el.classList.add('connect'); el.style.display = 'flex'; el.style.fontSize = ''; el.style.whiteSpace = '';
+    el.innerHTML = it.clues.map(function (c, i) {
+      return i <= step ? '<span class="cl-on">' + c + '</span>' : '<span class="cl-off">❓</span>';
+    }).join('');
+  }
   function fitTicker(el) {
     if (!el || el.style.display === 'none') return;
+    if (el.classList.contains('connect')) return;   // 커넥션은 CSS 고정 크기(여러 줄)라 자동조절 안 함
     if (el.classList.contains('desc')) { // 설명형: 한 줄 우선, 너무 길면 줄바꿈 허용
       el.style.whiteSpace = 'nowrap';
       const maxD = el.id === 'audTicker' ? Math.max(40, Math.round(window.innerHeight * 0.12))
@@ -2214,9 +2271,11 @@
       box.classList.add('audio-on'); box.classList.remove('ticker'); img.style.display = 'none'; ticker.style.display = 'none';
       if (audioDisp) audioDisp.style.display = 'block';
       if (doPlay) { var a = document.getElementById('songAudio'); if (a.dataset.cur !== it.preview) { a.dataset.cur = it.preview; a.src = it.preview; a.play().catch(function () {}); } }
-    } else if (mode === 'ticker') {
+    } else if (mode === 'ticker' || mode === 'connect') {
       box.classList.add('ticker'); box.classList.remove('audio-on'); img.style.display = 'none';
-      ticker.style.display = 'block'; ticker.textContent = it.q;
+      ticker.style.display = 'block';
+      if (mode === 'connect') { renderConnect(ticker, it, mosaicLevel || 0); }
+      else { ticker.classList.remove('connect'); ticker.textContent = it.q; }
       if (audioDisp) audioDisp.style.display = 'none';
     } else if (mode === 'mosaic') {
       box.classList.remove('ticker'); box.classList.remove('audio-on'); ticker.style.display = 'none';
@@ -2272,7 +2331,8 @@
 
     const it = q.items[idx];
     document.getElementById('presProgress').textContent = (idx + 1) + ' / ' + q.items.length;
-    var _presMlvl = (q.mode === 'mosaic') ? (presRevealed ? 99 : mosaicStep) : 0;
+    var _presMlvl = (q.mode === 'mosaic') ? (presRevealed ? 99 : revealStep)
+                  : (q.mode === 'connect') ? (presRevealed ? it.clues.length - 1 : revealStep) : 0;
     fillMedia(document.getElementById('presPhotoBox'), document.getElementById('presPhoto'),
               document.getElementById('presTicker'), it, q.mode, document.getElementById('presAudioDisp'), true, _presMlvl);
     document.getElementById('presTicker').classList.toggle('desc', !!q.desc);
@@ -2296,9 +2356,15 @@
     const cb = pickedTeam ? comboCount(pickedTeam, idx) : 0;
     if (presRevealed) { st.textContent = '● 관객 화면에 정답 공개됨'; st.className = 'reveal-shown'; }
     else if (q.mode === 'mosaic') {
-      st.textContent = (mosaicStep < MOSAIC_BLOCKS.length - 1)
-        ? '🧩 선명도 ' + (mosaicStep + 1) + '/' + MOSAIC_BLOCKS.length + ' — Enter로 더 선명하게'
+      st.textContent = (revealStep < MOSAIC_BLOCKS.length - 1)
+        ? '🧩 선명도 ' + (revealStep + 1) + '/' + MOSAIC_BLOCKS.length + ' — Enter로 더 선명하게'
         : '🧩 최대 선명 — Enter로 정답 공개';
+      st.className = 'reveal-hidden';
+    }
+    else if (q.mode === 'connect') {
+      st.textContent = (revealStep < it.clues.length - 1)
+        ? '🔗 단서 ' + (revealStep + 1) + '/' + it.clues.length + ' 공개 — Enter로 단서 더보기'
+        : '🔗 단서 전부 공개 — Enter로 정답 공개';
       st.className = 'reveal-hidden';
     }
     else {
@@ -2353,7 +2419,8 @@
     box.style.display = 'flex';
 
     const it = q.items[data.idx];
-    var _audMlvl = (q.mode === 'mosaic') ? (data.revealed ? 99 : (data.m || 0)) : 0;
+    var _audMlvl = (q.mode === 'mosaic') ? (data.revealed ? 99 : (data.m || 0))
+                 : (q.mode === 'connect') ? (data.revealed ? it.clues.length - 1 : (data.m || 0)) : 0;
     fillMedia(box, document.getElementById('audPhoto'), document.getElementById('audTicker'), it, q.mode, document.getElementById('audAudioDisp'), false, _audMlvl);
     document.getElementById('audTicker').classList.toggle('desc', !!q.desc);
     document.getElementById('audTicker').classList.toggle('emoji-big', !!q.big);
@@ -2410,11 +2477,13 @@
     if (!presMode) {
       var quizOn = document.getElementById('quiz').classList.contains('active');
       if (quizOn && cur && cur.mode === 'audio' && e.key === ' ') { e.preventDefault(); toggleSong(); return; }
-      // 모자이크: 스페이스로 한 단계씩 선명하게 (처음부터 마우스 없이 동작).
-      // 다 벗겨졌거나 정답 공개된 뒤엔 스페이스 무시 → 엔터로만 정답 공개/다음
-      if (quizOn && cur && cur.mode === 'mosaic' && e.key === ' ') {
+      // 모자이크/커넥션: 스페이스로 한 단계씩 공개 (처음부터 마우스 없이 동작).
+      // 다 공개됐거나 정답 공개된 뒤엔 스페이스 무시 → 엔터로만 정답 공개/다음
+      if (quizOn && cur && (cur.mode === 'mosaic' || cur.mode === 'connect') && e.key === ' ') {
         e.preventDefault();
-        if (!document.getElementById('reveal').classList.contains('show') && mosaicStep < MOSAIC_BLOCKS.length) selfClearer();
+        var revShown = document.getElementById('reveal').classList.contains('show');
+        var maxS = cur.mode === 'mosaic' ? MOSAIC_BLOCKS.length : (cur.items[idx].clues.length - 1);
+        if (!revShown && revealStep < maxS) selfClearer();
         return;
       }
       // 일반 모드: 퀴즈 화면에서 Enter로 정답 보기 / 다음 문제
