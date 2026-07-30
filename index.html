@@ -213,6 +213,8 @@
   .pres-ticker.connect .cl-off { color: rgba(35,42,69,.3); }
   .pres-ticker.connect .cl-on { color: #232a45; }
   #audTicker.connect { font-size: clamp(44px, 8vmin, 88px); }
+  /* 몸으로 말해요: 한글 단어라 한글 폰트+자간 정상 */
+  .ticker-display.gword, .pres-ticker.gword, #audTicker.gword { font-family: 'Apple SD Gothic Neo','Malgun Gothic',sans-serif; letter-spacing: 0; }
   /* 경제·투자 용어(설명형): 남색 박스 제거 + 작은 글씨 + 최대 3줄 */
   .photo-box.ticker-mode.desc, .aud-photo-box.ticker.desc {
     background: transparent; box-shadow: none; min-height: 0;
@@ -683,6 +685,10 @@
       <div class="card c17" onclick="startQuiz('emojiCorp')">
         <div class="emoji"><i class="ph ph-smiley"></i></div>
         <div><div class="title">이모지 기업</div><div class="sub">이모지로 기업 맞히기</div></div>
+      </div>
+      <div class="card c6" onclick="startQuiz('gesture')">
+        <div class="emoji"><i class="ph ph-hand-waving"></i></div>
+        <div><div class="title">몸으로 말해요</div><div class="sub">몸짓으로 설명하고 맞히기</div></div>
       </div>
     </div>
     <div class="admin-link"><button onclick="showAdmin()">🔧 관리자</button> <button onclick="announceResult()">🏆 팀 결과 발표</button></div>
@@ -1577,6 +1583,17 @@
     { q: '👴🥤', answer: '버크셔 해서웨이' },
   ];
 
+  // 몸으로 말해요: 발표자 화면에만 단어 표시, 한 명이 몸짓으로 설명 → 팀이 맞힘
+  const GESTURE = [
+    { answer: '기린' }, { answer: '펭귄' }, { answer: '방귀' }, { answer: '셀카 찍기' },
+    { answer: '낚시' }, { answer: '코끼리' }, { answer: '아이언맨' }, { answer: '겨울왕국' },
+    { answer: '태권도' }, { answer: '요리사' }, { answer: '좀비' }, { answer: '치과 치료' },
+    { answer: '지진' }, { answer: '프러포즈' }, { answer: '다이어트' }, { answer: '강남스타일' },
+    { answer: '코골기' }, { answer: '우산 쓰기' }, { answer: '헬스(웨이트)' }, { answer: '골 세리머니' },
+    { answer: '카멜레온' }, { answer: '경찰' }, { answer: '볼링' }, { answer: '스파이더맨' },
+    { answer: '라면 먹기' }, { answer: '골프 스윙' }, { answer: '하품' }, { answer: '문어' },
+    { answer: '결혼식' }, { answer: '수영' },
+  ];
 
   const QUIZZES = {
     ceo:      { title: 'CEO 기초',        question: '이 분이 이끄는 기업은? 🤔', items: CEO_QUIZ, hidden: true,
@@ -1621,6 +1638,8 @@
                 emoji: '🧩', sub: '모자이크가 벗겨질수록 선명해져요', grad: 'linear-gradient(135deg,#654ea3,#eaafc8)' },
     emojiCorp:{ title: '이모지 기업', question: '이모지가 가리키는 기업은? 🤔', items: EMOJI_CORP, mode: 'ticker', big: true,
                 emoji: '😀', sub: '이모지로 기업 맞히기', grad: 'linear-gradient(135deg,#f7971e,#ffd200)' },
+    gesture:  { title: '몸으로 말해요', question: '이 단어를 몸으로 설명! 🙊', items: GESTURE, mode: 'gesture',
+                emoji: '🙊', sub: '몸짓으로 설명하고 팀이 맞히기', grad: 'linear-gradient(135deg,#ee0979,#ff6a00)' },
   };
 
   let cur = QUIZZES.ceo;
@@ -1779,14 +1798,16 @@
       photo.style.display = 'none'; loading.style.display = 'none'; ticker.style.display = 'none';
       audioDisp.style.display = 'block';
       var sa = document.getElementById('songAudio'); if (sa.dataset.cur !== it.preview) { sa.dataset.cur = it.preview; sa.src = it.preview; sa.play().catch(function () {}); }
-    } else if (cur.mode === 'ticker' || cur.mode === 'connect') {
+    } else if (cur.mode === 'ticker' || cur.mode === 'connect' || cur.mode === 'gesture') {
       audioDisp.style.display = 'none';
       photoBox.classList.add('ticker-mode'); photoBox.classList.remove('audio-mode');
       photoBox.classList.toggle('desc', !!cur.desc); ticker.classList.toggle('desc', !!cur.desc);
       ticker.classList.toggle('emoji-big', !!cur.big);
+      ticker.classList.toggle('gword', cur.mode === 'gesture');
       var selfCanvasT = document.getElementById('ceoCanvas'); if (selfCanvasT) selfCanvasT.style.display = 'none';
       photo.style.display = 'none'; loading.style.display = 'none'; ticker.style.display = 'block';
       if (cur.mode === 'connect') { renderConnect(ticker, it, revealStep); }
+      else if (cur.mode === 'gesture') { ticker.classList.remove('connect'); ticker.textContent = it.answer; fitTicker(ticker); }
       else { ticker.classList.remove('connect'); ticker.textContent = it.q; fitTicker(ticker); }
     } else {
       audioDisp.style.display = 'none';
@@ -2268,10 +2289,11 @@
       box.classList.add('audio-on'); box.classList.remove('ticker'); img.style.display = 'none'; ticker.style.display = 'none';
       if (audioDisp) audioDisp.style.display = 'block';
       if (doPlay) { var a = document.getElementById('songAudio'); if (a.dataset.cur !== it.preview) { a.dataset.cur = it.preview; a.src = it.preview; a.play().catch(function () {}); } }
-    } else if (mode === 'ticker' || mode === 'connect') {
+    } else if (mode === 'ticker' || mode === 'connect' || mode === 'gesture') {
       box.classList.add('ticker'); box.classList.remove('audio-on'); img.style.display = 'none';
       ticker.style.display = 'block';
       if (mode === 'connect') { renderConnect(ticker, it, mosaicLevel || 0); }
+      else if (mode === 'gesture') { ticker.classList.remove('connect'); }   // 내용은 호출부에서 채움(발표자=단어/관객=가림)
       else { ticker.classList.remove('connect'); ticker.textContent = it.q; }
       if (audioDisp) audioDisp.style.display = 'none';
     } else if (mode === 'mosaic') {
@@ -2334,7 +2356,10 @@
               document.getElementById('presTicker'), it, q.mode, document.getElementById('presAudioDisp'), true, _presMlvl);
     document.getElementById('presTicker').classList.toggle('desc', !!q.desc);
     document.getElementById('presTicker').classList.toggle('emoji-big', !!q.big);
+    document.getElementById('presTicker').classList.toggle('gword', q.mode === 'gesture');
     if (q.mode === 'ticker') document.getElementById('presTicker').textContent = tickerText(q.items[idx], q.initials ? hintPos : []);
+    // 몸으로 말해요: 발표자 미디어영역도 관객과 똑같이 가림(단어는 아래 '정답' 칸에서만 봄)
+    if (q.mode === 'gesture') document.getElementById('presTicker').textContent = presRevealed ? it.answer : '🙊 몸으로 말해요!';
     fitTicker(document.getElementById('presTicker'));
     document.getElementById('presPhotoBox').classList.toggle('logo-mode', !!q.logoQuiz);
     document.getElementById('presQ').textContent = q.question;
@@ -2362,6 +2387,10 @@
       st.textContent = (revealStep < it.clues.length - 1)
         ? '🔗 단서 ' + (revealStep + 1) + '/' + it.clues.length + ' 공개 — Enter로 단서 더보기'
         : '🔗 단서 전부 공개 — Enter로 정답 공개';
+      st.className = 'reveal-hidden';
+    }
+    else if (q.mode === 'gesture') {
+      st.textContent = '🙊 아래 정답 단어를 몸으로! 맞히면 1/2 체크 · Enter로 빔에 공개/다음';
       st.className = 'reveal-hidden';
     }
     else {
@@ -2421,7 +2450,10 @@
     fillMedia(box, document.getElementById('audPhoto'), document.getElementById('audTicker'), it, q.mode, document.getElementById('audAudioDisp'), false, _audMlvl);
     document.getElementById('audTicker').classList.toggle('desc', !!q.desc);
     document.getElementById('audTicker').classList.toggle('emoji-big', !!q.big);
+    document.getElementById('audTicker').classList.toggle('gword', q.mode === 'gesture');
     if (q.mode === 'ticker') document.getElementById('audTicker').textContent = tickerText(it, q.initials ? (data.hint || []) : []);
+    // 몸으로 말해요: 관객(빔)엔 단어 숨김(공개 전엔 가림표시)
+    if (q.mode === 'gesture') document.getElementById('audTicker').textContent = data.revealed ? it.answer : '🙊 몸으로 말해요!';
     fitTicker(document.getElementById('audTicker'));
     box.classList.toggle('desc', !!q.desc);
     box.classList.toggle('logo-mode', !!q.logoQuiz);
