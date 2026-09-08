@@ -685,8 +685,8 @@
         <div><div class="title">슈가맨</div><div class="sub">노래를 듣고 맞혀요</div></div>
       </div>
       <div class="card c14" onclick="startQuiz('charL')">
-        <div class="emoji"><i class="ph ph-smiley"></i></div>
-        <div><div class="title">캐릭터</div><div class="sub">사진 속 캐릭터는?</div></div>
+        <div class="emoji"><i class="ph ph-television-simple"></i></div>
+        <div><div class="title">애니메이션</div><div class="sub">장면 속 애니메이션 제목은?</div></div>
       </div>
       <div class="card c3" onclick="startQuiz('krStar')">
         <div class="emoji"><i class="ph ph-star"></i></div>
@@ -1246,7 +1246,7 @@
     { photo: 'images/ani_clannad.jpg', company: '클라나드', ceo: '2007' },
     { photo: 'images/ani_guu.jpg', company: '정글은 언제나 맑은 뒤 흐림', ceo: '2001' },
     { photo: 'images/ani_ririka.jpg', company: '리리카 SOS', ceo: '1995' },
-    { photo: 'images/ani_placeholder.png', company: '웨딩피치', ceo: '1995' },
+    { photo: 'images/ani_weddingpeach.jpg', company: '웨딩피치', ceo: '1995' },
     { photo: 'images/ani_fushigi.jpg', company: '환상게임', ceo: '1995' },
     { photo: 'images/ani_hoshin.jpg', company: '봉신연의', ceo: '1999' },
     { photo: 'images/ani_haruhi.jpg', company: '스즈미야 하루히의 우울', ceo: '2006' },
@@ -1599,7 +1599,7 @@
                 emoji: '🎭', sub: '사진 속 배역은?', grad: 'linear-gradient(135deg,#8e2de2,#4a00e0)' },
     quote:    { title: '명대사',          question: '이 명장면의 명대사는? 💬', items: QUOTE,
                 emoji: '💬', sub: '사진 속 명대사는?', grad: 'linear-gradient(135deg,#ff512f,#dd2476)' },
-    charL:    { title: '애니메이션',       question: '이 장면은 어떤 애니메이션? 📺', items: ANIME, hidden: true,
+    charL:    { title: '애니메이션',       question: '이 장면은 어떤 애니메이션? 📺', items: ANIME,
                 emoji: '📺', sub: '장면 속 애니메이션 제목은?', grad: 'linear-gradient(135deg,#909497,#566573)' },
     chosung:  { title: '기업 초성',       question: '이 초성의 기업은? 🔤', items: CHOSUNG, mode: 'ticker', initials: true,
                 emoji: '🔤', sub: '초성으로 기업 맞히기', grad: 'linear-gradient(135deg,#36d1dc,#5b86e5)' },
@@ -1889,6 +1889,7 @@
     if (cur.mode === 'audio') {
       photoBox.classList.add('audio-mode'); photoBox.classList.remove('ticker-mode');
       photo.style.display = 'none'; loading.style.display = 'none'; ticker.style.display = 'none';
+      var selfCanvasA = document.getElementById('ceoCanvas'); if (selfCanvasA) selfCanvasA.style.display = 'none';   // 모자이크 게임에서 넘어왔을 때 캔버스가 남는 문제 방지
       audioDisp.style.display = 'block';
       playSong(it);
     } else if (cur.mode === 'ticker' || cur.mode === 'connect' || cur.mode === 'gesture') {
@@ -2695,6 +2696,10 @@
     var mm = oc.match(/startQuiz\('(\w+)'\)/);
     if (mm && QUIZZES[mm[1]] && QUIZZES[mm[1]].hidden) { card.style.display = 'none'; return; }   // 숨긴 게임은 홈에서 감춤(데이터는 유지)
     if (mm && QUIZZES[mm[1]]) {
+      // 카드 글자는 QUIZZES를 유일한 기준으로 삼는다(마크업에 적힌 값이 낡아 어긋나는 것 방지)
+      var _t = card.querySelector('.title'), _s = card.querySelector('.sub');
+      if (_t) _t.textContent = QUIZZES[mm[1]].title;
+      if (_s) _s.textContent = QUIZZES[mm[1]].sub;
       var b = document.createElement('div');
       b.className = 'count-badge';
       b.textContent = QUIZZES[mm[1]].items.length + '문제';
