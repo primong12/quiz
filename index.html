@@ -1115,7 +1115,6 @@
     { photo: 'images/cast11.jpg',  answer: '홍춘욱' },
     { photo: 'images/web_355aff53983e.jpg', answer: '30대 이효석' },
     { photo: 'images/cast05.jpg',  answer: '김준성' },
-    { photo: 'images/cast14.webp', answer: '이병한' },
     { photo: 'images/cast20.jpg', answer: '성상현' },
     { photo: 'images/cast16.jpg',  answer: '김효식' },
     { photo: 'images/cast13.jpg',  answer: '더글라스 요나스' },
@@ -1619,15 +1618,15 @@
                 emoji: '🎵', sub: '노래를 듣고 맞혀요', grad: 'linear-gradient(135deg,#c471f5,#fa71cd)' },
     sugarman: { title: '슈가맨',          question: '이 노래의 제목은? 🎵', items: SUGARMAN, mode: 'audio',
                 emoji: '🎵', sub: '노래를 듣고 맞혀요', grad: 'linear-gradient(135deg,#11998e,#38ef7d)' },
-    logoIntl: { title: '해외 로고', question: '이 로고의 기업은? 🌐', items: LOGO_INTL, logoQuiz: true,
+    logoIntl: { title: '해외 로고', question: '이 로고의 기업은? 🌐', items: LOGO_INTL, logoQuiz: true, hidden: true,
                 emoji: '🌐', sub: '로고로 기업 맞히기', grad: 'linear-gradient(135deg,#373b44,#4286f4)' },
-    logoKr:   { title: '국내 로고', question: '이 로고의 기업은? 🏢', items: LOGO_KR, logoQuiz: true,
+    logoKr:   { title: '국내 로고', question: '이 로고의 기업은? 🏢', items: LOGO_KR, logoQuiz: true, hidden: true,
                 emoji: '🏢', sub: '로고로 기업 맞히기', grad: 'linear-gradient(135deg,#1a2980,#26d0ce)' },
     ceoMosaic:{ title: 'CEO', question: '이 분이 이끄는 기업은? 🧩', items: CEO_QUIZ, mode: 'mosaic',
                 emoji: '🧩', sub: '모자이크가 벗겨질수록 선명해져요', grad: 'linear-gradient(135deg,#654ea3,#eaafc8)' },
     emojiCorp:{ title: '이모지 기업', question: '이모지가 가리키는 기업은? 🤔', items: EMOJI_CORP, mode: 'ticker', big: true,
                 emoji: '😀', sub: '이모지로 기업 맞히기', grad: 'linear-gradient(135deg,#f7971e,#ffd200)' },
-    gesture:  { title: '몸으로 말해요', question: '이 단어를 몸으로 설명! 🙊', items: GESTURE, mode: 'gesture',
+    gesture:  { title: '몸으로 말해요', question: '이 단어를 몸으로 설명! 🙊', items: GESTURE, mode: 'gesture', hidden: true,
                 emoji: '🙊', sub: '몸짓으로 설명하고 팀이 맞히기', grad: 'linear-gradient(135deg,#ee0979,#ff6a00)' },
   };
 
@@ -2699,6 +2698,7 @@
   document.querySelectorAll('#home .card').forEach(function (card) {
     var oc = card.getAttribute('onclick') || '';
     var mm = oc.match(/startQuiz\('(\w+)'\)/);
+    if (mm && QUIZZES[mm[1]] && QUIZZES[mm[1]].hidden) { card.style.display = 'none'; return; }   // 숨긴 게임은 홈에서 감춤(데이터는 유지)
     if (mm && QUIZZES[mm[1]]) {
       var b = document.createElement('div');
       b.className = 'count-badge';
