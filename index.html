@@ -7,7 +7,7 @@
 <title>엘리트 클럽 퀴즈</title>
 <link rel="icon" type="image/png" href="images/elite-club-icon.png">
 <link rel="apple-touch-icon" href="images/elite-club-icon.png">
-<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<link rel="stylesheet" href="fonts/phosphor.css">   <!-- 아이콘 로컬 사본 (인터넷 없어도 표시) -->
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -1337,96 +1337,96 @@
   // '추억' 퀴즈 (7080처럼 아이튠즈 미리듣기)
   const MEMORY = [
     { preview: "audio/aud_88b61b099d9e.m4a", start: 9.5, company: "아파트", ceo: "윤수일" },
-    { preview: "audio/aud_1c7c873afce9.m4a", start: 15.0, company: "잊혀진 계절", ceo: "이용" },
-    { preview: "audio/aud_27a4b258354f.m4a", start: 2.5, start: 2.5, company: "담배가게 아가씨", ceo: "송창식" },
-    { preview: "audio/aud_27e2708f50aa.m4a", start: 8.5, start: 8.5, company: "바다에 누워", ceo: "높은음자리" },
-    { preview: "audio/aud_f57f407b841c.m4a", start: 4.0, start: 4.0, company: "누구 없소", ceo: "한영애" },
-    { preview: "audio/aud_58038b121bc5.m4a", start: 7.5, company: "사랑의 미로", ceo: "최진희" },
-    { preview: "audio/aud_52f36053adf9.m4a", company: "나의 옛날이야기", ceo: "조덕배" },
+    { preview: "audio/aud_1c7c873afce9.m4a", vol: 0.449, start: 15.0, company: "잊혀진 계절", ceo: "이용" },
+    { preview: "audio/aud_27a4b258354f.m4a", vol: 0.371, start: 2.5, start: 2.5, company: "담배가게 아가씨", ceo: "송창식" },
+    { preview: "audio/aud_27e2708f50aa.m4a", vol: 0.64, start: 8.5, start: 8.5, company: "바다에 누워", ceo: "높은음자리" },
+    { preview: "audio/aud_f57f407b841c.m4a", vol: 0.529, start: 4.0, start: 4.0, company: "누구 없소", ceo: "한영애" },
+    { preview: "audio/aud_58038b121bc5.m4a", vol: 0.472, start: 7.5, company: "사랑의 미로", ceo: "최진희" },
+    { preview: "audio/aud_52f36053adf9.m4a", vol: 0.612, company: "나의 옛날이야기", ceo: "조덕배" },
     { preview: "audio/aud_ae7f84705aea.m4a", company: "모나리자", ceo: "조용필" },
-    { preview: "audio/aud_e5ea79bd165c.m4a", start: 3.5, company: "어쩌다 마주친 그대", ceo: "송골매" },
+    { preview: "audio/aud_e5ea79bd165c.m4a", vol: 0.457, start: 3.5, company: "어쩌다 마주친 그대", ceo: "송골매" },
     { preview: "audio/aud_d3635275c25e.m4a", start: 0.5, company: "나 항상 그대를", ceo: "이선희" },
-    { preview: "audio/aud_2f242d014911.m4a", company: "미소를 띄우며 나를 보낸 그 모습처럼", ceo: "이은하" },
-    { preview: "audio/aud_bfb10f8f10bc.m4a", start: 15.0, company: "널 그리며", ceo: "박남정" },
-    { preview: "audio/aud_14eb25709401.m4a", company: "불티", ceo: "전영록" },
+    { preview: "audio/aud_2f242d014911.m4a", vol: 0.43, company: "미소를 띄우며 나를 보낸 그 모습처럼", ceo: "이은하" },
+    { preview: "audio/aud_bfb10f8f10bc.m4a", vol: 0.514, start: 15.0, company: "널 그리며", ceo: "박남정" },
+    { preview: "audio/aud_14eb25709401.m4a", vol: 0.981, company: "불티", ceo: "전영록" },
     { preview: "audio/aud_b82a9df4bbde.m4a", start: 12.0, company: "비처럼 음악처럼", ceo: "김현식" },
-    { preview: "audio/aud_55366f4f998a.m4a", start: 1.0, company: "남자는 배 여자는 항구", ceo: "심수봉" },
-    { preview: "audio/aud_322829ad272c.m4a", start: 10.0, company: "희망사항", ceo: "변진섭" },
-    { preview: "audio/aud_ebfef44e0c0b.m4a", company: "텔레파시", ceo: "도시의 아이들" },
-    { preview: "audio/aud_fac166505e73.m4a", start: 9.5, start: 9.5, company: "너의 의미", ceo: "산울림" },
-    { preview: "audio/aud_092858bfd6bf.m4a", start: 15.0, start: 15.0, company: "슬픈인연", ceo: "나미" },
-    { preview: "audio/aud_8159d6e0c23b.m4a", start: 4.0, company: "젊은 그대", ceo: "김수철" },
-    { preview: "audio/aud_3a25e52913af.m4a", start: 13.0, company: "어젯밤 이야기", ceo: "소방차" },
-    { preview: "audio/aud_99d80b7d68e9.m4a", company: "남행열차", ceo: "김수희" },
-    { preview: "audio/aud_c9b21b282a21.m4a", start: 5.0, company: "담다디", ceo: "이상은" },
-    { preview: "audio/aud_b940a97ed493.m4a", start: 1.0, company: "환희", ceo: "정수라" },
+    { preview: "audio/aud_55366f4f998a.m4a", vol: 0.655, start: 1.0, company: "남자는 배 여자는 항구", ceo: "심수봉" },
+    { preview: "audio/aud_322829ad272c.m4a", vol: 0.655, start: 10.0, company: "희망사항", ceo: "변진섭" },
+    { preview: "audio/aud_ebfef44e0c0b.m4a", vol: 0.658, company: "텔레파시", ceo: "도시의 아이들" },
+    { preview: "audio/aud_fac166505e73.m4a", vol: 0.541, start: 9.5, start: 9.5, company: "너의 의미", ceo: "산울림" },
+    { preview: "audio/aud_092858bfd6bf.m4a", vol: 0.473, start: 15.0, start: 15.0, company: "슬픈인연", ceo: "나미" },
+    { preview: "audio/aud_8159d6e0c23b.m4a", vol: 0.676, start: 4.0, company: "젊은 그대", ceo: "김수철" },
+    { preview: "audio/aud_3a25e52913af.m4a", vol: 0.735, start: 13.0, company: "어젯밤 이야기", ceo: "소방차" },
+    { preview: "audio/aud_99d80b7d68e9.m4a", vol: 0.695, company: "남행열차", ceo: "김수희" },
+    { preview: "audio/aud_c9b21b282a21.m4a", vol: 0.256, start: 5.0, company: "담다디", ceo: "이상은" },
+    { preview: "audio/aud_b940a97ed493.m4a", vol: 0.293, start: 1.0, company: "환희", ceo: "정수라" },
     { preview: "audio/aud_fe61f1d1fb1e.m4a", company: "만남", ceo: "노사연" },
     { preview: "audio/aud_c10efbf4a9c4.m4a", start: 11.5, start: 11.5, company: "바람 바람 바람", ceo: "김범룡" },
-    { preview: "audio/aud_831ce7c8dffe.m4a", start: 7.5, company: "광화문 연가", ceo: "이문세" },
-    { preview: "audio/aud_900bb1abeb81.m4a", start: 4.5, company: "님은 먼 곳에", ceo: "김추자" },
-    { preview: "audio/aud_774247c2e0af.m4a", start: 1.5, company: "그 겨울의 찻집", ceo: "조용필" },
-    { preview: "audio/aud_76d4b4cad9e9.m4a", start: 2.5, company: "서른 즈음에", ceo: "김광석" },
+    { preview: "audio/aud_831ce7c8dffe.m4a", vol: 0.721, start: 7.5, company: "광화문 연가", ceo: "이문세" },
+    { preview: "audio/aud_900bb1abeb81.m4a", vol: 0.472, start: 4.5, company: "님은 먼 곳에", ceo: "김추자" },
+    { preview: "audio/aud_774247c2e0af.m4a", vol: 0.429, start: 1.5, company: "그 겨울의 찻집", ceo: "조용필" },
+    { preview: "audio/aud_76d4b4cad9e9.m4a", vol: 0.687, start: 2.5, company: "서른 즈음에", ceo: "김광석" },
   ];
 
   // 최신가요 (2023~2025 히트, 아이튠즈 미리듣기)
   const LATEST_SONGS = [
-    { preview: "audio/aud_53a3fa1f7ce2.m4a", start: 1.0, company: "APT.", ceo: "로제 & 브루노 마스" },
-    { preview: "audio/aud_facca29c75aa.m4a", start: 7.0, company: "모래 알갱이", ceo: "임영웅" },
-    { preview: "audio/aud_5b6f0ad580e6.m4a", start: 7.0, company: "I AM", ceo: "아이브 (IVE)" },
-    { preview: "audio/aud_6f14f01640b9.m4a", start: 12.0, company: "Ditto", ceo: "뉴진스 (NewJeans)" },
-    { preview: "audio/aud_a8e1f03bb4ce.m4a", company: "Supernova", ceo: "에스파 (aespa)" },
-    { preview: "audio/aud_99026998af36.m4a", company: "한 페이지가 될 수 있게", ceo: "데이식스 (DAY6)" },
-    { preview: "audio/aud_e01a060012d3.m4a", start: 0.5, company: "고민중독", ceo: "QWER" },
-    { preview: "audio/aud_0a1efba2310c.m4a", start: 2.0, company: "나는 반딧불", ceo: "황가람" },
-    { preview: "audio/aud_5f399830ee69.m4a", company: "퀸카 (Queencard)", ceo: "(여자)아이들" },
-    { preview: "audio/aud_043776739617.m4a", company: "EASY", ceo: "르세라핌 (LE SSERAFIM)" },
-    { preview: "audio/aud_e8aa5aabde44.m4a", start: 4.5, company: "밤양갱", ceo: "비비 (BIBI)" },
-    { preview: "audio/aud_2a6f41c39b69.m4a", start: 6.5, company: "첫 만남은 계획대로 되지 않아", ceo: "투어스 (TWS)" },
-    { preview: "audio/aud_732cc18caebb.m4a", company: "사랑인가 봐", ceo: "멜로망스" },
-    { preview: "audio/aud_63d93a414576.m4a", start: 6.0, company: "신호등", ceo: "이무진" },
-    { preview: "audio/aud_062567ec9806.m4a", company: "사건의 지평선", ceo: "윤하" },
-    { preview: "audio/aud_6abd51b0af06.m4a", start: 1.5, company: "Love Lee", ceo: "악뮤 (AKMU)" },
-    { preview: "audio/aud_c829c39144fc.m4a", start: 15.0, company: "꽃 (FLOWER)", ceo: "지수 (JISOO)" },
-    { preview: "audio/aud_b4a32c7b08ed.m4a", start: 4.0, company: "손오공", ceo: "세븐틴 (SEVENTEEN)" },
-    { preview: "audio/aud_d23715c872f7.m4a", company: "Seven", ceo: "정국" },
-    { preview: "audio/aud_e38e0c43f86c.m4a", start: 9.5, company: "Love 119", ceo: "라이즈 (RIIZE)" },
-    { preview: "audio/aud_16a71e6e8d01.m4a", company: "홀씨", ceo: "아이유 (IU)" },
-    { preview: "audio/aud_db06a395252a.m4a", start: 1.0, company: "WAY 4 LUV", ceo: "플레이브 (PLAVE)" },
-    { preview: "audio/aud_952fc0cf8941.m4a", start: 9.5, company: "Welcome to the Show", ceo: "데이식스 (DAY6)" },
-    { preview: "audio/aud_52bc2dbf532d.m4a", start: 2.0, company: "좋은 밤 좋은 꿈", ceo: "너드커넥션" },
+    { preview: "audio/aud_53a3fa1f7ce2.m4a", vol: 0.232, start: 1.0, company: "APT.", ceo: "로제 & 브루노 마스" },
+    { preview: "audio/aud_facca29c75aa.m4a", vol: 0.269, start: 7.0, company: "모래 알갱이", ceo: "임영웅" },
+    { preview: "audio/aud_5b6f0ad580e6.m4a", vol: 0.21, start: 7.0, company: "I AM", ceo: "아이브 (IVE)" },
+    { preview: "audio/aud_6f14f01640b9.m4a", vol: 0.25, start: 12.0, company: "Ditto", ceo: "뉴진스 (NewJeans)" },
+    { preview: "audio/aud_a8e1f03bb4ce.m4a", vol: 0.204, company: "Supernova", ceo: "에스파 (aespa)" },
+    { preview: "audio/aud_99026998af36.m4a", vol: 0.239, company: "한 페이지가 될 수 있게", ceo: "데이식스 (DAY6)" },
+    { preview: "audio/aud_e01a060012d3.m4a", vol: 0.212, start: 0.5, company: "고민중독", ceo: "QWER" },
+    { preview: "audio/aud_0a1efba2310c.m4a", vol: 0.245, start: 2.0, company: "나는 반딧불", ceo: "황가람" },
+    { preview: "audio/aud_5f399830ee69.m4a", vol: 0.212, company: "퀸카 (Queencard)", ceo: "(여자)아이들" },
+    { preview: "audio/aud_043776739617.m4a", vol: 0.21, company: "EASY", ceo: "르세라핌 (LE SSERAFIM)" },
+    { preview: "audio/aud_e8aa5aabde44.m4a", vol: 0.325, start: 4.5, company: "밤양갱", ceo: "비비 (BIBI)" },
+    { preview: "audio/aud_2a6f41c39b69.m4a", vol: 0.23, start: 6.5, company: "첫 만남은 계획대로 되지 않아", ceo: "투어스 (TWS)" },
+    { preview: "audio/aud_732cc18caebb.m4a", vol: 0.211, company: "사랑인가 봐", ceo: "멜로망스" },
+    { preview: "audio/aud_63d93a414576.m4a", vol: 0.258, start: 6.0, company: "신호등", ceo: "이무진" },
+    { preview: "audio/aud_062567ec9806.m4a", vol: 0.225, company: "사건의 지평선", ceo: "윤하" },
+    { preview: "audio/aud_6abd51b0af06.m4a", vol: 0.249, start: 1.5, company: "Love Lee", ceo: "악뮤 (AKMU)" },
+    { preview: "audio/aud_c829c39144fc.m4a", vol: 0.311, start: 15.0, company: "꽃 (FLOWER)", ceo: "지수 (JISOO)" },
+    { preview: "audio/aud_b4a32c7b08ed.m4a", vol: 0.254, start: 4.0, company: "손오공", ceo: "세븐틴 (SEVENTEEN)" },
+    { preview: "audio/aud_d23715c872f7.m4a", vol: 0.232, company: "Seven", ceo: "정국" },
+    { preview: "audio/aud_e38e0c43f86c.m4a", vol: 0.225, start: 9.5, company: "Love 119", ceo: "라이즈 (RIIZE)" },
+    { preview: "audio/aud_16a71e6e8d01.m4a", vol: 0.23, company: "홀씨", ceo: "아이유 (IU)" },
+    { preview: "audio/aud_db06a395252a.m4a", vol: 0.236, start: 1.0, company: "WAY 4 LUV", ceo: "플레이브 (PLAVE)" },
+    { preview: "audio/aud_952fc0cf8941.m4a", vol: 0.229, start: 9.5, company: "Welcome to the Show", ceo: "데이식스 (DAY6)" },
+    { preview: "audio/aud_52bc2dbf532d.m4a", vol: 0.323, start: 2.0, company: "좋은 밤 좋은 꿈", ceo: "너드커넥션" },
   ];
 
   const SONG_Y2K = [
-    { preview: "audio/aud_9e86da59b467.m4a", start: 6.0, company: "검은 고양이 네로", ceo: "터보" },
-    { preview: "audio/aud_e0f0cca74ad5.m4a", start: 14.0, company: "성인식", ceo: "박지윤" },
-    { preview: "audio/aud_ba89c293bb68.m4a", start: 5.0, company: "순정", ceo: "코요태" },
-    { preview: "audio/aud_ffabaac5c35e.m4a", start: 10.5, company: "Tell Me Tell Me", ceo: "샵" },
-    { preview: "audio/aud_98d01a1a17cf.m4a", start: 2.0, company: "좋은 사람", ceo: "토이" },
-    { preview: "audio/aud_c7b940c0ee28.m4a", company: "와", ceo: "이정현" },
-    { preview: "audio/aud_1486370248dc.m4a", start: 15.0, company: "DOC와 춤을", ceo: "DJ DOC" },
-    { preview: "audio/aud_582cb50e3639.m4a", start: 4.0, company: "맨발의 청춘", ceo: "벅" },
-    { preview: "audio/aud_e69d76873583.m4a", start: 8.0, company: "왜 불러", ceo: "디바" },
-    { preview: "audio/aud_1209615d2798.m4a", start: 1.0, company: "Come Back Home", ceo: "서태지와 아이들" },
-    { preview: "audio/aud_0089ba571359.m4a", start: 2.5, company: "애상", ceo: "쿨" },
-    { preview: "audio/aud_fee2f148e7a2.m4a", company: "날개 잃은 천사", ceo: "룰라" },
-    { preview: "audio/aud_a5f646b7ed3a.m4a", start: 15.0, company: "내 남자친구에게", ceo: "핑클" },
-    { preview: "audio/aud_f32569549f37.m4a", start: 10.0, company: "그녀와의 이별", ceo: "김현정" },
-    { preview: "audio/aud_4e813f1c2ce3.m4a", start: 13.5, company: "해변의 여인", ceo: "쿨" },
-    { preview: "audio/aud_3f4abb5b8d3a.m4a", start: 8.5, company: "버스 안에서", ceo: "자자" },
-    { preview: "audio/aud_24172381561f.m4a", start: 7.0, company: "꿍따리 샤바라", ceo: "클론" },
-    { preview: "audio/aud_9db2ba3936d5.m4a", start: 1.5, company: "캔디", ceo: "H.O.T." },
-    { preview: "audio/aud_8f7d9fa8f6ae.m4a", company: "헤어진 후에", ceo: "Y2K" },
-    { preview: "audio/aud_b057c1ba84b3.m4a", company: "일과 이분의 일", ceo: "투투" },
-    { preview: "audio/aud_7cead361d431.m4a", start: 3.5, company: "10 Minutes", ceo: "이효리" },
-    { preview: "audio/aud_9eee992fb979.m4a", start: 13.0, company: "뿌요뿌요", ceo: "유피" },
-    { preview: "audio/aud_fe6d182aea93.m4a", start: 4.0, company: "허니", ceo: "박진영" },
-    { preview: "audio/aud_3d0978c44783.m4a", start: 4.0, company: "정", ceo: "영턱스클럽" },
-    { preview: "audio/aud_051018dbe19d.m4a", start: 13.0, company: "Dash", ceo: "백지영" },
-    { preview: "audio/aud_bdc5772a734e.m4a", company: "머니", ceo: "왁스" },
-    { preview: "audio/aud_18dd4f369404.m4a", company: "파도", ceo: "유엔" },
-    { preview: "audio/aud_48097819cf9c.m4a", start: 12.5, company: "친구여", ceo: "인순이" },
-    { preview: "audio/aud_f2e559034907.m4a", company: "이유같지 않은 이유", ceo: "박미경" },
-    { preview: "audio/aud_d82270c0d067.m4a", start: 15.0, company: "내 얘길 들어봐", ceo: "파파야" },
+    { preview: "audio/aud_9e86da59b467.m4a", vol: 0.28, start: 6.0, company: "검은 고양이 네로", ceo: "터보" },
+    { preview: "audio/aud_e0f0cca74ad5.m4a", vol: 0.275, start: 14.0, company: "성인식", ceo: "박지윤" },
+    { preview: "audio/aud_ba89c293bb68.m4a", vol: 0.269, start: 5.0, company: "순정", ceo: "코요태" },
+    { preview: "audio/aud_ffabaac5c35e.m4a", vol: 0.253, start: 10.5, company: "Tell Me Tell Me", ceo: "샵" },
+    { preview: "audio/aud_98d01a1a17cf.m4a", vol: 0.338, start: 2.0, company: "좋은 사람", ceo: "토이" },
+    { preview: "audio/aud_c7b940c0ee28.m4a", vol: 0.206, company: "와", ceo: "이정현" },
+    { preview: "audio/aud_1486370248dc.m4a", vol: 0.292, start: 15.0, company: "DOC와 춤을", ceo: "DJ DOC" },
+    { preview: "audio/aud_582cb50e3639.m4a", vol: 0.244, start: 4.0, company: "맨발의 청춘", ceo: "벅" },
+    { preview: "audio/aud_e69d76873583.m4a", vol: 0.438, start: 8.0, company: "왜 불러", ceo: "디바" },
+    { preview: "audio/aud_1209615d2798.m4a", vol: 0.299, start: 1.0, company: "Come Back Home", ceo: "서태지와 아이들" },
+    { preview: "audio/aud_0089ba571359.m4a", vol: 0.349, start: 2.5, company: "애상", ceo: "쿨" },
+    { preview: "audio/aud_fee2f148e7a2.m4a", vol: 0.254, company: "날개 잃은 천사", ceo: "룰라" },
+    { preview: "audio/aud_a5f646b7ed3a.m4a", vol: 0.339, start: 15.0, company: "내 남자친구에게", ceo: "핑클" },
+    { preview: "audio/aud_f32569549f37.m4a", vol: 0.252, start: 10.0, company: "그녀와의 이별", ceo: "김현정" },
+    { preview: "audio/aud_4e813f1c2ce3.m4a", vol: 0.359, start: 13.5, company: "해변의 여인", ceo: "쿨" },
+    { preview: "audio/aud_3f4abb5b8d3a.m4a", vol: 0.32, start: 8.5, company: "버스 안에서", ceo: "자자" },
+    { preview: "audio/aud_24172381561f.m4a", vol: 0.25, start: 7.0, company: "꿍따리 샤바라", ceo: "클론" },
+    { preview: "audio/aud_9db2ba3936d5.m4a", vol: 0.25, start: 1.5, company: "캔디", ceo: "H.O.T." },
+    { preview: "audio/aud_8f7d9fa8f6ae.m4a", vol: 0.322, company: "헤어진 후에", ceo: "Y2K" },
+    { preview: "audio/aud_b057c1ba84b3.m4a", vol: 0.411, company: "일과 이분의 일", ceo: "투투" },
+    { preview: "audio/aud_7cead361d431.m4a", vol: 0.302, start: 3.5, company: "10 Minutes", ceo: "이효리" },
+    { preview: "audio/aud_9eee992fb979.m4a", vol: 0.284, start: 13.0, company: "뿌요뿌요", ceo: "유피" },
+    { preview: "audio/aud_fe6d182aea93.m4a", vol: 0.414, start: 4.0, company: "허니", ceo: "박진영" },
+    { preview: "audio/aud_3d0978c44783.m4a", vol: 0.294, start: 4.0, company: "정", ceo: "영턱스클럽" },
+    { preview: "audio/aud_051018dbe19d.m4a", vol: 0.249, start: 13.0, company: "Dash", ceo: "백지영" },
+    { preview: "audio/aud_bdc5772a734e.m4a", vol: 0.223, company: "머니", ceo: "왁스" },
+    { preview: "audio/aud_18dd4f369404.m4a", vol: 0.218, company: "파도", ceo: "유엔" },
+    { preview: "audio/aud_48097819cf9c.m4a", vol: 0.327, start: 12.5, company: "친구여", ceo: "인순이" },
+    { preview: "audio/aud_f2e559034907.m4a", vol: 0.477, company: "이유같지 않은 이유", ceo: "박미경" },
+    { preview: "audio/aud_d82270c0d067.m4a", vol: 0.292, start: 15.0, company: "내 얘길 들어봐", ceo: "파파야" },
   ];
 
   const LOGO_INTL = [
@@ -1496,40 +1496,40 @@
 
   // '슈가맨' 퀴즈 (아이튠즈 미리듣기)
   const SUGARMAN = [
-    { preview: "audio/aud_4531a99e52ec.m4a", company: "Y", ceo: "프리스타일" },
-    { preview: "audio/aud_253a1b4fc04d.m4a", start: 15.0, company: "잘부탁드립니다", ceo: "익스" },
-    { preview: "audio/aud_be0fee7a743c.m4a", start: 4.0, company: "사랑의 바보", ceo: "더 넛츠" },
-    { preview: "audio/aud_2977fdefe27b.m4a", start: 6.5, company: "Endless", ceo: "플라워" },
-    { preview: "audio/aud_b950de0565b6.m4a", start: 10.0, company: "You", ceo: "김상민" },
-    { preview: "audio/aud_c29f20bc1180.m4a", start: 15.0, company: "섹시한 남자", ceo: "스페이스A" },
-    { preview: "audio/aud_07499c5fb1b4.m4a", start: 6.5, company: "잘가요", ceo: "정재욱" },
-    { preview: "audio/aud_7f68c06a23a5.m4a", start: 2.0, company: "화려한 싱글", ceo: "양혜승" },
-    { preview: "audio/aud_2a52e0975b80.m4a", start: 13.5, company: "매일매일 기다려", ceo: "티삼스" },
-    { preview: "audio/aud_c36a80dd3698.m4a", start: 3.5, company: "도", ceo: "태사자" },
-    { preview: "audio/aud_54ce52864595.m4a", start: 2.5, company: "걸어서 하늘까지", ceo: "장현철" },
-    { preview: "audio/aud_754e79b1023d.m4a", start: 15.0, company: "뿌요뿌요", ceo: "UP" },
-    { preview: "audio/aud_9f08209c0509.m4a", start: 15.0, company: "사랑인걸", ceo: "모세" },
-    { preview: "audio/aud_54010fb19ffa.m4a", start: 7.0, company: "비행소녀", ceo: "마골피" },
-    { preview: "audio/aud_8952c0013b5a.m4a", company: "야인", ceo: "강성" },
-    { preview: "audio/aud_b0d5b7c5eb85.m4a", company: "나는 문제 없어", ceo: "황규영" },
-    { preview: "audio/aud_41cfc7a2a41d.m4a", start: 1.0, company: "칵테일 사랑", ceo: "마로니에" },
-    { preview: "audio/aud_91a92ede57aa.m4a", start: 8.5, company: "난 멈추지 않는다", ceo: "ZAM" },
-    { preview: "audio/aud_5eada23067cf.m4a", start: 11.0, company: "립스틱 짙게 바르고", ceo: "임주리" },
-    { preview: "audio/aud_129371325e9e.m4a", start: 8.5, company: "늦은 후회", ceo: "보보" },
-    { preview: "audio/aud_adfb319161ce.m4a", start: 3.0, company: "당돌한 여자", ceo: "서주경" },
-    { preview: "audio/aud_19a511650250.m4a", start: 15.0, company: "발걸음", ceo: "에메랄드 캐슬" },
-    { preview: "audio/aud_8e2752af4328.m4a", start: 12.0, company: "가질 수 없는 너", ceo: "뱅크" },
-    { preview: "audio/aud_5794ba5e4a72.m4a", company: "스톰", ceo: "루머스" },
-    { preview: "audio/aud_785fe8be4348.m4a", start: 7.5, company: "너는 왜", ceo: "철이와 미애" },
-    { preview: "audio/aud_48994cefc0be.m4a", start: 1.0, company: "Heaven", ceo: "김현성" },
-    { preview: "audio/aud_474bacd5cfd6.m4a", start: 13.5, company: "내 눈물 모아", ceo: "서지원" },
-    { preview: "audio/aud_29dd6dfe747f.m4a", start: 2.0, company: "상상속의 너", ceo: "노이즈" },
-    { preview: "audio/aud_aaf4b2027f24.m4a", start: 7.0, company: "진이", ceo: "하이디" },
+    { preview: "audio/aud_4531a99e52ec.m4a", vol: 0.286, company: "Y", ceo: "프리스타일" },
+    { preview: "audio/aud_253a1b4fc04d.m4a", vol: 0.295, start: 15.0, company: "잘부탁드립니다", ceo: "익스" },
+    { preview: "audio/aud_be0fee7a743c.m4a", vol: 0.23, start: 4.0, company: "사랑의 바보", ceo: "더 넛츠" },
+    { preview: "audio/aud_2977fdefe27b.m4a", vol: 0.304, start: 6.5, company: "Endless", ceo: "플라워" },
+    { preview: "audio/aud_b950de0565b6.m4a", vol: 0.389, start: 10.0, company: "You", ceo: "김상민" },
+    { preview: "audio/aud_c29f20bc1180.m4a", vol: 0.45, start: 15.0, company: "섹시한 남자", ceo: "스페이스A" },
+    { preview: "audio/aud_07499c5fb1b4.m4a", vol: 0.729, start: 6.5, company: "잘가요", ceo: "정재욱" },
+    { preview: "audio/aud_7f68c06a23a5.m4a", vol: 0.215, start: 2.0, company: "화려한 싱글", ceo: "양혜승" },
+    { preview: "audio/aud_2a52e0975b80.m4a", vol: 0.394, start: 13.5, company: "매일매일 기다려", ceo: "티삼스" },
+    { preview: "audio/aud_c36a80dd3698.m4a", vol: 0.372, start: 3.5, company: "도", ceo: "태사자" },
+    { preview: "audio/aud_54ce52864595.m4a", vol: 0.488, start: 2.5, company: "걸어서 하늘까지", ceo: "장현철" },
+    { preview: "audio/aud_754e79b1023d.m4a", vol: 0.26, start: 15.0, company: "뿌요뿌요", ceo: "UP" },
+    { preview: "audio/aud_9f08209c0509.m4a", vol: 0.394, start: 15.0, company: "사랑인걸", ceo: "모세" },
+    { preview: "audio/aud_54010fb19ffa.m4a", vol: 0.507, start: 7.0, company: "비행소녀", ceo: "마골피" },
+    { preview: "audio/aud_8952c0013b5a.m4a", vol: 0.342, company: "야인", ceo: "강성" },
+    { preview: "audio/aud_b0d5b7c5eb85.m4a", vol: 0.49, company: "나는 문제 없어", ceo: "황규영" },
+    { preview: "audio/aud_41cfc7a2a41d.m4a", vol: 0.383, start: 1.0, company: "칵테일 사랑", ceo: "마로니에" },
+    { preview: "audio/aud_91a92ede57aa.m4a", vol: 0.55, start: 8.5, company: "난 멈추지 않는다", ceo: "ZAM" },
+    { preview: "audio/aud_5eada23067cf.m4a", vol: 0.887, start: 11.0, company: "립스틱 짙게 바르고", ceo: "임주리" },
+    { preview: "audio/aud_129371325e9e.m4a", vol: 0.812, start: 8.5, company: "늦은 후회", ceo: "보보" },
+    { preview: "audio/aud_adfb319161ce.m4a", vol: 0.461, start: 3.0, company: "당돌한 여자", ceo: "서주경" },
+    { preview: "audio/aud_19a511650250.m4a", vol: 0.416, start: 15.0, company: "발걸음", ceo: "에메랄드 캐슬" },
+    { preview: "audio/aud_8e2752af4328.m4a", vol: 0.377, start: 12.0, company: "가질 수 없는 너", ceo: "뱅크" },
+    { preview: "audio/aud_5794ba5e4a72.m4a", vol: 0.271, company: "스톰", ceo: "루머스" },
+    { preview: "audio/aud_785fe8be4348.m4a", vol: 0.665, start: 7.5, company: "너는 왜", ceo: "철이와 미애" },
+    { preview: "audio/aud_48994cefc0be.m4a", vol: 0.382, start: 1.0, company: "Heaven", ceo: "김현성" },
+    { preview: "audio/aud_474bacd5cfd6.m4a", vol: 0.47, start: 13.5, company: "내 눈물 모아", ceo: "서지원" },
+    { preview: "audio/aud_29dd6dfe747f.m4a", vol: 0.251, start: 2.0, company: "상상속의 너", ceo: "노이즈" },
+    { preview: "audio/aud_aaf4b2027f24.m4a", vol: 0.427, start: 7.0, company: "진이", ceo: "하이디" },
     { preview: "audio/aud_afb59ee9e8d2.m4a", start: 15.0, company: "나만의 슬픔", ceo: "김돈규" },
-    { preview: "audio/aud_0d8a58a43a52.m4a", start: 10.0, company: "너에게 난 나에게 넌", ceo: "자전거 탄 풍경" },
-    { preview: "audio/aud_4a7f6452e8b1.m4a", company: "나비무덤", ceo: "테이크" },
-    { preview: "audio/aud_d0f536104627.m4a", start: 15.0, company: "그녀의 연인에게", ceo: "K2" },
-    { preview: "audio/aud_2482fb3b4dae.m4a", start: 15.0, company: "기도", ceo: "정일영" },
+    { preview: "audio/aud_0d8a58a43a52.m4a", vol: 0.339, start: 10.0, company: "너에게 난 나에게 넌", ceo: "자전거 탄 풍경" },
+    { preview: "audio/aud_4a7f6452e8b1.m4a", vol: 0.918, company: "나비무덤", ceo: "테이크" },
+    { preview: "audio/aud_d0f536104627.m4a", vol: 0.622, start: 15.0, company: "그녀의 연인에게", ceo: "K2" },
+    { preview: "audio/aud_2482fb3b4dae.m4a", vol: 0.327, start: 15.0, company: "기도", ceo: "정일영" },
   ];
 
   // 이모지로 기업 맞히기 (30). 1~4 고정(애플·삼성전자·진에어·하이트진로), 5~30 랜덤 배치
@@ -1753,6 +1753,9 @@
   function openAudience() {
     if (audienceWin && !audienceWin.closed) { audienceWin.focus(); return; }
     audienceWin = window.open(location.pathname + '?view=audience&seed=' + orderSeed + '&t=' + Date.now(), 'quizAudience', 'width=1100,height=760');
+    if (!audienceWin) {   // 브라우저가 팝업을 막은 경우 — 안내 없으면 진행자가 원인을 알 수 없다
+      alert('빔(관객) 창이 브라우저에 막혔습니다.\n\n주소창 오른쪽의 팝업 차단 아이콘을 눌러\n"이 사이트의 팝업 허용"을 선택한 뒤\n발표 모드를 다시 켜주세요.');
+    }
   }
   function togglePresent(on) {
     presSessionOn = on;
@@ -1763,6 +1766,7 @@
   function broadcastHome() { if (BC) BC.postMessage({ type: 'home', seed: orderSeed, visited: Array.from(visited), g: growthScore, v: valueScore, ver: appVersion }); }
 
   function updateHomeScore() {
+    saveScores();
     var g = document.getElementById('homeScoreG'), v = document.getElementById('homeScoreV');
     if (g) g.textContent = growthScore;
     if (v) v.textContent = valueScore;
@@ -1771,6 +1775,7 @@
     if (appVersion === '1.1') return;                 // 1주년: 팀 점수 없음
     if (team === 'growth') growthScore = Math.max(0, growthScore + d);
     else valueScore = Math.max(0, valueScore + d);
+    saveScores();
     updateHomeScore();
     if (presMode) { renderPresenter(); broadcast(); }
     else if (presSessionOn) { broadcastHome(); }
@@ -1994,7 +1999,10 @@
   // ===== 발표자 모드 (듀얼 스크린) =====
   const BC = ('BroadcastChannel' in window) ? new BroadcastChannel('elite-quiz') : null;
   let presMode = false, presKey = 'ceo', presIntro = true, presRevealed = false, presDone = false, audienceWin = null;
-  let growthScore = 0, valueScore = 0, pickedTeam = null;  // growthScore/valueScore = 메인(이긴 게임 수)
+  // 팀 점수는 세션에 저장한다 — 행사 중 실수로 새로고침해도 점수가 날아가지 않도록
+  function loadScore(k) { try { var v = sessionStorage.getItem(k); return v === null ? 0 : (+v || 0); } catch (e) { return 0; } }
+  function saveScores() { try { sessionStorage.setItem('quizScoreG', growthScore); sessionStorage.setItem('quizScoreV', valueScore); } catch (e) {} }
+  let growthScore = loadScore('quizScoreG'), valueScore = loadScore('quizScoreV'), pickedTeam = null;  // growthScore/valueScore = 메인(이긴 게임 수)
   let pgGrowth = 0, pgValue = 0, winnerMode = null;        // pgGrowth/pgValue = 현재 게임만의 점수
   let hintPos = [];   // 현재 문제에서 힌트로 공개된 글자 위치(랜덤 순서)
   let muted = false;  // 효과음 음소거 토글
@@ -2421,6 +2429,7 @@
     var a = document.getElementById('songAudio');
     if (!a || a.dataset.cur === it.preview) return;
     var st = Math.max(0, +(it.start || 0));
+    a.volume = (it.vol === undefined) ? 1 : Math.max(0, Math.min(1, +it.vol));   // 곡별 음량 평준화(시대별 마스터링 차이 보정)
     a.dataset.cur = it.preview;
     a.dataset.start = st;
     a.src = it.preview;

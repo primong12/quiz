@@ -1,0 +1,92 @@
+/* Phosphor Icons (regular) — 필요한 아이콘만 추린 로컬 사본.
+   원본: https://unpkg.com/@phosphor-icons/web@2.1.1 (MIT)
+   행사장 인터넷이 없어도 아이콘이 보이도록 로컬화함 */
+@font-face {
+  font-family: "Phosphor";
+  src:
+    url("Phosphor.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+.ph {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: "Phosphor" !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Enable Ligatures ================ */
+  letter-spacing: 0;
+  -webkit-font-feature-settings: "liga";
+  -moz-font-feature-settings: "liga=1";
+  -moz-font-feature-settings: "liga";
+  -ms-font-feature-settings: "liga" 1;
+  font-feature-settings: "liga";
+  -webkit-font-variant-ligatures: discretionary-ligatures;
+  font-variant-ligatures: discretionary-ligatures;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.ph
+.ph.ph-buildings:before {
+  content: "\e102";
+}
+.ph.ph-cassette-tape:before {
+  content: "\ed2e";
+}
+.ph.ph-chart-line-up:before {
+  content: "\e156";
+}
+.ph.ph-currency-dollar:before {
+  content: "\e550";
+}
+.ph.ph-film-slate:before {
+  content: "\e8c2";
+}
+.ph.ph-globe-hemisphere-west:before {
+  content: "\e28c";
+}
+.ph.ph-hand-waving:before {
+  content: "\e580";
+}
+.ph.ph-mask-happy:before {
+  content: "\e9f4";
+}
+.ph.ph-medal:before {
+  content: "\e320";
+}
+.ph.ph-music-notes:before {
+  content: "\e340";
+}
+.ph.ph-music-notes-plus:before {
+  content: "\eb7c";
+}
+.ph.ph-quotes:before {
+  content: "\e660";
+}
+.ph.ph-smiley:before {
+  content: "\e436";
+}
+.ph.ph-squares-four:before {
+  content: "\e464";
+}
+.ph.ph-star:before {
+  content: "\e46a";
+}
+.ph.ph-television-simple:before {
+  content: "\eae6";
+}
+.ph.ph-text-aa:before {
+  content: "\e6ee";
+}
+.ph.ph-vinyl-record:before {
+  content: "\ecac";
+}
