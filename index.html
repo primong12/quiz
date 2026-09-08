@@ -590,6 +590,11 @@
   .admin-seed button { border: 0; border-radius: 8px; padding: 7px 14px; font-weight: 800; cursor: pointer;
     background: #654ea3; color: #fff; }
   .admin-seed em { font-style: normal; font-weight: 700; font-size: 12px; color: #8a8a8a; }
+  .audio-seek { display: flex; gap: 8px; justify-content: center; margin-top: 14px; }
+  .audio-seek button { border: 0; border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 800;
+    cursor: pointer; background: rgba(255,255,255,.22); color: #fff; }
+  .audio-seek button:hover { background: rgba(255,255,255,.38); }
+  .aud-photo-box .audio-seek { display: none; }   /* 빔 화면엔 조작 버튼 안 띄움 */
 </style>
 </head>
 <body>
@@ -747,7 +752,7 @@
              onerror="document.getElementById('photoLoading').textContent='사진을 불러오지 못했어요 (인터넷 확인)';">
         <canvas id="ceoCanvas" style="display:none"></canvas>
         <div id="tickerDisplay" class="ticker-display" style="display:none"></div>
-        <div id="audioDisplay" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스: 정지·재생</span><div class="audio-bar"><div class="audio-bar-fill"></div></div><span class="audio-time">0:00 / 0:30</span></div>
+        <div id="audioDisplay" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스 정지·재생 · [ ] 구간 이동</span><div class="audio-bar"><div class="audio-bar-fill"></div></div><span class="audio-time">0:00 / 0:30</span><div class="audio-seek"><button onclick="seekSong(-5)">◀ 5초</button><button onclick="seekSong(0)">↺ 시작점</button><button onclick="seekSong(5)">5초 ▶</button></div></div>
       </div>
       <audio id="songAudio"></audio>
       <div class="answer-area">
@@ -800,7 +805,7 @@
           <img id="presPhoto" alt="">
           <canvas id="presCanvas" style="display:none"></canvas>
           <div id="presTicker" class="pres-ticker" style="display:none"></div>
-          <div id="presAudioDisp" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스: 정지·재생</span><div class="audio-bar"><div class="audio-bar-fill"></div></div><span class="audio-time">0:00 / 0:30</span></div>
+          <div id="presAudioDisp" class="audio-display" style="display:none">🎵<br>노래 재생 중<span class="audio-hint">스페이스 정지·재생 · [ ] 구간 이동</span><div class="audio-bar"><div class="audio-bar-fill"></div></div><span class="audio-time">0:00 / 0:30</span><div class="audio-seek"><button onclick="seekSong(-5)">◀ 5초</button><button onclick="seekSong(0)">↺ 시작점</button><button onclick="seekSong(5)">5초 ▶</button></div></div>
         </div>
         <div id="presQ"></div>
         <div id="presHintLine" class="pres-hintline" style="display:none"></div>
@@ -1335,131 +1340,131 @@
   ];
 
   const SONG = [
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/e2/6f/ee/e26feea5-5b5b-98e7-a969-ea18491b790e/mzaf_9114597391113564647.plus.aac.p.m4a", company: "광화문 연가", ceo: "이문세" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/e9/55/9a/e9559a5b-2d5a-558c-5580-f030ed6ab723/mzaf_12339351853979091478.plus.aac.p.m4a", company: "아파트", ceo: "윤수일" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/e5/a7/44/e5a744f0-5e4c-45b7-a500-9ef79c59343c/mzaf_17210876166294494869.plus.aac.p.m4a", company: "서른 즈음에", ceo: "김광석" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/dc/31/6e/dc316e10-cc41-8532-167b-d1b9b179b001/mzaf_16865291432505363048.plus.aac.p.m4a", company: "어쩌다 마주친 그대", ceo: "송골매" },
+    { preview: "audio/aud_831ce7c8dffe.m4a", company: "광화문 연가", ceo: "이문세" },
+    { preview: "audio/aud_88b61b099d9e.m4a", company: "아파트", ceo: "윤수일" },
+    { preview: "audio/aud_76d4b4cad9e9.m4a", company: "서른 즈음에", ceo: "김광석" },
+    { preview: "audio/aud_e5ea79bd165c.m4a", company: "어쩌다 마주친 그대", ceo: "송골매" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/aa/68/0a/aa680a0c-2026-39aa-b829-554f2360ab0c/mzaf_8726940804879731615.plus.aac.p.m4a", company: "호랑나비", ceo: "김흥국" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/f3/49/3b/f3493b7a-2ace-f944-b87c-03da70e8a8c2/mzaf_2252143088883260085.plus.aac.p.m4a", company: "미소를 띄우며 나를 보낸 그 모습처럼", ceo: "이은하" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e6/3b/04/e63b0476-0db1-f405-02ee-aa822b33411b/mzaf_6355364134988151913.plus.aac.p.m4a", company: "비처럼 음악처럼", ceo: "김현식" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/84/36/be/8436be88-331c-2933-8412-67a5fd5c95e6/mzaf_11882316407209111545.plus.aac.p.m4a", company: "남행열차", ceo: "김수희" },
+    { preview: "audio/aud_2f242d014911.m4a", company: "미소를 띄우며 나를 보낸 그 모습처럼", ceo: "이은하" },
+    { preview: "audio/aud_b82a9df4bbde.m4a", company: "비처럼 음악처럼", ceo: "김현식" },
+    { preview: "audio/aud_99d80b7d68e9.m4a", company: "남행열차", ceo: "김수희" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/23/94/1d/23941d46-da9d-72b8-e4b5-00ff15ed382b/mzaf_5911579201492998398.plus.aac.p.m4a", company: "희나리", ceo: "구창모" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/99/52/a5/9952a569-2a8f-6517-2834-60d48d66a9be/mzaf_379464859300269742.plus.aac.p.m4a", company: "널 그리며", ceo: "박남정" },
+    { preview: "audio/aud_bfb10f8f10bc.m4a", company: "널 그리며", ceo: "박남정" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/f7/27/5d/f7275df8-8959-9308-1754-3b1cb2926e46/mzaf_15777158085286768983.plus.aac.p.m4a", company: "해야", ceo: "마그마" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/c7/c0/19/c7c019cd-88cc-2b59-ed8c-65a82e03524b/mzaf_5817054361534506312.plus.aac.p.m4a", company: "담다디", ceo: "이상은" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/75/e3/fb/75e3fbe4-f301-4a83-2744-aa8cce471cc3/mzaf_16131889593201457764.plus.aac.p.m4a", company: "남자는 배 여자는 항구", ceo: "심수봉" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/61/65/5e/61655e22-0993-9ab9-45da-9c0cb09c743f/mzaf_4109089154525768655.plus.aac.p.m4a", company: "모나리자", ceo: "조용필" },
+    { preview: "audio/aud_c9b21b282a21.m4a", company: "담다디", ceo: "이상은" },
+    { preview: "audio/aud_55366f4f998a.m4a", company: "남자는 배 여자는 항구", ceo: "심수봉" },
+    { preview: "audio/aud_ae7f84705aea.m4a", company: "모나리자", ceo: "조용필" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/9a/25/9f/9a259fee-8e30-22e6-c4ac-c56a43a33b0e/mzaf_15024754448248197592.plus.aac.p.m4a", company: "바람아 멈추어다오", ceo: "이지연" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/67/74/93/67749385-e2eb-0e61-b035-9e3be28e96d9/mzaf_12417194670277791931.plus.aac.p.m4a", company: "한동안 뜸했었지", ceo: "사랑과 평화" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/2f/fa/6c/2ffa6c10-74d5-d4c2-7f69-f08efdbe263d/mzaf_10745862638759133461.plus.aac.p.m4a", company: "젊은 그대", ceo: "김수철" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/ca/75/ae/ca75ae95-4e60-5de8-a03d-bf62538c8cc3/mzaf_13816739955672336971.plus.aac.p.m4a", company: "님은 먼 곳에", ceo: "김추자" },
+    { preview: "audio/aud_8159d6e0c23b.m4a", company: "젊은 그대", ceo: "김수철" },
+    { preview: "audio/aud_900bb1abeb81.m4a", company: "님은 먼 곳에", ceo: "김추자" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/78/5c/5b/785c5b3f-0d91-00f7-2151-55a65c12d04d/mzaf_942053018719053871.plus.aac.p.m4a", company: "나 어떡해", ceo: "산울림" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/2b/8c/96/2b8c96a1-9489-1428-b1a6-6d2aea8fa38e/mzaf_15963688176240453827.plus.aac.p.m4a", company: "잊혀진 계절", ceo: "이용" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/bb/6c/40/bb6c4054-623f-5444-96ac-3614d4c2c0ab/mzaf_2257830586871097408.plus.aac.p.m4a", company: "나 항상 그대를", ceo: "이선희" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/79/fb/05/79fb05ec-d9bf-fbfa-c8e3-24f028589614/mzaf_2080199511518981974.plus.aac.p.m4a", company: "어젯밤 이야기", ceo: "소방차" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/c8/1d/fd/c81dfdd2-241c-f97e-f2aa-60e224e4a658/mzaf_16863388697120676920.plus.aac.p.m4a", company: "만남", ceo: "노사연" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/3f/7d/b4/3f7db43d-bea7-9daa-5023-12682ee727f0/mzaf_17403200606887318522.plus.aac.p.m4a", company: "환희", ceo: "정수라" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/c5/06/22/c50622c0-83bf-984f-c100-d9a40252995d/mzaf_5426982728439588556.plus.aac.p.m4a", company: "그 겨울의 찻집", ceo: "조용필" },
+    { preview: "audio/aud_1c7c873afce9.m4a", company: "잊혀진 계절", ceo: "이용" },
+    { preview: "audio/aud_d3635275c25e.m4a", company: "나 항상 그대를", ceo: "이선희" },
+    { preview: "audio/aud_3a25e52913af.m4a", company: "어젯밤 이야기", ceo: "소방차" },
+    { preview: "audio/aud_fe61f1d1fb1e.m4a", company: "만남", ceo: "노사연" },
+    { preview: "audio/aud_b940a97ed493.m4a", company: "환희", ceo: "정수라" },
+    { preview: "audio/aud_774247c2e0af.m4a", company: "그 겨울의 찻집", ceo: "조용필" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/7c/1d/fa/7c1dfaa7-dbef-8dd5-9ba7-28fc8abc455c/mzaf_15143080955315119144.plus.aac.p.m4a", company: "J에게", ceo: "이선희" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/cd/fa/8d/cdfa8d50-350b-f551-2486-b6fa91373113/mzaf_5809918596500779133.plus.aac.p.m4a", company: "사랑의 미로", ceo: "최진희" },
+    { preview: "audio/aud_58038b121bc5.m4a", company: "사랑의 미로", ceo: "최진희" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview113/v4/b1/3d/b2/b13db280-f928-f650-91d4-f260871b4887/mzaf_2395120172756558870.plus.aac.p.m4a", company: "아! 대한민국", ceo: "정수라" },
     { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/39/6a/2a/396a2ab2-0b3a-6b02-27c1-c0e5aa013136/mzaf_8172617109257645715.plus.aac.p.m4a", company: "빈잔", ceo: "남진" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/56/3e/5e/563e5e28-465e-52e2-76f4-9715cf5bc32e/mzaf_17022097414201996493.plus.aac.p.m4a", company: "희망사항", ceo: "변진섭" },
+    { preview: "audio/aud_322829ad272c.m4a", company: "희망사항", ceo: "변진섭" },
   ];
 
   // '추억' 퀴즈 (7080처럼 아이튠즈 미리듣기)
   const MEMORY = [
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/e9/55/9a/e9559a5b-2d5a-558c-5580-f030ed6ab723/mzaf_12339351853979091478.plus.aac.p.m4a", company: "아파트", ceo: "윤수일" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/2b/8c/96/2b8c96a1-9489-1428-b1a6-6d2aea8fa38e/mzaf_15963688176240453827.plus.aac.p.m4a", company: "잊혀진 계절", ceo: "이용" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/67/50/83/675083d0-f1fc-4cd3-9f49-babde80814f0/mzaf_10602713658445261350.plus.aac.p.m4a", company: "담배가게 아가씨", ceo: "송창식" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/74/68/21/746821fe-f2b4-b5a1-b4a1-45d687fe457c/mzaf_18347060696084751177.plus.aac.p.m4a", company: "바다에 누워", ceo: "높은음자리" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/e8/f7/ed/e8f7edc6-8b41-c928-d6c9-14182d7a6123/mzaf_2750433868158197719.plus.aac.p.m4a", company: "누구 없소", ceo: "한영애" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/cd/fa/8d/cdfa8d50-350b-f551-2486-b6fa91373113/mzaf_5809918596500779133.plus.aac.p.m4a", company: "사랑의 미로", ceo: "최진희" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/c3/44/f9/c344f9ab-cbca-d3b5-b69b-a7ec7e224b15/mzaf_11835403973642360907.plus.aac.p.m4a", company: "나의 옛날이야기", ceo: "조덕배" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/61/65/5e/61655e22-0993-9ab9-45da-9c0cb09c743f/mzaf_4109089154525768655.plus.aac.p.m4a", company: "모나리자", ceo: "조용필" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/dc/31/6e/dc316e10-cc41-8532-167b-d1b9b179b001/mzaf_16865291432505363048.plus.aac.p.m4a", company: "어쩌다 마주친 그대", ceo: "송골매" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/bb/6c/40/bb6c4054-623f-5444-96ac-3614d4c2c0ab/mzaf_2257830586871097408.plus.aac.p.m4a", company: "나 항상 그대를", ceo: "이선희" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/f3/49/3b/f3493b7a-2ace-f944-b87c-03da70e8a8c2/mzaf_2252143088883260085.plus.aac.p.m4a", company: "미소를 띄우며 나를 보낸 그 모습처럼", ceo: "이은하" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/99/52/a5/9952a569-2a8f-6517-2834-60d48d66a9be/mzaf_379464859300269742.plus.aac.p.m4a", company: "널 그리며", ceo: "박남정" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/82/4c/96/824c96b8-281a-02c1-b18e-10b623270a1f/mzaf_3223559474013252741.plus.aac.p.m4a", company: "불티", ceo: "전영록" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e6/3b/04/e63b0476-0db1-f405-02ee-aa822b33411b/mzaf_6355364134988151913.plus.aac.p.m4a", company: "비처럼 음악처럼", ceo: "김현식" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/75/e3/fb/75e3fbe4-f301-4a83-2744-aa8cce471cc3/mzaf_16131889593201457764.plus.aac.p.m4a", company: "남자는 배 여자는 항구", ceo: "심수봉" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/56/3e/5e/563e5e28-465e-52e2-76f4-9715cf5bc32e/mzaf_17022097414201996493.plus.aac.p.m4a", company: "희망사항", ceo: "변진섭" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/2c/43/f6/2c43f618-7df8-7b70-14bc-3b7018d9dbc8/mzaf_6042422265317865168.plus.aac.p.m4a", company: "텔레파시", ceo: "도시의 아이들" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/8e/6f/53/8e6f5394-b684-4e4b-8a78-34a07349fa3d/mzaf_16866145403667526963.plus.aac.p.m4a", company: "너의 의미", ceo: "산울림" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/e3/40/35/e34035ce-44b8-9f2f-a554-fef47ef69141/mzaf_13451655127585332478.plus.aac.p.m4a", company: "슬픈인연", ceo: "나미" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/2f/fa/6c/2ffa6c10-74d5-d4c2-7f69-f08efdbe263d/mzaf_10745862638759133461.plus.aac.p.m4a", company: "젊은 그대", ceo: "김수철" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/79/fb/05/79fb05ec-d9bf-fbfa-c8e3-24f028589614/mzaf_2080199511518981974.plus.aac.p.m4a", company: "어젯밤 이야기", ceo: "소방차" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/84/36/be/8436be88-331c-2933-8412-67a5fd5c95e6/mzaf_11882316407209111545.plus.aac.p.m4a", company: "남행열차", ceo: "김수희" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/c7/c0/19/c7c019cd-88cc-2b59-ed8c-65a82e03524b/mzaf_5817054361534506312.plus.aac.p.m4a", company: "담다디", ceo: "이상은" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/3f/7d/b4/3f7db43d-bea7-9daa-5023-12682ee727f0/mzaf_17403200606887318522.plus.aac.p.m4a", company: "환희", ceo: "정수라" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/c8/1d/fd/c81dfdd2-241c-f97e-f2aa-60e224e4a658/mzaf_16863388697120676920.plus.aac.p.m4a", company: "만남", ceo: "노사연" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/8f/33/19/8f3319e5-af8d-378b-edb9-a1c2b2417775/mzaf_6477979112181203578.plus.aac.p.m4a", company: "바람 바람 바람", ceo: "김범룡" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/e2/6f/ee/e26feea5-5b5b-98e7-a969-ea18491b790e/mzaf_9114597391113564647.plus.aac.p.m4a", company: "광화문 연가", ceo: "이문세" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/ca/75/ae/ca75ae95-4e60-5de8-a03d-bf62538c8cc3/mzaf_13816739955672336971.plus.aac.p.m4a", company: "님은 먼 곳에", ceo: "김추자" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/c5/06/22/c50622c0-83bf-984f-c100-d9a40252995d/mzaf_5426982728439588556.plus.aac.p.m4a", company: "그 겨울의 찻집", ceo: "조용필" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/e5/a7/44/e5a744f0-5e4c-45b7-a500-9ef79c59343c/mzaf_17210876166294494869.plus.aac.p.m4a", company: "서른 즈음에", ceo: "김광석" },
+    { preview: "audio/aud_88b61b099d9e.m4a", start: 9.5, company: "아파트", ceo: "윤수일" },
+    { preview: "audio/aud_1c7c873afce9.m4a", start: 15.0, company: "잊혀진 계절", ceo: "이용" },
+    { preview: "audio/aud_27a4b258354f.m4a", start: 2.5, start: 2.5, company: "담배가게 아가씨", ceo: "송창식" },
+    { preview: "audio/aud_27e2708f50aa.m4a", start: 8.5, start: 8.5, company: "바다에 누워", ceo: "높은음자리" },
+    { preview: "audio/aud_f57f407b841c.m4a", start: 4.0, start: 4.0, company: "누구 없소", ceo: "한영애" },
+    { preview: "audio/aud_58038b121bc5.m4a", start: 7.5, company: "사랑의 미로", ceo: "최진희" },
+    { preview: "audio/aud_52f36053adf9.m4a", company: "나의 옛날이야기", ceo: "조덕배" },
+    { preview: "audio/aud_ae7f84705aea.m4a", company: "모나리자", ceo: "조용필" },
+    { preview: "audio/aud_e5ea79bd165c.m4a", start: 3.5, company: "어쩌다 마주친 그대", ceo: "송골매" },
+    { preview: "audio/aud_d3635275c25e.m4a", start: 0.5, company: "나 항상 그대를", ceo: "이선희" },
+    { preview: "audio/aud_2f242d014911.m4a", company: "미소를 띄우며 나를 보낸 그 모습처럼", ceo: "이은하" },
+    { preview: "audio/aud_bfb10f8f10bc.m4a", start: 15.0, company: "널 그리며", ceo: "박남정" },
+    { preview: "audio/aud_14eb25709401.m4a", company: "불티", ceo: "전영록" },
+    { preview: "audio/aud_b82a9df4bbde.m4a", start: 12.0, company: "비처럼 음악처럼", ceo: "김현식" },
+    { preview: "audio/aud_55366f4f998a.m4a", start: 1.0, company: "남자는 배 여자는 항구", ceo: "심수봉" },
+    { preview: "audio/aud_322829ad272c.m4a", start: 10.0, company: "희망사항", ceo: "변진섭" },
+    { preview: "audio/aud_ebfef44e0c0b.m4a", company: "텔레파시", ceo: "도시의 아이들" },
+    { preview: "audio/aud_fac166505e73.m4a", start: 9.5, start: 9.5, company: "너의 의미", ceo: "산울림" },
+    { preview: "audio/aud_092858bfd6bf.m4a", start: 15.0, start: 15.0, company: "슬픈인연", ceo: "나미" },
+    { preview: "audio/aud_8159d6e0c23b.m4a", start: 4.0, company: "젊은 그대", ceo: "김수철" },
+    { preview: "audio/aud_3a25e52913af.m4a", start: 13.0, company: "어젯밤 이야기", ceo: "소방차" },
+    { preview: "audio/aud_99d80b7d68e9.m4a", company: "남행열차", ceo: "김수희" },
+    { preview: "audio/aud_c9b21b282a21.m4a", start: 5.0, company: "담다디", ceo: "이상은" },
+    { preview: "audio/aud_b940a97ed493.m4a", start: 1.0, company: "환희", ceo: "정수라" },
+    { preview: "audio/aud_fe61f1d1fb1e.m4a", company: "만남", ceo: "노사연" },
+    { preview: "audio/aud_c10efbf4a9c4.m4a", start: 11.5, start: 11.5, company: "바람 바람 바람", ceo: "김범룡" },
+    { preview: "audio/aud_831ce7c8dffe.m4a", start: 7.5, company: "광화문 연가", ceo: "이문세" },
+    { preview: "audio/aud_900bb1abeb81.m4a", start: 4.5, company: "님은 먼 곳에", ceo: "김추자" },
+    { preview: "audio/aud_774247c2e0af.m4a", start: 1.5, company: "그 겨울의 찻집", ceo: "조용필" },
+    { preview: "audio/aud_76d4b4cad9e9.m4a", start: 2.5, company: "서른 즈음에", ceo: "김광석" },
   ];
 
   // 최신가요 (2023~2025 히트, 아이튠즈 미리듣기)
   const LATEST_SONGS = [
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/95/79/f5/9579f50e-ac47-1e43-acab-d422cbe17a21/mzaf_12002777810095615569.plus.aac.p.m4a", company: "APT.", ceo: "로제 & 브루노 마스" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/0c/76/4d/0c764db0-1223-bda7-5ade-8fb1a6d3bb68/mzaf_6178280437461332450.plus.aac.p.m4a", company: "모래 알갱이", ceo: "임영웅" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/3d/57/20/3d5720b3-f6b4-a2fd-8d8f-96515cda91a3/mzaf_17422220011601403216.plus.aac.p.m4a", company: "I AM", ceo: "아이브 (IVE)" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/85/72/66/8572665a-d35f-ce5d-43c5-9ae4b69b4b46/mzaf_2317272666428796662.plus.aac.p.m4a", company: "Ditto", ceo: "뉴진스 (NewJeans)" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/cb/a5/34/cba5340f-feac-7e85-0d62-c687a5da7524/mzaf_5508662312740645025.plus.aac.p.m4a", company: "Supernova", ceo: "에스파 (aespa)" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/79/19/be/7919be5a-969d-0e3b-df54-71592942d13f/mzaf_767193238431796792.plus.aac.p.m4a", company: "한 페이지가 될 수 있게", ceo: "데이식스 (DAY6)" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/ca/f2/aa/caf2aa58-40ef-8460-cf65-0f97848da839/mzaf_11004362433324424334.plus.aac.p.m4a", company: "고민중독", ceo: "QWER" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/da/5d/da/da5ddaea-f08f-d5a7-2178-7a8e5489704b/mzaf_5693961966471527130.plus.aac.p.m4a", company: "나는 반딧불", ceo: "황가람" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/d0/61/fe/d061fef8-d964-d5d3-fe5c-147202fccd32/mzaf_5090530859078181756.plus.aac.p.m4a", company: "퀸카 (Queencard)", ceo: "(여자)아이들" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/19/f6/98/19f6985f-4633-0de9-6529-22e9c84e31be/mzaf_2983769807683393748.plus.aac.p.m4a", company: "EASY", ceo: "르세라핌 (LE SSERAFIM)" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/b1/f5/5c/b1f55c57-76ee-524f-35b3-ba046034ac9e/mzaf_17010912782387954876.plus.aac.p.m4a", company: "밤양갱", ceo: "비비 (BIBI)" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/ac/8d/97/ac8d9717-2bbf-b1bf-b2e9-476feea6a480/mzaf_11615065500455071115.plus.aac.p.m4a", company: "첫 만남은 계획대로 되지 않아", ceo: "투어스 (TWS)" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/41/10/ee/4110ee0c-7e0b-b0c7-e6b3-1d5288dc377f/mzaf_1679421330560011573.plus.aac.p.m4a", company: "사랑인가 봐", ceo: "멜로망스" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/9c/b5/3a/9cb53a36-d58f-d9a8-b23c-5bc1d28ef431/mzaf_17732560313905705620.plus.aac.p.m4a", company: "신호등", ceo: "이무진" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/18/a8/bb/18a8bb14-c776-1e64-06f8-636e624c86d3/mzaf_10852494709540318183.plus.aac.p.m4a", company: "사건의 지평선", ceo: "윤하" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/75/42/8e/75428efd-bf7c-922a-253a-dcc9f812eddc/mzaf_9614853286254962096.plus.aac.p.m4a", company: "Love Lee", ceo: "악뮤 (AKMU)" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/fe/df/b0/fedfb0cb-d93a-fb60-2a3d-719e1f74968d/mzaf_3325318025147233907.plus.aac.p.m4a", company: "꽃 (FLOWER)", ceo: "지수 (JISOO)" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/76/9c/dd/769cdd57-1dc9-aff1-8af2-de134b7e0498/mzaf_9327909714451142276.plus.aac.p.m4a", company: "손오공", ceo: "세븐틴 (SEVENTEEN)" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/e5/dd/c1/e5ddc11a-cca1-86eb-bc36-5cae9869dded/mzaf_2438982977131590749.plus.aac.p.m4a", company: "Seven", ceo: "정국" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/da/e8/75/dae8752f-a3e5-4e6d-7027-7b5b43c413f7/mzaf_11459182446397175961.plus.aac.p.m4a", company: "Love 119", ceo: "라이즈 (RIIZE)" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/b2/38/6f/b2386f32-3eed-a099-044a-2944430c1b5d/mzaf_8465968415111905068.plus.aac.p.m4a", company: "홀씨", ceo: "아이유 (IU)" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/55/0b/9a/550b9ad4-17f9-c17b-979c-68ada0ab2811/mzaf_3573603930208239944.plus.aac.p.m4a", company: "WAY 4 LUV", ceo: "플레이브 (PLAVE)" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/67/0c/69/670c697b-b943-1148-95ba-5733b70e3042/mzaf_14041457009119207683.plus.aac.p.m4a", company: "Welcome to the Show", ceo: "데이식스 (DAY6)" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/d0/b6/c8/d0b6c853-b1c3-b4c4-ba2b-8b0baa1e51b7/mzaf_16774218591059411033.plus.aac.p.m4a", company: "좋은 밤 좋은 꿈", ceo: "너드커넥션" },
+    { preview: "audio/aud_53a3fa1f7ce2.m4a", start: 1.0, company: "APT.", ceo: "로제 & 브루노 마스" },
+    { preview: "audio/aud_facca29c75aa.m4a", start: 7.0, company: "모래 알갱이", ceo: "임영웅" },
+    { preview: "audio/aud_5b6f0ad580e6.m4a", start: 7.0, company: "I AM", ceo: "아이브 (IVE)" },
+    { preview: "audio/aud_6f14f01640b9.m4a", start: 12.0, company: "Ditto", ceo: "뉴진스 (NewJeans)" },
+    { preview: "audio/aud_a8e1f03bb4ce.m4a", company: "Supernova", ceo: "에스파 (aespa)" },
+    { preview: "audio/aud_99026998af36.m4a", company: "한 페이지가 될 수 있게", ceo: "데이식스 (DAY6)" },
+    { preview: "audio/aud_e01a060012d3.m4a", start: 0.5, company: "고민중독", ceo: "QWER" },
+    { preview: "audio/aud_0a1efba2310c.m4a", start: 2.0, company: "나는 반딧불", ceo: "황가람" },
+    { preview: "audio/aud_5f399830ee69.m4a", company: "퀸카 (Queencard)", ceo: "(여자)아이들" },
+    { preview: "audio/aud_043776739617.m4a", company: "EASY", ceo: "르세라핌 (LE SSERAFIM)" },
+    { preview: "audio/aud_e8aa5aabde44.m4a", start: 4.5, company: "밤양갱", ceo: "비비 (BIBI)" },
+    { preview: "audio/aud_2a6f41c39b69.m4a", start: 6.5, company: "첫 만남은 계획대로 되지 않아", ceo: "투어스 (TWS)" },
+    { preview: "audio/aud_732cc18caebb.m4a", company: "사랑인가 봐", ceo: "멜로망스" },
+    { preview: "audio/aud_63d93a414576.m4a", start: 6.0, company: "신호등", ceo: "이무진" },
+    { preview: "audio/aud_062567ec9806.m4a", company: "사건의 지평선", ceo: "윤하" },
+    { preview: "audio/aud_6abd51b0af06.m4a", start: 1.5, company: "Love Lee", ceo: "악뮤 (AKMU)" },
+    { preview: "audio/aud_c829c39144fc.m4a", start: 15.0, company: "꽃 (FLOWER)", ceo: "지수 (JISOO)" },
+    { preview: "audio/aud_b4a32c7b08ed.m4a", start: 4.0, company: "손오공", ceo: "세븐틴 (SEVENTEEN)" },
+    { preview: "audio/aud_d23715c872f7.m4a", company: "Seven", ceo: "정국" },
+    { preview: "audio/aud_e38e0c43f86c.m4a", start: 9.5, company: "Love 119", ceo: "라이즈 (RIIZE)" },
+    { preview: "audio/aud_16a71e6e8d01.m4a", company: "홀씨", ceo: "아이유 (IU)" },
+    { preview: "audio/aud_db06a395252a.m4a", start: 1.0, company: "WAY 4 LUV", ceo: "플레이브 (PLAVE)" },
+    { preview: "audio/aud_952fc0cf8941.m4a", start: 9.5, company: "Welcome to the Show", ceo: "데이식스 (DAY6)" },
+    { preview: "audio/aud_52bc2dbf532d.m4a", start: 2.0, company: "좋은 밤 좋은 꿈", ceo: "너드커넥션" },
   ];
 
   const SONG_Y2K = [
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/6a/25/10/6a2510dc-d8b2-11cc-8616-41ac44ddf33b/mzaf_6715468866373289994.plus.aac.p.m4a", company: "검은 고양이 네로", ceo: "터보" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/69/ae/94/69ae948a-a986-5fdd-4bc8-c645e9c2e67c/mzaf_15179820352132273152.plus.aac.p.m4a", company: "성인식", ceo: "박지윤" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/be/50/fb/be50fb56-3f7b-8d28-780e-72a51f462297/mzaf_13932827511355052947.plus.aac.p.m4a", company: "순정", ceo: "코요태" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/0b/b3/f2/0bb3f25d-6830-0cf0-6e55-4ca003227e0a/mzaf_6722396325576980982.plus.aac.p.m4a", company: "Tell Me Tell Me", ceo: "샵" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/33/bd/92/33bd9227-55e8-776e-9bf1-d5b49e0495e3/mzaf_2579457300533113674.plus.aac.p.m4a", company: "좋은 사람", ceo: "토이" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/32/76/31/3276319b-f9ac-ee0b-5a57-ff9d6830f788/mzaf_12407445031042571060.plus.aac.p.m4a", company: "와", ceo: "이정현" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/ce/83/57/ce83578b-97de-37d2-75e9-fb596f066328/mzaf_17657838391782849046.plus.aac.p.m4a", company: "DOC와 춤을", ceo: "DJ DOC" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/2b/38/e0/2b38e047-f470-45da-bd22-46aa68f15838/mzaf_15241325113058856474.plus.aac.p.m4a", company: "맨발의 청춘", ceo: "벅" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/73/17/62/7317620c-088c-7ff9-ec9a-db94570007b0/mzaf_12949657780323496131.plus.aac.p.m4a", company: "왜 불러", ceo: "디바" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/af/51/fe/af51fe65-7628-6442-2827-5cbb1e060764/mzaf_8651671111720237765.plus.aac.p.m4a", company: "Come Back Home", ceo: "서태지와 아이들" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/8b/7e/9c/8b7e9c05-ffd2-9923-9799-87f5d0fb1cdd/mzaf_4573498049999093402.plus.aac.p.m4a", company: "애상", ceo: "쿨" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/c9/af/ab/c9afabff-d82d-da4e-5d26-676b8a91c9bc/mzaf_10766297628448038922.plus.aac.p.m4a", company: "날개 잃은 천사", ceo: "룰라" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/da/7c/e9/da7ce9ad-9ca3-2d94-6919-4e437c2df6d1/mzaf_3629705757468826121.plus.aac.p.m4a", company: "내 남자친구에게", ceo: "핑클" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/82/53/d5/8253d5aa-43ce-5103-1eb7-b81b39a1d73e/mzaf_18061176206684687594.plus.aac.p.m4a", company: "그녀와의 이별", ceo: "김현정" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/02/36/f5/0236f54a-f30c-c6ec-f89c-0db1ed86c321/mzaf_14121833226193995076.plus.aac.p.m4a", company: "해변의 여인", ceo: "쿨" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/79/0c/bf/790cbf35-ff62-6843-7deb-6e612a09d458/mzaf_15686156230106978567.plus.aac.p.m4a", company: "버스 안에서", ceo: "자자" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/35/9a/bd/359abd7e-75fb-a112-a338-3b0865d1882b/mzaf_813279759223266637.plus.aac.p.m4a", company: "꿍따리 샤바라", ceo: "클론" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/b9/3a/58/b93a5806-0a73-9c9d-ba1c-fe29e54db2e8/mzaf_12973314473649694196.plus.aac.p.m4a", company: "캔디", ceo: "H.O.T." },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/0f/74/97/0f749776-851b-28f7-02cb-7fb6f03a8b5c/mzaf_6037512581880510526.plus.aac.p.m4a", company: "헤어진 후에", ceo: "Y2K" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/c8/d8/fb/c8d8fbbe-a109-365d-cc22-75cdb8add793/mzaf_14245327683875154870.plus.aac.p.m4a", company: "일과 이분의 일", ceo: "투투" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/fe/1c/43/fe1c4370-0e33-d993-c57e-4c421d1561d7/mzaf_14420089433299538153.plus.aac.p.m4a", company: "10 Minutes", ceo: "이효리" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/3a/ce/ce/3acece68-d329-45ff-1674-e27989ccdc0b/mzaf_3630059156294081965.plus.aac.p.m4a", company: "뿌요뿌요", ceo: "유피" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/ab/04/39/ab043905-f23d-d77a-5f9e-c4c7b5b3a0f0/mzaf_6295194151736937192.plus.aac.p.m4a", company: "허니", ceo: "박진영" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/13/b7/fa/13b7faea-3103-2653-81c7-b135ee144d87/mzaf_685450540944147769.plus.aac.p.m4a", company: "정", ceo: "영턱스클럽" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/68/63/45/6863452d-a4ba-9db3-8bd7-f399a360e609/mzaf_9335979590141530175.plus.aac.p.m4a", company: "Dash", ceo: "백지영" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/ab/68/97/ab689797-423d-9b75-3709-8552f5959cda/mzaf_8764466287407738350.plus.aac.p.m4a", company: "머니", ceo: "왁스" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/11/90/f0/1190f03c-720e-0888-277f-edb45252ce28/mzaf_5950982039860522760.plus.aac.p.m4a", company: "파도", ceo: "유엔" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/be/13/ca/be13ca0f-dab7-7178-c629-a4b41118dc94/mzaf_12011550388497854778.plus.aac.p.m4a", company: "친구여", ceo: "인순이" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/f5/18/41/f518415b-14cf-3ffb-94d6-a6ef180d9333/mzaf_11764661393892009278.plus.aac.p.m4a", company: "이유같지 않은 이유", ceo: "박미경" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/5f/3d/28/5f3d28a6-e445-f153-0122-027b4f71ddf6/mzaf_15761865320168866066.plus.aac.p.m4a", company: "내 얘길 들어봐", ceo: "파파야" },
+    { preview: "audio/aud_9e86da59b467.m4a", start: 6.0, company: "검은 고양이 네로", ceo: "터보" },
+    { preview: "audio/aud_e0f0cca74ad5.m4a", start: 14.0, company: "성인식", ceo: "박지윤" },
+    { preview: "audio/aud_ba89c293bb68.m4a", start: 5.0, company: "순정", ceo: "코요태" },
+    { preview: "audio/aud_ffabaac5c35e.m4a", start: 10.5, company: "Tell Me Tell Me", ceo: "샵" },
+    { preview: "audio/aud_98d01a1a17cf.m4a", start: 2.0, company: "좋은 사람", ceo: "토이" },
+    { preview: "audio/aud_c7b940c0ee28.m4a", company: "와", ceo: "이정현" },
+    { preview: "audio/aud_1486370248dc.m4a", start: 15.0, company: "DOC와 춤을", ceo: "DJ DOC" },
+    { preview: "audio/aud_582cb50e3639.m4a", start: 4.0, company: "맨발의 청춘", ceo: "벅" },
+    { preview: "audio/aud_e69d76873583.m4a", start: 8.0, company: "왜 불러", ceo: "디바" },
+    { preview: "audio/aud_1209615d2798.m4a", start: 1.0, company: "Come Back Home", ceo: "서태지와 아이들" },
+    { preview: "audio/aud_0089ba571359.m4a", start: 2.5, company: "애상", ceo: "쿨" },
+    { preview: "audio/aud_fee2f148e7a2.m4a", company: "날개 잃은 천사", ceo: "룰라" },
+    { preview: "audio/aud_a5f646b7ed3a.m4a", start: 15.0, company: "내 남자친구에게", ceo: "핑클" },
+    { preview: "audio/aud_f32569549f37.m4a", start: 10.0, company: "그녀와의 이별", ceo: "김현정" },
+    { preview: "audio/aud_4e813f1c2ce3.m4a", start: 13.5, company: "해변의 여인", ceo: "쿨" },
+    { preview: "audio/aud_3f4abb5b8d3a.m4a", start: 8.5, company: "버스 안에서", ceo: "자자" },
+    { preview: "audio/aud_24172381561f.m4a", start: 7.0, company: "꿍따리 샤바라", ceo: "클론" },
+    { preview: "audio/aud_9db2ba3936d5.m4a", start: 1.5, company: "캔디", ceo: "H.O.T." },
+    { preview: "audio/aud_8f7d9fa8f6ae.m4a", company: "헤어진 후에", ceo: "Y2K" },
+    { preview: "audio/aud_b057c1ba84b3.m4a", company: "일과 이분의 일", ceo: "투투" },
+    { preview: "audio/aud_7cead361d431.m4a", start: 3.5, company: "10 Minutes", ceo: "이효리" },
+    { preview: "audio/aud_9eee992fb979.m4a", start: 13.0, company: "뿌요뿌요", ceo: "유피" },
+    { preview: "audio/aud_fe6d182aea93.m4a", start: 4.0, company: "허니", ceo: "박진영" },
+    { preview: "audio/aud_3d0978c44783.m4a", start: 4.0, company: "정", ceo: "영턱스클럽" },
+    { preview: "audio/aud_051018dbe19d.m4a", start: 13.0, company: "Dash", ceo: "백지영" },
+    { preview: "audio/aud_bdc5772a734e.m4a", company: "머니", ceo: "왁스" },
+    { preview: "audio/aud_18dd4f369404.m4a", company: "파도", ceo: "유엔" },
+    { preview: "audio/aud_48097819cf9c.m4a", start: 12.5, company: "친구여", ceo: "인순이" },
+    { preview: "audio/aud_f2e559034907.m4a", company: "이유같지 않은 이유", ceo: "박미경" },
+    { preview: "audio/aud_d82270c0d067.m4a", start: 15.0, company: "내 얘길 들어봐", ceo: "파파야" },
   ];
 
   const LOGO_INTL = [
@@ -1529,40 +1534,40 @@
 
   // '슈가맨' 퀴즈 (아이튠즈 미리듣기)
   const SUGARMAN = [
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/3d/93/ad/3d93ad61-7cf5-43d5-4f5c-6666fbdfe30c/mzaf_4927946264999096706.plus.aac.p.m4a", company: "Y", ceo: "프리스타일" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/92/d4/eb/92d4eb87-a91d-5dfc-3185-a9fde1514ff1/mzaf_10896223573872037643.plus.aac.p.m4a", company: "잘부탁드립니다", ceo: "익스" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/de/6c/22/de6c229d-b45f-e2fa-cc7b-2340be7bc8a5/mzaf_1425299367592356167.plus.aac.p.m4a", company: "사랑의 바보", ceo: "더 넛츠" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/59/c5/8e/59c58e2a-e28c-fa38-8ffd-8a4a15889f6b/mzaf_2599790525200016926.plus.aac.p.m4a", company: "Endless", ceo: "플라워" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/b8/1f/12/b81f1264-ff94-ddd0-d001-eb08c21b2bbc/mzaf_16370500329988408245.plus.aac.p.m4a", company: "You", ceo: "김상민" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/d4/b3/8d/d4b38dda-ca00-48d8-fbcb-4b39738ed53f/mzaf_9894583438197212859.plus.aac.p.m4a", company: "섹시한 남자", ceo: "스페이스A" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/70/00/91/70009156-ab90-a18b-7f6e-ed5da36ba20a/mzaf_17400464728071144556.plus.aac.p.m4a", company: "잘가요", ceo: "정재욱" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/d6/22/5c/d6225ceb-dd11-c089-8b89-637600f01538/mzaf_11355140474619961737.plus.aac.p.m4a", company: "화려한 싱글", ceo: "양혜승" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/6f/53/b6/6f53b6f0-32d3-f585-ad49-1e63f2abf320/mzaf_4445285824822376809.plus.aac.p.m4a", company: "매일매일 기다려", ceo: "티삼스" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/21/d8/1b/21d81b64-39fe-f8f0-2d68-0c8e614eeac6/mzaf_8510158031863418908.plus.aac.p.m4a", company: "도", ceo: "태사자" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/09/b3/06/09b30680-3ca2-899d-2c62-6457497d634d/mzaf_16438953585336158424.plus.aac.p.m4a", company: "걸어서 하늘까지", ceo: "장현철" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/c0/66/a6/c066a6da-3302-079f-4cb2-872b53de6756/mzaf_7726268294992329077.plus.aac.p.m4a", company: "뿌요뿌요", ceo: "UP" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/4d/83/61/4d836143-3f2c-a500-c6f4-db8f0ddf826f/mzaf_5845208536963457881.plus.aac.p.m4a", company: "사랑인걸", ceo: "모세" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/9a/98/54/9a9854df-a8af-bda9-3530-369916abf95c/mzaf_16388295786256879447.plus.aac.p.m4a", company: "비행소녀", ceo: "마골피" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/22/5e/96/225e967f-379f-78b7-10a1-39e54dd5c5ad/mzaf_11221699841750326905.plus.aac.p.m4a", company: "야인", ceo: "강성" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/d3/d8/4a/d3d84abe-4ff1-0721-758b-951c93101466/mzaf_1992576710591838508.plus.aac.p.m4a", company: "나는 문제 없어", ceo: "황규영" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/f6/da/c5/f6dac553-af68-e650-fb4f-f923e85acee1/mzaf_15983642769078245261.plus.aac.p.m4a", company: "칵테일 사랑", ceo: "마로니에" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/04/24/af/0424af1f-d529-3ee4-3dfd-331e8eb34866/mzaf_10647717673865983658.plus.aac.p.m4a", company: "난 멈추지 않는다", ceo: "ZAM" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/8e/5b/45/8e5b45e4-f53e-4bea-23e6-5f534e0483d9/mzaf_8832263794860092583.plus.aac.p.m4a", company: "립스틱 짙게 바르고", ceo: "임주리" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/94/1d/fc/941dfc8f-8f5c-f7bd-de4d-534107459831/mzaf_16623500992548152006.plus.aac.p.m4a", company: "늦은 후회", ceo: "보보" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/20/28/85/202885a8-15ea-4859-2ece-3d5ca711878c/mzaf_12748922478032629473.plus.aac.p.m4a", company: "당돌한 여자", ceo: "서주경" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/45/4c/68/454c6849-29b9-a9d4-70f7-c128517ac0e1/mzaf_10125537275736473598.plus.aac.p.m4a", company: "발걸음", ceo: "에메랄드 캐슬" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/c9/8e/72/c98e7265-bdff-9b6f-f76b-6800f639fca5/mzaf_7276642636280015947.plus.aac.p.m4a", company: "가질 수 없는 너", ceo: "뱅크" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/4f/91/1f/4f911f64-47d2-73d7-8e6e-2e6afae19186/mzaf_10955400388489153065.plus.aac.p.m4a", company: "스톰", ceo: "루머스" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/58/8f/ec/588fec7e-ec21-9c89-d9b6-6fa4f0fc41ef/mzaf_14372916572498225922.plus.aac.p.m4a", company: "너는 왜", ceo: "철이와 미애" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/05/5a/7f/055a7f39-cd9d-1031-c11b-2f3b219bf9e0/mzaf_16906163288048304230.plus.aac.p.m4a", company: "Heaven", ceo: "김현성" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/99/b7/d4/99b7d49e-23f3-aede-7b41-c1af53efed23/mzaf_2070369518440983727.plus.aac.p.m4a", company: "내 눈물 모아", ceo: "서지원" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/00/79/17/007917c7-a727-db28-ab99-c54f2c9bd26d/mzaf_10799232868213487070.plus.aac.p.m4a", company: "상상속의 너", ceo: "노이즈" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/55/79/b7/5579b77a-feb6-a600-e1fd-294e0b0fcfdb/mzaf_4619742931445764653.plus.aac.p.m4a", company: "진이", ceo: "하이디" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/02/6e/c1/026ec116-690f-05be-2524-e6b36e8a28c5/mzaf_16473715350902589086.plus.aac.p.m4a", company: "나만의 슬픔", ceo: "김돈규" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/1e/cb/13/1ecb135c-8bed-e3d3-3088-6f9985395f73/mzaf_4292581999221145653.plus.aac.p.m4a", company: "너에게 난 나에게 넌", ceo: "자전거 탄 풍경" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/4c/66/b0/4c66b04c-66c9-2cf3-d084-1d48f9242589/mzaf_4029773721655606625.plus.aac.p.m4a", company: "나비무덤", ceo: "테이크" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/e4/53/1d/e4531dce-1c95-ee71-433d-b1ba323c3ebc/mzaf_13965222196471770030.plus.aac.p.m4a", company: "그녀의 연인에게", ceo: "K2" },
-    { preview: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/6b/36/0d/6b360d7b-8a89-b035-dfc6-70bb7da1a394/mzaf_5790008113688511380.plus.aac.p.m4a", company: "기도", ceo: "정일영" },
+    { preview: "audio/aud_4531a99e52ec.m4a", company: "Y", ceo: "프리스타일" },
+    { preview: "audio/aud_253a1b4fc04d.m4a", start: 15.0, company: "잘부탁드립니다", ceo: "익스" },
+    { preview: "audio/aud_be0fee7a743c.m4a", start: 4.0, company: "사랑의 바보", ceo: "더 넛츠" },
+    { preview: "audio/aud_2977fdefe27b.m4a", start: 6.5, company: "Endless", ceo: "플라워" },
+    { preview: "audio/aud_b950de0565b6.m4a", start: 10.0, company: "You", ceo: "김상민" },
+    { preview: "audio/aud_c29f20bc1180.m4a", start: 15.0, company: "섹시한 남자", ceo: "스페이스A" },
+    { preview: "audio/aud_07499c5fb1b4.m4a", start: 6.5, company: "잘가요", ceo: "정재욱" },
+    { preview: "audio/aud_7f68c06a23a5.m4a", start: 2.0, company: "화려한 싱글", ceo: "양혜승" },
+    { preview: "audio/aud_2a52e0975b80.m4a", start: 13.5, company: "매일매일 기다려", ceo: "티삼스" },
+    { preview: "audio/aud_c36a80dd3698.m4a", start: 3.5, company: "도", ceo: "태사자" },
+    { preview: "audio/aud_54ce52864595.m4a", start: 2.5, company: "걸어서 하늘까지", ceo: "장현철" },
+    { preview: "audio/aud_754e79b1023d.m4a", start: 15.0, company: "뿌요뿌요", ceo: "UP" },
+    { preview: "audio/aud_9f08209c0509.m4a", start: 15.0, company: "사랑인걸", ceo: "모세" },
+    { preview: "audio/aud_54010fb19ffa.m4a", start: 7.0, company: "비행소녀", ceo: "마골피" },
+    { preview: "audio/aud_8952c0013b5a.m4a", company: "야인", ceo: "강성" },
+    { preview: "audio/aud_b0d5b7c5eb85.m4a", company: "나는 문제 없어", ceo: "황규영" },
+    { preview: "audio/aud_41cfc7a2a41d.m4a", start: 1.0, company: "칵테일 사랑", ceo: "마로니에" },
+    { preview: "audio/aud_91a92ede57aa.m4a", start: 8.5, company: "난 멈추지 않는다", ceo: "ZAM" },
+    { preview: "audio/aud_5eada23067cf.m4a", start: 11.0, company: "립스틱 짙게 바르고", ceo: "임주리" },
+    { preview: "audio/aud_129371325e9e.m4a", start: 8.5, company: "늦은 후회", ceo: "보보" },
+    { preview: "audio/aud_adfb319161ce.m4a", start: 3.0, company: "당돌한 여자", ceo: "서주경" },
+    { preview: "audio/aud_19a511650250.m4a", start: 15.0, company: "발걸음", ceo: "에메랄드 캐슬" },
+    { preview: "audio/aud_8e2752af4328.m4a", start: 12.0, company: "가질 수 없는 너", ceo: "뱅크" },
+    { preview: "audio/aud_5794ba5e4a72.m4a", company: "스톰", ceo: "루머스" },
+    { preview: "audio/aud_785fe8be4348.m4a", start: 7.5, company: "너는 왜", ceo: "철이와 미애" },
+    { preview: "audio/aud_48994cefc0be.m4a", start: 1.0, company: "Heaven", ceo: "김현성" },
+    { preview: "audio/aud_474bacd5cfd6.m4a", start: 13.5, company: "내 눈물 모아", ceo: "서지원" },
+    { preview: "audio/aud_29dd6dfe747f.m4a", start: 2.0, company: "상상속의 너", ceo: "노이즈" },
+    { preview: "audio/aud_aaf4b2027f24.m4a", start: 7.0, company: "진이", ceo: "하이디" },
+    { preview: "audio/aud_afb59ee9e8d2.m4a", start: 15.0, company: "나만의 슬픔", ceo: "김돈규" },
+    { preview: "audio/aud_0d8a58a43a52.m4a", start: 10.0, company: "너에게 난 나에게 넌", ceo: "자전거 탄 풍경" },
+    { preview: "audio/aud_4a7f6452e8b1.m4a", company: "나비무덤", ceo: "테이크" },
+    { preview: "audio/aud_d0f536104627.m4a", start: 15.0, company: "그녀의 연인에게", ceo: "K2" },
+    { preview: "audio/aud_2482fb3b4dae.m4a", start: 15.0, company: "기도", ceo: "정일영" },
   ];
 
   // 이모지로 기업 맞히기 (30). 1~4 고정(애플·삼성전자·진에어·하이트진로), 5~30 랜덤 배치
@@ -1923,7 +1928,7 @@
       photoBox.classList.add('audio-mode'); photoBox.classList.remove('ticker-mode');
       photo.style.display = 'none'; loading.style.display = 'none'; ticker.style.display = 'none';
       audioDisp.style.display = 'block';
-      var sa = document.getElementById('songAudio'); if (sa.dataset.cur !== it.preview) { sa.dataset.cur = it.preview; sa.src = it.preview; sa.play().catch(function () {}); }
+      playSong(it);
     } else if (cur.mode === 'ticker' || cur.mode === 'connect' || cur.mode === 'gesture') {
       audioDisp.style.display = 'none';
       photoBox.classList.add('ticker-mode'); photoBox.classList.remove('audio-mode');
@@ -2414,7 +2419,7 @@
     if (mode === 'audio') {
       box.classList.add('audio-on'); box.classList.remove('ticker'); img.style.display = 'none'; ticker.style.display = 'none';
       if (audioDisp) audioDisp.style.display = 'block';
-      if (doPlay) { var a = document.getElementById('songAudio'); if (a.dataset.cur !== it.preview) { a.dataset.cur = it.preview; a.src = it.preview; a.play().catch(function () {}); } }
+      if (doPlay) playSong(it);
     } else if (mode === 'ticker' || mode === 'connect' || mode === 'gesture') {
       box.classList.add('ticker'); box.classList.remove('audio-on'); img.style.display = 'none';
       ticker.style.display = 'block';
@@ -2445,6 +2450,32 @@
       }
     }
   }
+
+  // ── 음악 퀴즈 재생 구간 제어 ───────────────────────────────────────────
+  // 미리듣기는 30초 고정이라 구간을 바꿀 수 없다. 대신 어디서부터 틀지는 정할 수 있다.
+  // 곡 데이터의 start(초)부터 재생해 전주·간주를 건너뛴다. 없으면 0초부터.
+  function playSong(it) {
+    var a = document.getElementById('songAudio');
+    if (!a || a.dataset.cur === it.preview) return;
+    var st = Math.max(0, +(it.start || 0));
+    a.dataset.cur = it.preview;
+    a.dataset.start = st;
+    a.src = it.preview;
+    var seek = function () { try { if (st > 0 && Math.abs(a.currentTime - st) > 0.3) a.currentTime = st; } catch (e) {} };
+    a.addEventListener('loadedmetadata', function onMeta() { seek(); a.removeEventListener('loadedmetadata', onMeta); });
+    seek();
+    a.play().catch(function () {});
+  }
+  // 현장 보정: 자동 시작점이 애매할 때 진행자가 즉시 구간을 옮긴다
+  function seekSong(delta) {
+    var a = document.getElementById('songAudio');
+    if (!a || !a.src) return;
+    var dur = (a.duration && isFinite(a.duration)) ? a.duration : 30;
+    if (delta === 0) a.currentTime = Math.min(+(a.dataset.start || 0), dur - 0.3);
+    else a.currentTime = Math.min(Math.max(0, a.currentTime + delta), dur - 0.3);
+    if (a.paused) a.play().catch(function () {});
+  }
+
   function toggleSong() {
     var a = document.getElementById('songAudio');
     if (a.paused) a.play().catch(function () {}); else a.pause();
@@ -2632,6 +2663,9 @@
     if (!presMode) {
       var quizOn = document.getElementById('quiz').classList.contains('active');
       if (quizOn && cur && cur.mode === 'audio' && e.key === ' ') { e.preventDefault(); toggleSong(); return; }
+      if (quizOn && cur && cur.mode === 'audio' && (e.key === '[' || e.key === ']' || e.key === '\\')) {
+        e.preventDefault(); seekSong(e.key === '[' ? -5 : (e.key === ']' ? 5 : 0)); return;
+      }
       // 모자이크/커넥션: 스페이스로 한 단계씩 공개 (처음부터 마우스 없이 동작).
       // 다 공개됐거나 정답 공개된 뒤엔 스페이스 무시 → 엔터로만 정답 공개/다음
       if (quizOn && cur && (cur.mode === 'mosaic' || cur.mode === 'connect') && e.key === ' ') {
@@ -2651,6 +2685,9 @@
       return;
     }
     if (cur && cur.mode === 'audio' && !presIntro && !presDone && e.key === ' ') { e.preventDefault(); toggleSong(); return; }
+    if (cur && cur.mode === 'audio' && !presIntro && !presDone && (e.key === '[' || e.key === ']' || e.key === '\\')) {
+      e.preventDefault(); seekSong(e.key === '[' ? -5 : (e.key === ']' ? 5 : 0)); return;
+    }
     if (e.key === 'Enter' || e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); presAdvance(); }
     else if (e.key === 'ArrowLeft') { e.preventDefault(); presBack(); }
     else if (e.key === '1') { e.preventDefault(); pickTeam('value'); }
