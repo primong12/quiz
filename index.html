@@ -119,6 +119,7 @@
   .c17 { --accent: #ff7a45; }
   .c18 { --accent: #f08ad8; }
   .c19 { --accent: #6f86ff; }
+  .c30 { --accent: #f953c6; }   /* 00-10 히트곡 */
   .c20 { --accent: #3fd0c9; }
   .c21 { --accent: #36b3a8; }
   .c22 { --accent: #5b9bf0; }
@@ -671,6 +672,10 @@
       <div class="card c19" onclick="startQuiz('y2k')">
         <div class="emoji"><i class="ph ph-vinyl-record"></i></div>
         <div><div class="title">Y2K</div><div class="sub">노래를 듣고 맞혀요</div></div>
+      </div>
+      <div class="card c30" onclick="startQuiz('hits')">
+        <div class="emoji"><i class="ph ph-vinyl-record"></i></div>
+        <div><div class="title">00-10 히트곡</div><div class="sub">노래를 듣고 맞혀요</div></div>
       </div>
       <div class="card c17" onclick="startQuiz('latest')">
         <div class="emoji"><i class="ph ph-music-notes-plus"></i></div>
@@ -1532,6 +1537,39 @@
     { preview: "audio/aud_2482fb3b4dae.m4a", vol: 0.327, company: "기도", ceo: "정일영" },
   ];
 
+  const HITS = [
+    { preview: "audio/hit_1ff7e8db0e82.m4a", vol: 0.351, company: "벚꽃 엔딩", ceo: "버스커 버스커" },
+    { preview: "audio/hit_6e3a0290735d.m4a", vol: 0.41, company: "사랑 안해", ceo: "백지영" },
+    { preview: "audio/hit_fe87d599ffa2.m4a", vol: 0.248, company: "사랑앓이", ceo: "FT아일랜드" },
+    { preview: "audio/hit_3f6f866ff9b7.m4a", vol: 0.217, company: "사랑과 전쟁", ceo: "다비치" },
+    { preview: "audio/hit_2ad13af60466.m4a", vol: 0.213, company: "총 맞은 것처럼", ceo: "백지영" },
+    { preview: "audio/hit_4c07d26b6414.m4a", vol: 0.253, company: "No.1", ceo: "보아" },
+    { preview: "audio/hit_2ff3f7e39329.m4a", vol: 0.264, company: "8282", ceo: "다비치" },
+    { preview: "audio/hit_1ba01cb1d76e.m4a", vol: 0.257, company: "Again & Again", ceo: "2PM" },
+    { preview: "audio/hit_e118ed368a8c.m4a", vol: 0.26, company: "Day by Day", ceo: "소녀시대" },
+    { preview: "audio/hit_1ba197be4273.m4a", vol: 0.207, company: "Heartbeat", ceo: "2PM" },
+    { preview: "audio/hit_5b41ce953cfd.m4a", vol: 0.326, company: "봄날", ceo: "방탄소년단" },
+    { preview: "audio/hit_5a52a18c48bd.m4a", vol: 0.588, company: "눈의 꽃", ceo: "박효신" },
+    { preview: "audio/hit_d31232fd1a8d.m4a", vol: 0.216, company: "Bad Girl Good Girl", ceo: "미쓰에이" },
+    { preview: "audio/hit_e3ede5f2caa6.m4a", vol: 0.229, company: "좋은 날", ceo: "아이유" },
+    { preview: "audio/hit_6b716394b9ea.m4a", vol: 0.238, company: "미친거니", ceo: "송지은" },
+    { preview: "audio/hit_a0ca36ab1101.m4a", vol: 0.2, company: "피노키오", ceo: "에프엑스" },
+    { preview: "audio/hit_0230d5017ec8.m4a", vol: 0.207, company: "으르렁", ceo: "엑소" },
+    { preview: "audio/hit_b180c0a34ef3.m4a", vol: 0.443, company: "내 손을 잡아", ceo: "아이유" },
+    { preview: "audio/hit_6b68e8885c34.m4a", vol: 0.262, company: "샤이보이", ceo: "시크릿" },
+    { preview: "audio/hit_ec1a480eb212.m4a", vol: 0.331, company: "뚜두뚜두", ceo: "블랙핑크" },
+    { preview: "audio/hit_8f7c9354fa3b.m4a", vol: 0.199, company: "Hot Summer", ceo: "에프엑스" },
+    { preview: "audio/hit_6072a36f395f.m4a", vol: 0.344, company: "Tell Me", ceo: "원더걸스" },
+    { preview: "audio/hit_85027bacd23b.m4a", vol: 0.213, company: "내가 제일 잘나가", ceo: "2NE1" },
+    { preview: "audio/hit_768863ed3556.m4a", vol: 0.36, company: "Cheer Up", ceo: "트와이스" },
+    { preview: "audio/hit_9172bf4d8c64.m4a", vol: 0.245, company: "Blue", ceo: "빅뱅" },
+    { preview: "audio/hit_4cfd20972183.m4a", vol: 0.209, company: "Monster", ceo: "빅뱅" },
+    { preview: "audio/hit_fac13418f416.m4a", vol: 0.221, company: "Electric Shock", ceo: "에프엑스" },
+    { preview: "audio/hit_32819942d81b.m4a", vol: 0.387, company: "올 포 유", ceo: "서인국·정은지" },
+    { preview: "audio/hit_743a397b50a1.m4a", vol: 0.272, company: "젠틀맨", ceo: "싸이" },
+    { preview: "audio/hit_3d52fabb2e3e.m4a", vol: 0.951, company: "겁쟁이", ceo: "버즈" },
+  ];
+
   // 이모지로 기업 맞히기 (30). 1~4 고정(애플·삼성전자·진에어·하이트진로), 5~30 랜덤 배치
   const EMOJI_CORP = [
     { q: '🍎', answer: '애플' },
@@ -1609,6 +1647,8 @@
                 emoji: '🎶', sub: '노래를 듣고 맞혀요', grad: 'linear-gradient(135deg,#ff5f6d,#ffc371)' },
     y2k:      { title: 'Y2K',             question: '이 노래의 제목은? 🎵', items: SONG_Y2K, mode: 'audio',
                 emoji: '🕹️', sub: '노래를 듣고 맞혀요', grad: 'linear-gradient(135deg,#fc466b,#3f5efb)' },
+    hits:     { title: '00-10 히트곡',     question: '이 노래의 제목은? 🎵', items: HITS, mode: 'audio',
+                emoji: '💽', sub: '노래를 듣고 맞혀요', grad: 'linear-gradient(135deg,#f953c6,#b91d73)' },
     memory:   { title: '7080',            question: '이 노래의 제목은? 🎵', items: MEMORY, mode: 'audio',
                 emoji: '🎵', sub: '노래를 듣고 맞혀요', grad: 'linear-gradient(135deg,#c471f5,#fa71cd)' },
     sugarman: { title: '슈가맨',          question: '이 노래의 제목은? 🎵', items: SUGARMAN, mode: 'audio', hidden: true,
