@@ -2105,8 +2105,8 @@
     if (presDone) return;
     hintPos = [];                                       // 단계 이동 시 힌트 초기화
     if (presIntro) { presIntro = false; revealStep = 0; }   // 표지 → 첫 문제 시작
-    else if (cur.mode === 'mosaic' && !presRevealed && revealStep < MOSAIC_BLOCKS.length - 1) {
-      revealStep++;                                     // 모자이크: 한 단계 더 선명하게
+    else if (cur.mode === 'mosaic' && !presRevealed && revealStep < MOSAIC_BLOCKS.length) {
+      revealStep++;                                     // 모자이크: 한 단계 더 선명하게 (마지막 단계 다음은 원본 사진)
     }
     else if (cur.mode === 'connect' && !presRevealed && revealStep < cur.items[idx].clues.length - 1) {
       revealStep++;                                     // 커넥션: 단서 하나 더 공개
@@ -2122,10 +2122,10 @@
   function presBack() {
     pickedTeam = null; hintPos = [];
     if (presDone) presDone = false;
-    else if (presRevealed) { presRevealed = false; if (cur.mode === 'mosaic') revealStep = MOSAIC_BLOCKS.length - 1; else if (cur.mode === 'connect') revealStep = cur.items[idx].clues.length - 1; }
+    else if (presRevealed) { presRevealed = false; if (cur.mode === 'mosaic') revealStep = MOSAIC_BLOCKS.length; else if (cur.mode === 'connect') revealStep = cur.items[idx].clues.length - 1; }
     else if (cur.mode === 'mosaic' && revealStep > 0) { revealStep--; }   // 모자이크: 한 단계 덜 선명하게
     else if (cur.mode === 'connect' && revealStep > 0) { revealStep--; }  // 커넥션: 단서 하나 덜 공개
-    else if (idx > 0) { idx--; presRevealed = false; if (cur.mode === 'mosaic') revealStep = MOSAIC_BLOCKS.length - 1; else if (cur.mode === 'connect') revealStep = cur.items[idx].clues.length - 1; }
+    else if (idx > 0) { idx--; presRevealed = false; if (cur.mode === 'mosaic') revealStep = MOSAIC_BLOCKS.length; else if (cur.mode === 'connect') revealStep = cur.items[idx].clues.length - 1; }
     else presIntro = true;                             // 첫 문제 → 표지로
     renderPresenter(); broadcast();
   }
@@ -2549,7 +2549,9 @@
     else if (q.mode === 'mosaic') {
       st.textContent = (revealStep < MOSAIC_BLOCKS.length - 1)
         ? '🧩 선명도 ' + (revealStep + 1) + '/' + MOSAIC_BLOCKS.length + ' — Enter로 더 선명하게'
-        : '🧩 최대 선명 — Enter로 정답 공개';
+        : (revealStep < MOSAIC_BLOCKS.length)
+          ? '🧩 최대 선명 — Enter로 원본 사진'
+          : '🖼️ 원본 사진 — Enter로 정답 공개';
       st.className = 'reveal-hidden';
     }
     else if (q.mode === 'connect') {
