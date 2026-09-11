@@ -1878,8 +1878,18 @@
   // 관리자 1단계: 버전 선택 + 퀴즈 선택 화면 (숨김 게임 포함 전체 표시)
   function showAdmin() {
     adminKey = null;
-    // 홈에 보이는 게임을 위에, 숨긴 게임을 아래에 (숨김 여부만 기준, 나머지 순서는 그대로)
-    const allKeys = Object.keys(QUIZZES);
+    // 홈 화면 카드 순서를 그대로 따른다(발표자가 보는 순서와 관리자 순서를 일치시킴).
+    // 홈에 카드가 없는 게임(처음부터 숨겨둔 것)은 뒤로 보낸다.
+    const homeOrder = {};
+    [].forEach.call(document.querySelectorAll('#home .card'), function (c, i) {
+      const mm = (c.getAttribute('onclick') || '').match(/startQuiz\('(\w+)'\)/);
+      if (mm) homeOrder[mm[1]] = i;
+    });
+    const allKeys = Object.keys(QUIZZES).slice().sort(function (a, b) {
+      const ra = homeOrder[a] === undefined ? 9999 : homeOrder[a];
+      const rb = homeOrder[b] === undefined ? 9999 : homeOrder[b];
+      return ra - rb;
+    });
     const activeKeys = allKeys.filter(function (k) { return !QUIZZES[k].hidden; });
     const hiddenKeys = allKeys.filter(function (k) { return QUIZZES[k].hidden; });
     const pickBtn = function (key) {
