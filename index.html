@@ -596,6 +596,8 @@
     cursor: pointer; background: rgba(255,255,255,.22); color: #fff; }
   .audio-seek button:hover { background: rgba(255,255,255,.38); }
   .aud-photo-box .audio-seek { display: none; }   /* 빔 화면엔 조작 버튼 안 띄움 */
+  .admin-hidden-sep { grid-column: 1 / -1; margin: 18px 2px 2px; padding-top: 14px;
+    border-top: 1px dashed rgba(255,255,255,.22); color: #cdbff5; font-weight: 800; font-size: 14px; }
 </style>
 </head>
 <body>
@@ -1876,15 +1878,23 @@
   // 관리자 1단계: 버전 선택 + 퀴즈 선택 화면 (숨김 게임 포함 전체 표시)
   function showAdmin() {
     adminKey = null;
-    let html = adminSeedBar() + '<div class="admin-pick-grid">';
-    for (const key of Object.keys(QUIZZES)) {
+    // 홈에 보이는 게임을 위에, 숨긴 게임을 아래에 (숨김 여부만 기준, 나머지 순서는 그대로)
+    const allKeys = Object.keys(QUIZZES);
+    const activeKeys = allKeys.filter(function (k) { return !QUIZZES[k].hidden; });
+    const hiddenKeys = allKeys.filter(function (k) { return QUIZZES[k].hidden; });
+    const pickBtn = function (key) {
       const q = QUIZZES[key];
-      html +=
-        '<button class="admin-pick' + (q.hidden ? ' hidden-game' : '') + '" style="background:' + q.grad + '" onclick="showAdminQuiz(\'' + key + '\')">' +
+      return '<button class="admin-pick' + (q.hidden ? ' hidden-game' : '') + '" style="background:' + q.grad + '" onclick="showAdminQuiz(\'' + key + '\')">' +
           '<span class="emoji">' + q.emoji + '</span>' +
           '<span class="t">' + q.title + (q.hidden ? ' 🙈' : '') + '</span>' +
           '<span class="c">' + q.items.length + '문제</span>' +
         '</button>';
+    };
+    let html = adminSeedBar() + '<div class="admin-pick-grid">';
+    html += activeKeys.map(pickBtn).join('');
+    if (hiddenKeys.length) {
+      html += '<div class="admin-hidden-sep">🙈 숨긴 게임 ' + hiddenKeys.length + '개 · 홈과 랜덤 시작에서 제외됨 (정답지는 볼 수 있음)</div>';
+      html += hiddenKeys.map(pickBtn).join('');
     }
     html += UPCOMING.map(name =>
       '<button class="admin-pick soon" disabled>🔒 ' + name + '<span class="c">준비 중</span></button>'
